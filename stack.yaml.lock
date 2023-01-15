@@ -11,4 +11,25 @@ packages:
     hackage: heap-1.0.4@sha256:ad0e192efbff268e85042068c308c69fa6c787c3cd6ab96c34f89e5bfee01cf9,1556
   original:
     hackage: heap-1.0.4@sha256:ad0e192efbff268e85042068c308c69fa6c787c3cd6ab96c34f89e5bfee01cf9,1556
+- completed:
+    pantry-tree:
+      sha256: 96848e2a3a704c4a46b473b603804309441bee3e35b79fd809b50fb47d1728b4
+      size: 251
+    hackage: data-memocombinators-0.5.1@sha256:bf7f56cf280a6e6d7a0958a8f7c23b4c23f26e56e5ada320cdf5b0ec49634800,486
+  original:
+    hackage: data-memocombinators-0.5.1@sha256:bf7f56cf280a6e6d7a0958a8f7c23b4c23f26e56e5ada320cdf5b0ec49634800,486
+- completed:
+    pantry-tree:
+      sha256: f186efcab2fa5ed750b1b4c77741160b76ea18783d45e8af2e1969d891ffda43
+      size: 261
+    hackage: data-inttrie-0.1.4@sha256:7b91bbc80c667b6f38e38c872c65f51a79d929774967166c172a73e5cebb0e33,812
+  original:
+    hackage: data-inttrie-0.1.4@sha256:7b91bbc80c667b6f38e38c872c65f51a79d929774967166c172a73e5cebb0e33,812
+- completed:
+    pantry-tree:
+      sha256: 88e6fadb03c176bd0359c325a9b7007b79065fadce063c2289640306e6b3599a
+      size: 2748
+    hackage: fgl-5.8.0.0@sha256:c28a8742408a7f81793e525f9bf8e2783ad3e475e77e7d5018dc55407ab607ea,3706
+  original:
+    hackage: fgl-5.8.0.0@sha256:c28a8742408a7f81793e525f9bf8e2783ad3e475e77e7d5018dc55407ab607ea,3706
 snapshots: []

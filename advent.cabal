@@ -40,6 +40,7 @@ library
       Challenges.Y2022.Day13
       Challenges.Y2022.Day14
       Challenges.Y2022.Day15
+      Challenges.Y2022.Day16
       DijkstraSimple
       IntervalSet
       Lib
@@ -55,6 +56,8 @@ library
       array
     , base >=4.7 && <5
     , containers
+    , data-memocombinators
+    , fgl
     , heap
     , mtl
     , parsec
@@ -73,6 +76,8 @@ executable advent-exe
     , array
     , base >=4.7 && <5
     , containers
+    , data-memocombinators
+    , fgl
     , heap
     , mtl
     , parsec
@@ -92,6 +97,8 @@ test-suite advent-test
     , array
     , base >=4.7 && <5
     , containers
+    , data-memocombinators
+    , fgl
     , heap
     , mtl
     , parsec
