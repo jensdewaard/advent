@@ -70,11 +70,12 @@ solveA _ = let
     go :: [LNode Int] -> Int -> [(Int, Int)] -> LNode Int -> [(Int, Int)]
     go _ 0 open _ = open
     go _ 1 open cur = (1, snd cur) : open
+    go [] _ open _ = open
     go unopened t open cur = open' ++ bestOption where
         options :: [LNode Int]
         options = filter (\n -> snd n <= t - 1) unopened
         options' :: [[(Int, Int)]]
-        options' = map (\n -> go (del unopened cur) (t - (ttr cur n)) open cur) options
+        options' = map (\n -> go (del unopened cur) (t - (ttr cur n) - 1) open cur) options
         bestOption :: [(Int, Int)]
         bestOption = maximumBy maximumPressure options'
         open' = (t - 1, snd cur) : open
