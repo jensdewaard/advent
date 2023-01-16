@@ -1,4 +1,4 @@
-module FloydWarshall (Weight (Weight, Inf), floydwarshall) where
+module FloydWarshall (Weight (Weight, Inf), floydwarshall, fromWeight) where
 
 import Data.List (transpose)
 
@@ -40,6 +40,9 @@ sign :: Weight -> Weight
 sign (Weight x) = Weight (signum x)
 sign Inf = Inf
 
+fromWeight :: Weight -> Int
+fromWeight (Weight x) = x
+fromWeight Inf = error "cannot get weight from Inf"
 
 floydwarshall :: [[Weight]] -> [[Weight]]
 floydwarshall m = snd (iterate step (0, m) !! length m)

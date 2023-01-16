@@ -1,9 +1,9 @@
-module Challenges.Y2022.Day16 (parse, solveA, solveB, bestOf, world, toLists, toGraph, rmNode) where
+module Challenges.Y2022.Day16 (parse, solveA, solveB, bestOf, world, toLists, toGraph, rmNode, toMatrix) where
 import Data.Char (ord)
 import Data.Maybe (fromJust)
-import qualified Data.MemoCombinators as Memo
-import Data.List (subsequences)
-import Data.Graph.Inductive (Gr, Node, LNode, LEdge, Graph (mkGraph), inn, out, delNode, insEdges, hasEdge)
+import Data.Graph.Inductive ((&), Gr, Node, Edge, LNode, LEdge, Graph (mkGraph), inn, out, labNodes, delNode, insEdges, hasEdge, nodes, labEdges, toEdge, edgeLabel, labfilter, context)
+import FloydWarshall (Weight (Weight, Inf), fromWeight, floydwarshall)
+import Data.Foldable (find, maximumBy)
 
 world :: [Valve]
 world = [
@@ -19,7 +19,20 @@ world = [
     Valve{label = "JJ", flow = 21, next = ["II"]}
     ]
 
-labelToInt :: Label -> Int
+toMatrix :: Gr Int Int -> [[Weight]]
+toMatrix g = map buildRow ns
+    where 
+        ns = nodes g
+        buildRow :: Node -> [Weight]
+        buildRow n = map (getEdgeWeight n) ns
+        getEdgeWeight :: Node -> Node -> Weight
+        getEdgeWeight n m = if (n == m) then (Weight 0) else
+            if hasEdge g (n, m) then Weight (findEdgeLabel (labEdges g) (n,m)) else Inf
+        findEdgeLabel :: [LEdge Int] -> Edge -> Int
+        findEdgeLabel [] _ = error "no such edge"
+        findEdgeLabel (e:es) e' = if toEdge e == e' then edgeLabel e else findEdgeLabel es e'
+
+labelToInt :: String -> Int
 labelToInt l = 1000 * ord (l !! 0) + ord (l !! 1)
 
 toLists :: [Valve] -> ([LNode Int], [LEdge Int])
@@ -33,35 +46,58 @@ rmNode g n = insEdges newEdges $ delNode n g where
         not $ hasEdge g (i,o),
         i /= o]
 
+rmAllZero :: Gr Int Int -> Gr Int Int
+rmAllZero g = foldl rmNode g (nodes $ labfilter (\l -> l == 0) g) where
+
 toGraph :: [Valve] -> Gr Int Int
-toGraph vs = mkGraph nodes edges where
-    (nodes, edges) = toLists vs
+toGraph vs = mkGraph ns es where
+    (ns, es) = toLists vs
 
 parse :: String -> [Valve]
 parse _ = []
 
 solveA :: [Valve] -> Int
-solveA _ = maximum $ map released $ subsequences $ filter (\v -> flow v /= 0) world
+solveA _ = let
+    time = 30
+    g = toGraph world
+    startNode = fromJust $ find (\(n, _) -> n == 65065) (labNodes g)
+    g' = (context g (fst startNode)) & (rmAllZero g)
+    dm = toMatrix g'
+    dists = floydwarshall dm
+    ns = labNodes g'
+    ttr :: LNode Int -> LNode Int -> Int
+    ttr cur n = fromWeight $ dists !! (fromJust $ indexOf ns cur) !! (fromJust $ indexOf ns n)
+    go :: [LNode Int] -> Int -> [(Int, Int)] -> LNode Int -> [(Int, Int)]
+    go _ 0 open _ = open
+    go _ 1 open cur = (1, snd cur) : open
+    go unopened t open cur = open' ++ bestOption where
+        options :: [LNode Int]
+        options = filter (\n -> snd n <= t - 1) unopened
+        options' :: [[(Int, Int)]]
+        options' = map (\n -> go (del unopened cur) (t - (ttr cur n)) open cur) options
+        bestOption :: [(Int, Int)]
+        bestOption = maximumBy maximumPressure options'
+        open' = (t - 1, snd cur) : open
+    in
+        pressure $ go (del ns startNode) time [] startNode
+
+del :: Eq a => [a] -> a -> [a]
+del [] _ = []
+del (a:as) a' = if a == a' then as else a : del as a'
+
+maximumPressure :: [(Int, Int)] -> [(Int, Int)] -> Ordering
+maximumPressure a b = compare a' b' where
+    a' :: Int
+    a' = pressure a
+    b' :: Int
+    b' = pressure b
+
+pressure :: [(Int, Int)] -> Int
+pressure = sum . map product
 
 solveB :: [Valve] -> Int
 solveB _ = 0
 
-valveMemo :: Memo.Memo Valve
-valveMemo = Memo.wrap (fromJust . getValve world) label (Memo.list Memo.char)
-
-goMemo :: Int -> [Valve] -> Valve -> [Valve]
-goMemo = Memo.memo3 Memo.integral (Memo.list valveMemo) valveMemo (go world)
-
-go :: [Valve] -> Int -> [Valve] -> Valve -> [Valve]
-go _ 0 open _ = open
-go _ 1 open cur = cur : open
-go w n open cur
-    | cur `elem` open || flow cur == 0 = bestOf $ map (go w (n-1) open) (map getV $ next cur)
-    | otherwise = bestOf $ (map (go w (n-2) (cur : open)) (map getV $ next cur)) ++ (map (go w (n-1) open) (map getV $ next cur))
-    where 
-        getV = fromJust . getValve w
-
-type Label = String
 
 bestOf :: [[Valve]] -> [Valve]
 bestOf [] = []
@@ -74,17 +110,14 @@ bestOf (a : b : vs) = if a' > b' then bestOf (a : vs) else bestOf (b : vs)
 released :: [Valve] -> Int
 released = product . map flow
 
-getValve :: [Valve] -> Label -> Maybe Valve
-getValve [] _ = Nothing
-getValve (v:vs) l = if label v == l then Just v else getValve vs l
-
 data Valve = Valve {
-    label :: Label,
+    label :: String,
     flow :: Int,
-    next :: [Label]
+    next :: [String]
 } deriving (Show, Eq)
 
-valid :: [Valve] -> Bool
-valid [] = True
-valid [_] = True
-valid (u : v: vs) = if label v `elem` next u then valid (v:vs) else False
+indexOf :: Eq a => [a] -> a -> Maybe Int
+indexOf as a = indexOf' 0 as a where
+    indexOf' :: Eq a => Int -> [a] -> a -> Maybe Int
+    indexOf' _ [] _ = Nothing
+    indexOf' i (a':as') a'' = if a' == a'' then Just i else indexOf' (i+1) as' a''
