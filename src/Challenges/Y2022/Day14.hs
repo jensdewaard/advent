@@ -1,31 +1,33 @@
-#!/usr/bin/env nix-shell
-#!nix-shell --pure -i runghc -p "haskellPackages.ghcWithPackages (pkgs: [ pkgs.turtle pkgs.heap ])"
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 
-module Challenges.Y2022.Day14 where
+module Challenges.Y2022.Day14 (input, solutionA, solutionB) where
 
-import Data.Char
-import Data.List
 import Data.Maybe
-import qualified Data.Map as M
 import Shared
 import Text.ParserCombinators.Parsec
-import Numeric
 
-main :: IO ()
-main = do
-    m <- readFile "inputs/14.txt"
-    let Right c = parseInput (init m)
-    let sandedCave = dropSand (lowestY c) c (500,0)
-    --print $ solveA c
-    print $ solveB c
+input :: Bool -> IO String 
+input False = do
+    m <- readFile "data/2022/14.txt"
+    return $ init m
+input True = return "498,4 -> 498,6 -> 496,6\
+\503,4 -> 502,4 -> 502,9 -> 494,9"
+
+solutionA :: String -> String
+solutionA = show . solveA . fromRight . parseInput 
+
+solutionB :: String -> String
+solutionB = show . solveB . fromRight . parseInput
+
+solve :: (Int -> Cave -> Coord -> Cave) -> Cave -> Int
+solve f c = countSand $ f (lowestY c) c (500,0)
 
 solveA :: Cave -> Int
-solveA c = countSand $ dropSand (lowestY c) c (500,0)
+solveA = solve dropSand
 
 solveB :: Cave -> Int
-solveB c = countSand $ dropSand' (lowestY c) c (500,0)
+solveB = solve dropSand'
 
 -- data
 type Filling = (Coord, Char)
@@ -91,3 +93,7 @@ oneCloser p@(px, py) (qx, qy)
     | py > qy = (px, py - 1)
     | py < qy = (px, py + 1)
     | otherwise = p
+
+fromRight :: Either a b -> b
+fromRight (Left _) = error "fromRight from left"
+fromRight (Right r) = r
