@@ -41,6 +41,7 @@ library
       Challenges.Y2022.Day14
       Challenges.Y2022.Day15
       Challenges.Y2022.Day16
+      Challenges.Y2022.Day17
       DijkstraSimple
       FloydWarshall
       IntervalSet
