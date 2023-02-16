@@ -15,6 +15,14 @@ indexedList = indexedList' 1 where
 -- Coords
 type Coord = (Int, Int)
 
+data Dir = U | D| L| R
+
+move :: Dir -> Coord -> Coord
+move U (x, y) = (x, y + 1)
+move D (x, y) = (x, y - 1)
+move L (x, y) = (x - 1, y)
+move R (x, y) = (x + 1, y)
+
 coords :: GenParser Char st Coord
 coords = do
     l <- number
