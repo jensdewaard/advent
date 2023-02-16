@@ -93,7 +93,3 @@ oneCloser p@(px, py) (qx, qy)
     | py > qy = (px, py - 1)
     | py < qy = (px, py + 1)
     | otherwise = p
-
-fromRight :: Either a b -> b
-fromRight (Left _) = error "fromRight from left"
-fromRight (Right r) = r

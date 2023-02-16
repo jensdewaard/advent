@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Challenges.Y2015.Day01
+      Challenges.Y2015.Day02
       Challenges.Y2022.Day01
       Challenges.Y2022.Day02
       Challenges.Y2022.Day03
@@ -46,7 +47,6 @@ library
       DijkstraSimple
       FloydWarshall
       IntervalSet
-      Lib
       Parsing
       Shared
       Solution

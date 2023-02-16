@@ -1,37 +1,28 @@
-#!/usr/bin/env nix-shell
-#!nix-shell --pure -i runghc -p "haskellPackages.ghcWithPackages (pkgs: [ pkgs.turtle pkgs.heap ])"
 {-# LANGUAGE OverloadedStrings #-}
 
-module Challenges.Y2022.Day13 where
+module Challenges.Y2022.Day13 (solutionA, solutionB) where
 
-import Data.Char
-import Data.List
-import Data.Maybe
+import qualified Data.List as L
 import Shared
 import Text.ParserCombinators.Parsec
-import qualified Data.Text as T
-import Numeric
+import Data.Maybe (fromJust)
 
-main :: IO ()
-main = do
-    m <- readFile "inputs/13.txt"
-    let i = parseInput (init m)
-    let p1 = List [List [Val 2]]
-    let p2 = List [List [Val 6]]
-    let Right ps = parseInput (init m)
-    print $ solveA ps
-    print $ solveB ps
+solutionA :: String -> String
+solutionA = show . solveA . fromRight . parseInput
+
+solutionB :: String -> String
+solutionB = show . solveB . fromRight . parseInput
 
 solveA :: [(Packet, Packet)] -> Int
 solveA = sum . map fst . filter snd . indexedList . map (uncurry (<=))
 
 solveB :: [(Packet, Packet)] -> Int
 solveB ps = succ iDiv * succ iDiv' where
-    Just iDiv = elemIndex p1 aps
-    Just iDiv' = elemIndex p2 aps
+    iDiv = fromJust $ L.elemIndex p1 aps
+    iDiv' = fromJust $ L.elemIndex p2 aps
     p1 = List [List [Val 2]]
     p2 = List [List [Val 6]]
-    aps = sort (p1 : p2 : concatMap (\p -> [fst p, snd p]) ps)
+    aps = L.sort (p1 : p2 : concatMap (\p -> [fst p, snd p]) ps)
 
 -- parsing
 parseInput :: String -> Either ParseError [(Packet, Packet)]
@@ -43,15 +34,15 @@ file = sepBy pair (count 2 newline)
 pair :: GenParser Char st (Packet, Packet)
 pair = do
     l <- packet
-    string "\n"
+    _ <- string "\n"
     r <- packet
     return (l, r)
 
 packet :: GenParser Char st Packet
 packet = (do 
-        char '['
+        _ <- char '['
         p <- sepBy packet (char ',')
-        char ']'
+        _ <- char ']'
         return (List p)) <|> literal
 
 literal :: GenParser Char st Packet
@@ -64,7 +55,7 @@ instance Ord Packet where
     compare (Val x) (Val y) = compare x y
     compare (List []) (List []) = EQ
     compare (List []) _ = LT
-    compare (List (x : xs)) (List []) = GT
+    compare (List (_ : _)) (List []) = GT
     compare (Val x) (List ys) = compare (List [Val x]) (List ys)
     compare (List xs) (Val y) = compare (List xs) (List [Val y])
     compare (List (x:xs)) (List (y:ys)) = let c = compare x y in

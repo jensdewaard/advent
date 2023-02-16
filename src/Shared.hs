@@ -2,8 +2,6 @@ module Shared where
 
 import qualified Data.Text as T
 import Text.ParserCombinators.Parsec
-import Data.Bifunctor
-import Control.Monad (ap)
 import qualified Parsing as P
 
 toLines :: String -> [String]
@@ -20,7 +18,7 @@ type Coord = (Int, Int)
 coords :: GenParser Char st Coord
 coords = do
     l <- number
-    string ","
+    _ <- string ","
     r <- number
     return (l, r)
 
@@ -29,3 +27,7 @@ distanceC (px, py) (qx, qy) = abs (px - qx) + abs (py - qy)
 
 number :: GenParser Char st Int
 number = P.int
+
+fromRight :: Either a b -> b
+fromRight (Left _) = error "fromRight from Left"
+fromRight (Right r) = r
