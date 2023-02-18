@@ -20,6 +20,13 @@ packages:
     hackage: data-memocombinators-0.5.1@sha256:bf7f56cf280a6e6d7a0958a8f7c23b4c23f26e56e5ada320cdf5b0ec49634800,486
 - completed:
     pantry-tree:
+      sha256: bb739f3bafdcd464ea2c9420d2a8f9efebb65d4771cc0c9a9a1179828f2404bb
+      size: 6351
+    hackage: dsp-0.2.5.2@sha256:0b988569ad8718df17ef3b9c4f87b896684400181de6ac5ef32c61e38de86a26,5374
+  original:
+    hackage: dsp-0.2.5.2@sha256:0b988569ad8718df17ef3b9c4f87b896684400181de6ac5ef32c61e38de86a26,5374
+- completed:
+    pantry-tree:
       sha256: f186efcab2fa5ed750b1b4c77741160b76ea18783d45e8af2e1969d891ffda43
       size: 261
     hackage: data-inttrie-0.1.4@sha256:7b91bbc80c667b6f38e38c872c65f51a79d929774967166c172a73e5cebb0e33,812
@@ -46,4 +53,18 @@ packages:
     hackage: call-stack-0.4.0@sha256:ac44d2c00931dc20b01750da8c92ec443eb63a7231e8550188cb2ac2385f7feb,1200
   original:
     hackage: call-stack-0.4.0@sha256:ac44d2c00931dc20b01750da8c92ec443eb63a7231e8550188cb2ac2385f7feb,1200
+- completed:
+    pantry-tree:
+      sha256: 646ee77fe01178837ee928b61ae8653dcf190e9b5353ebebd094079c77a18b76
+      size: 1528
+    hackage: random-1.2.1.1@sha256:dea1f11e5569332dc6c8efaad1cb301016a5587b6754943a49f9de08ae0e56d9,6541
+  original:
+    hackage: random-1.2.1.1@sha256:dea1f11e5569332dc6c8efaad1cb301016a5587b6754943a49f9de08ae0e56d9,6541
+- completed:
+    pantry-tree:
+      sha256: b56f706c092dc0ac4875ef45bd18719386358c56667f6b604a733b66f9e4657f
+      size: 1519
+    hackage: splitmix-0.1.0.4@sha256:804e2574bc7e32d08cbab91e47ee6287b4df7d50851d73f9e778f94a9a7814c7,6521
+  original:
+    hackage: splitmix-0.1.0.4@sha256:804e2574bc7e32d08cbab91e47ee6287b4df7d50851d73f9e778f94a9a7814c7,6521
 snapshots: []

@@ -15,7 +15,7 @@ indexedList = indexedList' 1 where
 -- Coords
 type Coord = (Int, Int)
 
-data Dir = U | D| L| R
+data Dir = U | D| L| R deriving (Show, Eq)
 
 move :: Dir -> Coord -> Coord
 move U (x, y) = (x, y + 1)

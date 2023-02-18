@@ -24,6 +24,7 @@ dependencies:
 - array
 - containers
 - data-memocombinators
+- dsp
 - fgl
 - heap
 - mtl
