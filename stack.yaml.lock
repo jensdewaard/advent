@@ -67,4 +67,39 @@ packages:
     hackage: splitmix-0.1.0.4@sha256:804e2574bc7e32d08cbab91e47ee6287b4df7d50851d73f9e778f94a9a7814c7,6521
   original:
     hackage: splitmix-0.1.0.4@sha256:804e2574bc7e32d08cbab91e47ee6287b4df7d50851d73f9e778f94a9a7814c7,6521
+- completed:
+    pantry-tree:
+      sha256: d76e91242ac1719b7f9030e3d36c8a5e4176709a75c1acb692c5f4c82888e5a2
+      size: 270
+    hackage: pureMD5-2.1.4@sha256:61be0d74a24a4873d4ced33abb7b100e2b95ffe53645f870968c6891f4e75046,1536
+  original:
+    hackage: pureMD5-2.1.4@sha256:61be0d74a24a4873d4ced33abb7b100e2b95ffe53645f870968c6891f4e75046,1536
+- completed:
+    pantry-tree:
+      sha256: 2d570ae699908d131b63fe176115809982f86ec4589cdbf42848aa2ca79209cb
+      size: 641
+    hackage: cereal-0.5.8.3@sha256:87a227c7b510217ea059db3dd59d9665edd8f0d1d3d8de39458e371a1d9402fb,2767
+  original:
+    hackage: cereal-0.5.8.3@sha256:87a227c7b510217ea059db3dd59d9665edd8f0d1d3d8de39458e371a1d9402fb,2767
+- completed:
+    pantry-tree:
+      sha256: 73b31229fc38562b8eec3cb5f7ad828a44bf7820bf3196c9113d64ad13578fc1
+      size: 903
+    hackage: crypto-api-0.13.3@sha256:e572c0cdc58ba6773ea200ea5261d6bf5fc116d910b52cf1c671d85b940ed6fc,2366
+  original:
+    hackage: crypto-api-0.13.3@sha256:e572c0cdc58ba6773ea200ea5261d6bf5fc116d910b52cf1c671d85b940ed6fc,2366
+- completed:
+    pantry-tree:
+      sha256: 38c9b55d6918304b17a6c70a51ad9d981e9f64e08121482d9a801d4e4681a7db
+      size: 496
+    hackage: tagged-0.8.6.1@sha256:8a24aef29b8e35447ccc56658ea07c2aded30bfa8130ea057e382936e17c74a6,2874
+  original:
+    hackage: tagged-0.8.6.1@sha256:8a24aef29b8e35447ccc56658ea07c2aded30bfa8130ea057e382936e17c74a6,2874
+- completed:
+    pantry-tree:
+      sha256: ca524cf25006be36863142f96039eed582943168cb6d9b65eebd449647857e8e
+      size: 682
+    hackage: entropy-0.4.1.10@sha256:219a10d58386831dd742982e85841c16822f5c219b7cc6e5afff86f956c5b935,2784
+  original:
+    hackage: entropy-0.4.1.10@sha256:219a10d58386831dd742982e85841c16822f5c219b7cc6e5afff86f956c5b935,2784
 snapshots: []

@@ -28,6 +28,7 @@ library
       Challenges.Y2015.Day01
       Challenges.Y2015.Day02
       Challenges.Y2015.Day03
+      Challenges.Y2015.Day04
       Challenges.Y2022.Day01
       Challenges.Y2022.Day02
       Challenges.Y2022.Day03
@@ -60,6 +61,7 @@ library
       HUnit
     , array
     , base >=4.7 && <5
+    , bytestring
     , containers
     , data-memocombinators
     , dsp
@@ -67,6 +69,7 @@ library
     , heap
     , mtl
     , parsec
+    , pureMD5
     , text
   default-language: Haskell2010
 
@@ -82,6 +85,7 @@ executable advent-exe
     , advent
     , array
     , base >=4.7 && <5
+    , bytestring
     , containers
     , data-memocombinators
     , dsp
@@ -89,6 +93,7 @@ executable advent-exe
     , heap
     , mtl
     , parsec
+    , pureMD5
     , text
   default-language: Haskell2010
 
@@ -106,6 +111,7 @@ test-suite advent-test
     , advent
     , array
     , base >=4.7 && <5
+    , bytestring
     , containers
     , data-memocombinators
     , dsp
@@ -113,5 +119,6 @@ test-suite advent-test
     , heap
     , mtl
     , parsec
+    , pureMD5
     , text
   default-language: Haskell2010
