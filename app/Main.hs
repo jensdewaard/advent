@@ -30,7 +30,7 @@ getSol (test, y, d) = return $ ((getYear y) test) d
 runSol :: Sol -> IO String
 runSol (inputSource, solveA, solveB) = do
     input <- inputSource
-    return $ concat ["Solution A: ", solveA input, "\nSolution B: ", solveB input, "\n"] 
+    return $ concat ["Solution A:\t", solveA input, "\nSolution B:\t", solveB input, "\n"] 
 
 getYear :: Int -> Bool -> Int -> Sol
 getYear 2015 = getDay2015
