@@ -33,6 +33,7 @@ dependencies:
 - pureMD5
 - text
 - HUnit
+- optparse-applicative
 
 ghc-options:
 - -Wall

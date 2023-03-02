@@ -51,6 +51,7 @@ library
       DijkstraSimple
       FloydWarshall
       IntervalSet
+      Parser
       Parsing
       Shared
       Solution
@@ -70,6 +71,7 @@ library
     , fgl
     , heap
     , mtl
+    , optparse-applicative
     , parsec
     , pureMD5
     , text
@@ -94,6 +96,7 @@ executable advent-exe
     , fgl
     , heap
     , mtl
+    , optparse-applicative
     , parsec
     , pureMD5
     , text
@@ -120,6 +123,7 @@ test-suite advent-test
     , fgl
     , heap
     , mtl
+    , optparse-applicative
     , parsec
     , pureMD5
     , text
