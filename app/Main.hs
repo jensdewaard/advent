@@ -16,8 +16,8 @@ main = runProg =<< execParser opts
     where
         opts = info (sample <**> helper)
             ( fullDesc
-            <> progDesc "Print a greeting for TARGET"
-            <> header "hello - a test for optparse-applicative" )
+            <> progDesc "Run an advent of code solution"
+            <> header "advent - running advent of code solutions" )
 
 runProg :: Sample -> IO ()
 runProg (Sample test year day) = (getSol (test, year, day)) >>= runSol >>= putStr
