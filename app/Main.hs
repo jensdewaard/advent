@@ -5,7 +5,8 @@ import qualified Challenges.Y2015.Day02 as Y15D02 (input, solutionA, solutionB)
 import qualified Challenges.Y2015.Day03 as Y15D03 (input, solutionA, solutionB)
 import qualified Challenges.Y2015.Day04 as Y15D04 (input, solutionA, solutionB)
 import qualified Challenges.Y2015.Day05 as Y15D05 (input, solutionA, solutionB)
-import qualified Challenges.Y2022.Day14 as D14 (input, solutionA, solutionB) 
+import qualified Challenges.Y2019.Day01 as Y19D01 (input, solutionA, solutionB)
+import qualified Challenges.Y2022.Day14 as D14 (input, solutionA, solutionB)
 import Parser (Sample (Sample), sample)
 import Options.Applicative
 import System.Environment (getArgs)
@@ -20,26 +21,31 @@ main = runProg =<< execParser opts
             <> header "advent - running advent of code solutions" )
 
 runProg :: Sample -> IO ()
-runProg (Sample test year day) = (getSol (test, year, day)) >>= runSol >>= putStr
+runProg (Sample test year day) = getSol (test, year, day) >>= runSol >>= putStr
 
 type Sol = (IO String, String -> String, String -> String)
 
 getSol :: (Bool, Int, Int) -> IO Sol
-getSol (test, y, d) = return $ ((getYear y) test) d
+getSol (test, y, d) = return $ getYear y test d
 
 runSol :: Sol -> IO String
 runSol (inputSource, solveA, solveB) = do
     input <- inputSource
-    return $ concat ["Solution A:\t", solveA input, "\nSolution B:\t", solveB input, "\n"] 
+    return $ concat ["Solution A:\t", solveA input, "\nSolution B:\t", solveB input, "\n"]
 
 getYear :: Int -> Bool -> Int -> Sol
 getYear 2015 = getDay2015
+getYear 2019 = getDay2019
 getYear 2022 = getDay2022
 getYear _ = error "unsupported year"
+
+getDay2019 :: Bool -> Int -> Sol
+getDay2019 test 1 = (Y19D01.input test, Y19D01.solutionA, Y19D01.solutionB)
 
 getDay2022 :: Bool -> Int -> Sol
 getDay2022 test 14 = (D14.input test, D14.solutionA, D14.solutionB)
 getDay2022 _ _ = error "unsupported day"
+
 
 getDay2015 :: Bool -> Int -> Sol
 getDay2015 test 1 = (Y15D01.input test, Y15D01.solutionA, Y15D01.solutionB)
