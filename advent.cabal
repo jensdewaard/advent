@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.7.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -31,6 +31,7 @@ library
       Challenges.Y2015.Day04
       Challenges.Y2015.Day05
       Challenges.Y2015.Day06
+      Challenges.Y2019.Day01
       Challenges.Y2022.Day01
       Challenges.Y2022.Day02
       Challenges.Y2022.Day03
@@ -107,6 +108,7 @@ test-suite advent-test
   main-is: Spec.hs
   other-modules:
       FloydWarshallTests
+      Y2019Tests.Day01
       Paths_advent
   hs-source-dirs:
       test

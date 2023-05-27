@@ -1,0 +1,10 @@
+{
+    "configurations": [
+    {
+        "command": "stack build",
+        "name": "Run stack build",
+        "request": "launch",
+        "type": "node-terminal"
+    }
+    ]
+}
