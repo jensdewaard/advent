@@ -7,6 +7,9 @@ import qualified Parsing as P
 toLines :: String -> [String]
 toLines s = filter (/= "") $ map T.unpack $ T.splitOn (T.pack "\n") (T.pack s)
 
+splitOn :: String -> String -> [String]
+splitOn d s = map T.unpack $ T.splitOn (T.pack d) (T.pack s)
+
 indexedList :: [a] -> [(Int, a)]
 indexedList = indexedList' 1 where
     indexedList' n (a:as) = (n, a) : indexedList' (succ n) as
