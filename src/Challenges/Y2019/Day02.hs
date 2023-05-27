@@ -1,12 +1,28 @@
 module Challenges.Y2019.Day02 where
 import Shared (splitOn)
+import qualified Data.Bifunctor
 
 solutionA :: String -> String
-solutionA inp = show $ runOpProgram 0 prog' where
-    prog' = opReplace 2 2 $ opReplace 1 12 $ readProg inp
+solutionA inp = show $ head $ runOpProgram 0 prog' where
+    prog' = snd $ initMemory (readProg inp) (12, 1)
 
 solutionB :: String -> String
-solutionB = undefined
+solutionB inp = show $ answer $ fst $
+    head $
+    filter isCorrect $ map (Data.Bifunctor.second (runOpProgram 0) . initMemory prog) posSol where
+    prog = readProg inp
+
+answer :: (Int, Int) -> Int
+answer (n, v) = 100 * n + v
+
+initMemory :: OpProgram -> (Int, Int) -> ((Int, Int), OpProgram)
+initMemory prog (noun, verb) = ((noun, verb), opReplace 2 verb $ opReplace 1 noun prog)
+
+isCorrect :: ((Int, Int), OpProgram) -> Bool
+isCorrect (_, p) = head p == 19690720
+
+posSol :: [(Int, Int)]
+posSol = [(x, y) | x <- [0..100], y <- [0..100]]
 
 readInt :: String -> Int
 readInt = read
