@@ -1,7 +1,7 @@
 packages:
 - .
 resolver:
-  compiler: ghc-9.2.4
+  compiler: ghc-9.0.2
 ghc-options:
   $everything: -haddock
 extra-deps:
