@@ -1,4 +1,4 @@
-module Challenges.Y2015.Day06 () where
+module Challenges.Y2015.Day06 (input, solutionA, solutionB) where
 import Data.Set (Set)
 import Shared (Coord)
 
