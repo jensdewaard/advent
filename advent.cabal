@@ -34,6 +34,7 @@ library
       Challenges.Y2019.Day01
       Challenges.Y2019.Day02
       Challenges.Y2019.Day03
+      Challenges.Y2019.Day04
       Challenges.Y2022.Day01
       Challenges.Y2022.Day02
       Challenges.Y2022.Day03
@@ -111,6 +112,7 @@ test-suite advent-test
   other-modules:
       FloydWarshallTests
       Y2019Tests.Day01
+      Y2019Tests.Day04
       Paths_advent
   hs-source-dirs:
       test

@@ -8,6 +8,7 @@ import qualified Challenges.Y2015.Day05 as Y15D05 (input, solutionA, solutionB)
 import qualified Challenges.Y2019.Day01 as Y19D01 (input, solutionA, solutionB)
 import qualified Challenges.Y2019.Day02 as Y19D02 (input, solutionA, solutionB)
 import qualified Challenges.Y2019.Day03 as Y19D03 (input, solutionA, solutionB)
+import qualified Challenges.Y2019.Day04 as Y19D04 (input, solutionA, solutionB)
 import qualified Challenges.Y2022.Day14 as D14 (input, solutionA, solutionB)
 import Parser (Sample (Sample), sample)
 import Options.Applicative
@@ -45,6 +46,7 @@ getDay2019 :: Bool -> Int -> Sol
 getDay2019 test 1 = (Y19D01.input test, Y19D01.solutionA, Y19D01.solutionB)
 getDay2019 test 2 = (Y19D02.input test, Y19D02.solutionA, Y19D02.solutionB)
 getDay2019 test 3 = (Y19D03.input test, Y19D03.solutionA, Y19D03.solutionB)
+getDay2019 test 4 = (Y19D04.input test, Y19D04.solutionA, Y19D04.solutionB)
 
 getDay2022 :: Bool -> Int -> Sol
 getDay2022 test 14 = (D14.input test, D14.solutionA, D14.solutionB)
