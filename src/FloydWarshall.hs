@@ -10,7 +10,7 @@ instance Num Weight where
     (-) = sub
     abs = absW
     signum = sign
-    fromInteger = \x -> Weight (fromInteger x)
+    fromInteger = Weight . fromInteger
 
 instance Ord Weight where compare = compareWeights
 

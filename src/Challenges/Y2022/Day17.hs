@@ -49,11 +49,11 @@ solveA ds = undefined
 sim :: [Int -> Rock] -> [Dir] -> World -> World
 sim [] _ _ = error "no rocks given"
 sim _ [] _ = error "no jet streams"
-sim rs _ w@World{fallingRock=Nothing} = w{fallingRock=r, rockIndex=(rockIndex w) + 1 } where
-    r = Just $ rs !! (rockIndex w) $ (stackHeight w + 3)
-sim _ ds w = w{fallingRock = mr, jetIndex=(jetIndex w) + 1, surface=stack', stackHeight = sh} where
+sim rs _ w@World{fallingRock=Nothing} = w{fallingRock=r, rockIndex=rockIndex w + 1 } where
+    r = Just $ rs !! rockIndex w $ (stackHeight w + 3)
+sim _ ds w = w{fallingRock = mr, jetIndex=jetIndex w + 1, surface=stack', stackHeight = sh} where
         r = fromJust $ fallingRock w
-        dir = ds !! (jetIndex w)
+        dir = ds !! jetIndex w
         r' = move dir r
         collisionLR = undefined
         r'' = if collisionLR then r else r'

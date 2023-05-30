@@ -3,7 +3,7 @@
 
 module Challenges.Y2022.Day15 (Challenges.Y2022.Day15.parse, solveA, solveB) where
 
-import Data.Set as S (Set, fromList, empty, union, difference, size) 
+import Data.Set as S (Set, fromList, empty, union, difference, size)
 import Data.Either (fromRight)
 import Shared ( distanceC, number, Coord )
 import Text.ParserCombinators.Parsec as P
@@ -11,11 +11,11 @@ import Text.ParserCombinators.Parsec as P
 import qualified IntervalSet as IS
 
 parse :: String -> [(Sensor, Beacon)]
-parse = (fromRight []) . parseInput . init
+parse = fromRight [] . parseInput . init
 
 solveA :: [(Sensor, Beacon)] -> Int
 solveA ps = S.size $ difference os bs where
-    bs = fromList $ map snd ps 
+    bs = fromList $ map snd ps
     os = foldl union empty (map (fromList . uncurry (noneAtForY 2_000_000)) ps)
 
 solveB :: [(Sensor, Beacon)] -> [IS.IntervalSet]
@@ -52,7 +52,7 @@ noneAtForY' y s@(sx, _) b = subs [0..max_x] ps where
         | ubx < 0 && lbx > max_x = []
         | ubx < 0 = [IS.fromPair (lbx, max_x)]
         | lbx > max_x = [IS.fromPair (0, ubx)]
-        | otherwise = IS.add (IS.fromPair (fst (last ys) + 1 ,max_x)) [IS.fromPair (0, fst (head ys)- 1)] 
+        | otherwise = IS.add (IS.fromPair (fst (last ys) + 1 ,max_x)) [IS.fromPair (0, fst (head ys)- 1)]
 
 noneAt :: Coord -> Coord -> Set Coord
 noneAt s@(sx, sy) b = let dist = distanceC s b

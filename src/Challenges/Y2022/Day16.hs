@@ -4,6 +4,7 @@ import Data.Maybe (fromJust)
 import Data.Graph.Inductive ((&), Gr, Node, Edge, LNode, LEdge, Graph (mkGraph), inn, out, labNodes, delNode, insEdges, hasEdge, nodes, labEdges, toEdge, edgeLabel, labfilter, context)
 import FloydWarshall (Weight (Weight, Inf), fromWeight, floydwarshall)
 import Data.Foldable (find, maximumBy)
+import qualified Data.Bifunctor
 
 world :: [Valve]
 world = [
@@ -21,33 +22,39 @@ world = [
 
 toMatrix :: Gr Int Int -> [[Weight]]
 toMatrix g = map buildRow ns
-    where 
+    where
         ns = nodes g
         buildRow :: Node -> [Weight]
         buildRow n = map (getEdgeWeight n) ns
         getEdgeWeight :: Node -> Node -> Weight
-        getEdgeWeight n m = if (n == m) then (Weight 0) else
-            if hasEdge g (n, m) then Weight (findEdgeLabel (labEdges g) (n,m)) else Inf
+        getEdgeWeight n m
+          | n == m = Weight 0
+          | hasEdge g (n, m) = Weight (findEdgeLabel (labEdges g) (n,m))
+          | otherwise = Inf
         findEdgeLabel :: [LEdge Int] -> Edge -> Int
         findEdgeLabel [] _ = error "no such edge"
         findEdgeLabel (e:es) e' = if toEdge e == e' then edgeLabel e else findEdgeLabel es e'
 
 labelToInt :: String -> Int
-labelToInt l = 1000 * ord (l !! 0) + ord (l !! 1)
+labelToInt l = 1000 * ord (head l) + ord (l !! 1)
 
 toLists :: [Valve] -> ([LNode Int], [LEdge Int])
-toLists [] = ([], [])
-toLists (v : vs) = ((labelToInt $ label v, flow v) : (fst $ toLists vs), 
-                    (map (\n -> (labelToInt $ label v, labelToInt n, 1)) (next v)) ++ (snd $ toLists vs))
+toLists = foldr
+      (\ v
+         -> Data.Bifunctor.bimap
+              ((labelToInt $ label v, flow v) :)
+              (
+                 map (\ n -> (labelToInt $ label v, labelToInt n, 1)) (next v) ++))
+      ([], [])
 
 rmNode :: Gr Int Int -> Node -> Gr Int Int
 rmNode g n = insEdges newEdges $ delNode n g where
-    newEdges = [(i, o, w1+w2) | (i,_,w1) <- inn g n, (_,o,w2) <- out g n, 
+    newEdges = [(i, o, w1+w2) | (i,_,w1) <- inn g n, (_,o,w2) <- out g n,
         not $ hasEdge g (i,o),
         i /= o]
 
 rmAllZero :: Gr Int Int -> Gr Int Int
-rmAllZero g = foldl rmNode g (nodes $ labfilter (\l -> l == 0) g) where
+rmAllZero g = foldl rmNode g (nodes $ labfilter (== 0) g)
 
 toGraph :: [Valve] -> Gr Int Int
 toGraph vs = mkGraph ns es where
@@ -61,12 +68,12 @@ solveA _ = let
     time = 30
     g = toGraph world
     startNode = fromJust $ find (\(n, _) -> n == 65065) (labNodes g)
-    g' = (context g (fst startNode)) & (rmAllZero g)
+    g' = context g (fst startNode) & rmAllZero g
     dm = toMatrix g'
     dists = floydwarshall dm
     ns = labNodes g'
     ttr :: LNode Int -> LNode Int -> Int
-    ttr cur n = fromWeight $ dists !! (fromJust $ indexOf ns cur) !! (fromJust $ indexOf ns n)
+    ttr cur n = fromWeight $ dists !! fromJust (indexOf ns cur) !! fromJust (indexOf ns n)
     go :: [LNode Int] -> Int -> [(Int, Int)] -> LNode Int -> [(Int, Int)]
     go _ 0 open _ = open
     go _ 1 open cur = (1, snd cur) : open
@@ -75,7 +82,7 @@ solveA _ = let
         options :: [LNode Int]
         options = filter (\n -> snd n <= t - 1) unopened
         options' :: [[(Int, Int)]]
-        options' = map (\n -> go (del unopened cur) (t - (ttr cur n) - 1) open cur) options
+        options' = map (\n -> go (del unopened cur) (t - ttr cur n - 1) open cur) options
         bestOption :: [(Int, Int)]
         bestOption = maximumBy maximumPressure options'
         open' = (t - 1, snd cur) : open
@@ -104,7 +111,7 @@ bestOf :: [[Valve]] -> [Valve]
 bestOf [] = []
 bestOf [a] = a
 bestOf (a : b : vs) = if a' > b' then bestOf (a : vs) else bestOf (b : vs)
-    where 
+    where
         a' = released a
         b' = released b
 
@@ -118,7 +125,7 @@ data Valve = Valve {
 } deriving (Show, Eq)
 
 indexOf :: Eq a => [a] -> a -> Maybe Int
-indexOf as a = indexOf' 0 as a where
+indexOf = indexOf' 0 where
     indexOf' :: Eq a => Int -> [a] -> a -> Maybe Int
     indexOf' _ [] _ = Nothing
     indexOf' i (a':as') a'' = if a' == a'' then Just i else indexOf' (i+1) as' a''

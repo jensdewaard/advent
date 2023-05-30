@@ -20,13 +20,13 @@ data Present = Present
     } deriving Show
 
 requiredPaper :: Present -> Int
-requiredPaper p = 2*(w p * h p 
-    + w p * l p 
+requiredPaper p = 2*(w p * h p
+    + w p * l p
     + l p * h p) + minimum [w p * h p, w p * l p, l p * h p]
 
 requiredRibbon :: Present -> Int
-requiredRibbon p = (w p * h p * l p) + 
-    2 * (sum $ take 2 $ sort [w p, l p , h p])
+requiredRibbon p = (w p * h p * l p) +
+    2 * sum (take 2 $ sort [w p, l p , h p])
 
 parseInput :: String -> Either ParseError [Present]
 parseInput = parse parser "could not parse file"

@@ -11,12 +11,12 @@ solutionA :: String -> String
 solutionA = show . length . nub . routeSanta . parseInput
 
 solutionB :: String -> String
-solutionB = show 
-    . length 
-    . nub 
+solutionB = show
+    . length
+    . nub
     . pconcat
-    . pmap (routeSanta)
-    . uninterleave 
+    . pmap routeSanta
+    . uninterleave
     . parseInput
 
 pmap :: (a -> b) -> (a,a) -> (b,b)
