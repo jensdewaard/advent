@@ -57,6 +57,7 @@ library
       Challenges.Y2022.Day17
       DijkstraSimple
       FloydWarshall
+      Intcode
       IntervalSet
       Parser
       Parsing
