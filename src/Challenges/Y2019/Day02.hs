@@ -5,7 +5,7 @@ import qualified Data.Bifunctor
 
 solutionA :: String -> String
 solutionA inp = show $ head $ runOpProgram 0 prog' where
-    prog' = snd $ initMemory (parseProgram inp) (12, 1)
+    prog' = snd $ initMemory (parseProgram inp) (12, 2)
 
 solutionB :: String -> String
 solutionB inp = show $ answer $ fst $
