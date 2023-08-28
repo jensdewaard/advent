@@ -6,6 +6,7 @@
 
   # https://devenv.sh/languages/
   languages.haskell.enable = true;
+  languages.haskell.package = pkgs.haskell.compiler.ghc902;
 
   # https://devenv.sh/pre-commit-hooks/
   # pre-commit.hooks.shellcheck.enable = true;
