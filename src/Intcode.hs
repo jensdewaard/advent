@@ -1,4 +1,4 @@
-module Intcode where
+module Intcode (ProgState (ProgState, memory, ptr), OpProgram, runOpProgram, parseProgram, opReplace ) where
 
 import Shared (splitOn)
 
@@ -10,30 +10,28 @@ data OpCode =
     | OpMult Int Int Int
     deriving Eq
 
+runOpProgram = undefined
+
+data ProgState = ProgState 
+    { memory    :: OpProgram
+    , ptr       :: Int
+    }
+
 parseProgram :: String -> OpProgram
 parseProgram s = map read $ splitOn "," s
 
-runOpProgram :: Int -> OpProgram -> OpProgram
-runOpProgram idx prog = let
-        c = readOpCode (take 4 (drop idx prog))
-        prog' = runOpCode c prog
-        in
-        if c == OpFinished
-            then prog
-            else runOpProgram (idx + 4) prog'
-
-runOpCode :: OpCode -> OpProgram -> OpProgram
+runOpCode :: OpCode -> ProgState -> ProgState
 runOpCode OpFinished prog = prog
-runOpCode (OpAdd opA opB res) prog = opReplace res ((prog !! opA) + (prog !! opB)) prog
-runOpCode (OpMult opA opB res) prog = opReplace res ((prog !! opA) * (prog !! opB)) prog
+runOpCode (OpAdd opA opB res) prog@(ProgState { memory = mem, ptr = p } ) = prog { memory = opReplace res ((mem !! opA) + (mem !! opB)) mem, ptr = p+4 }
+runOpCode (OpMult opA opB res) prog@(ProgState { memory = mem, ptr = p} ) = prog { memory = opReplace res ((mem !! opA) * (mem !! opB)) mem, ptr = p+4 }
 
 opReplace :: Int -> Int -> OpProgram -> OpProgram
 opReplace 0 val (_ : os) = val : os
 opReplace idx val (o : os) = o : opReplace (idx - 1) val os
 opReplace _ _ [] = []
 
-readOpCode :: OpProgram -> OpCode
-readOpCode (1 : opA : opB : res : _) = OpAdd opA opB res
-readOpCode (2 : opA : opB : res : _) = OpMult opA opB res
-readOpCode (99 : _) = OpFinished
-readOpCode o = error ("invalid opcode: " ++ show o)
+parseInstruction :: Int -> OpCode 
+parseInstruction = undefined
+
+readInstruction :: ProgState -> OpCode
+readInstruction = undefined

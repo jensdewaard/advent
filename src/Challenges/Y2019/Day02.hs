@@ -4,23 +4,23 @@ import Intcode
 import qualified Data.Bifunctor
 
 solutionA :: String -> String
-solutionA inp = show $ head $ runOpProgram 0 prog' where
+solutionA inp = show $ head $ memory $ runOpProgram prog' where
     prog' = snd $ initMemory (parseProgram inp) (12, 2)
 
 solutionB :: String -> String
 solutionB inp = show $ answer $ fst $
     head $
-    filter isCorrect $ map (Data.Bifunctor.second (runOpProgram 0) . initMemory prog) posSol where
+    filter isCorrect $ map (Data.Bifunctor.second runOpProgram . initMemory prog) posSol where
     prog = parseProgram inp
 
 answer :: (Int, Int) -> Int
 answer (n, v) = 100 * n + v
 
-initMemory :: OpProgram -> (Int, Int) -> ((Int, Int), OpProgram)
-initMemory prog (noun, verb) = ((noun, verb), opReplace 2 verb $ opReplace 1 noun prog)
+initMemory :: OpProgram -> (Int, Int) -> ((Int, Int), ProgState)
+initMemory prog (noun, verb) = ((noun, verb), ProgState { memory = opReplace 2 verb $ opReplace 1 noun prog, ptr = 0})
 
-isCorrect :: ((Int, Int), OpProgram) -> Bool
-isCorrect (_, p) = head p == 19690720
+isCorrect :: ((Int, Int), ProgState) -> Bool
+isCorrect (_, p) = head (memory p) == 19690720
 
 posSol :: [(Int, Int)]
 posSol = [(x, y) | x <- [0..100], y <- [0..100]]
