@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Shared where
 
 import qualified Data.Text as T
@@ -24,15 +26,31 @@ indexedList = indexedList' 1 where
     indexedList' _ [] = []
 
 -- Coords
+class Coordinate a where
+    predX :: a -> a
+    succX :: a -> a
+    predY :: a -> a
+    succY :: a -> a
+    xCoord :: a -> Int
+    yCoord :: a -> Int
+
 type Coord = (Int, Int)
+
+instance Coordinate Coord where
+    predX (x, y) = (pred x, y)
+    succX (x, y) = (succ x, y)
+    predY (x, y) = (x, pred y)
+    succY (x, y) = (x, succ y)
+    xCoord = fst
+    yCoord = snd
 
 data Dir = U | D| L| R deriving (Show, Eq)
 
-move :: Dir -> Coord -> Coord
-move U (x, y) = (x, y + 1)
-move D (x, y) = (x, y - 1)
-move L (x, y) = (x - 1, y)
-move R (x, y) = (x + 1, y)
+move :: Coordinate a => Dir -> a -> a
+move U c = succY c
+move D c = predY c
+move L c = predX c
+move R c = succX c
 
 coords :: GenParser Char st Coord
 coords = do
@@ -44,8 +62,8 @@ coords = do
 rectFromTo :: Coord -> Coord -> [Coord]
 rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (\y -> (x, y)) (enumFromTo y1 y2)) (enumFromTo x1 x2)
 
-distanceC :: Coord -> Coord -> Int
-distanceC (px, py) (qx, qy) = abs (px - qx) + abs (py - qy)
+distanceC :: Coordinate a => a -> a -> Int
+distanceC p q = abs (xCoord p - xCoord q) + abs (yCoord p - yCoord q)
 
 number :: GenParser Char st Int
 number = P.int
