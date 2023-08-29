@@ -4,6 +4,14 @@ import qualified Data.Text as T
 import Text.ParserCombinators.Parsec
 import qualified Parsing as P
 
+solve :: String -> Parser a -> (a -> String) -> String
+solve input parser f = f $ parse' parser input 
+
+parse' :: Parser a -> String -> a
+parse' p i = case parse p "advent" i of
+                  Left err -> error ("could not run parser " ++ show err)
+                  Right val -> val
+
 toLines :: String -> [String]
 toLines s = filter (/= "") $ map T.unpack $ T.splitOn (T.pack "\n") (T.pack s)
 
@@ -32,6 +40,9 @@ coords = do
     _ <- string ","
     r <- number
     return (l, r)
+
+rectFromTo :: Coord -> Coord -> [Coord]
+rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (\y -> (x, y)) (enumFromTo y1 y2)) (enumFromTo x1 x2)
 
 distanceC :: Coord -> Coord -> Int
 distanceC (px, py) (qx, qy) = abs (px - qx) + abs (py - qy)

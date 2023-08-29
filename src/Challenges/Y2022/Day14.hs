@@ -20,14 +20,14 @@ solutionA = show . solveA . fromRight . parseInput
 solutionB :: String -> String
 solutionB = show . solveB . fromRight . parseInput
 
-solve :: (Int -> Cave -> Coord -> Cave) -> Cave -> Int
-solve f c = countSand $ f (lowestY c) c (500,0)
+solve' :: (Int -> Cave -> Coord -> Cave) -> Cave -> Int
+solve' f c = countSand $ f (lowestY c) c (500,0)
 
 solveA :: Cave -> Int
-solveA = solve dropSand
+solveA = solve' dropSand
 
 solveB :: Cave -> Int
-solveB = solve dropSand'
+solveB = solve' dropSand'
 
 -- data
 type Filling = (Coord, Char)

@@ -3,7 +3,6 @@ module Challenges.Y2022.Day01 where
 import Data.List
 import Data.Maybe
 import Parsing
-import Solution
 import Text.ParserCombinators.Parsec
 
 partA :: [Elf] -> Int
