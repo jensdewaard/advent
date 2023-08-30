@@ -5,27 +5,37 @@ import qualified Data.Map as Map
 import Shared (Coord, solve, rectFromTo)
 import Text.ParserCombinators.Parsec
 
--- 598216 too high
+-- 14989458 too low
+-- 15343601
+-- 21186044 too high
 
 type MappedToInt a = Map a Int
 
 solutionA :: String -> String
 solutionA input = solve input parseInput (show . sum . foldSequence . (map sndExpand))
 solutionB :: String -> String
-solutionB _ = "0"
+solutionB input = solve input parseInput (show . sum . foldSequence' . map sndExpand)
 
 foldSequence :: [(LightAction, MappedToInt Coord)] -> MappedToInt Coord
 foldSequence as = foldl doAction Map.empty as
 
+foldSequence' :: [(LightAction, MappedToInt Coord)] -> MappedToInt Coord
+foldSequence' as = foldl doAction' Map.empty as
+
 sndExpand :: (LightAction, Coord, Coord) -> (LightAction, MappedToInt Coord)
-sndExpand (a, c1, c2) = (a, Map.fromList $ map (\x -> (x,if a == Off then 0 else 1)) (rectFromTo c1 c2))
+sndExpand (a, c1, c2) = (a, Map.fromList $ map (\x -> (x,if a == Off then 0 else if a == Toggle then 2 else 1)) (rectFromTo c1 c2))
 
 data LightAction = Toggle | On | Off deriving Eq
 
 doAction :: MappedToInt Coord -> (LightAction, MappedToInt Coord) -> MappedToInt Coord
-doAction cs (Toggle, cs') = Map.unionWith (\a -> \b -> abs (b - a)) cs cs'
-doAction cs (On, cs') = Map.unionWith (\a -> \b -> b) cs cs'
-doAction cs (Off, cs') = Map.unionWith (\a -> \b -> b) cs cs'
+doAction cs (Toggle, cs') = Map.unionWith (\a -> \b -> 1 - a) cs cs'
+doAction cs (On, cs') = Map.unionWith (\a -> \b -> 1) cs cs'
+doAction cs (Off, cs') = Map.unionWith (\a -> \b -> 0) cs cs'
+
+doAction' :: MappedToInt Coord -> (LightAction, MappedToInt Coord) -> MappedToInt Coord
+doAction' cs (Toggle, cs') = Map.unionWith (\a -> \b -> a + 2) cs cs'
+doAction' cs (On, cs') = Map.unionWith (\a -> \b -> a + 1) cs cs'
+doAction' cs (Off, cs') = Map.unionWith (\a -> \b -> max (a - 1) 0) cs cs'
 
 -- Parsers
 parseInput :: Parser [(LightAction, Coord, Coord)]
