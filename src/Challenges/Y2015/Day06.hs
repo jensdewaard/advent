@@ -1,37 +1,31 @@
 module Challenges.Y2015.Day06 (parseInput, solutionA, solutionB) where
 import qualified Data.Set as S
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Shared (Coord, solve, rectFromTo)
 import Text.ParserCombinators.Parsec
 
 -- 598216 too high
 
+type MappedToInt a = Map a Int
+
 solutionA :: String -> String
-solutionA input = solve input parseInput (show . length . foldSequence . runSequence)
+solutionA input = solve input parseInput (show . sum . foldSequence . (map sndExpand))
 solutionB :: String -> String
 solutionB _ = "0"
 
-foldSequence :: [(LightAction, S.Set Coord)] -> S.Set Coord
-foldSequence as = foldl doAction S.empty as
+foldSequence :: [(LightAction, MappedToInt Coord)] -> MappedToInt Coord
+foldSequence as = foldl doAction Map.empty as
 
-runSequence :: [(LightAction, Coord, Coord)] -> [(LightAction, S.Set Coord)]
-runSequence as = map sndExpand as
+sndExpand :: (LightAction, Coord, Coord) -> (LightAction, MappedToInt Coord)
+sndExpand (a, c1, c2) = (a, Map.fromList $ map (\x -> (x,if a == Off then 0 else 1)) (rectFromTo c1 c2))
 
-sndExpand :: (LightAction, Coord, Coord) -> (LightAction, S.Set Coord)
-sndExpand (a, c1, c2) = (a, S.fromList $ rectFromTo c1 c2)
+data LightAction = Toggle | On | Off deriving Eq
 
-data LightAction = Toggle | On | Off
-
-doAction :: S.Set Coord -> (LightAction, S.Set Coord) -> S.Set Coord
-doAction cs (Toggle, cs') = foldl toggle cs cs' 
-doAction cs (On, cs') = foldl on cs cs' 
-doAction cs (Off, cs') = foldl off cs cs' 
-
-toggle :: S.Set Coord -> Coord -> S.Set Coord
-toggle cs c = if S.member c cs then off cs c else on cs c
-on :: S.Set Coord -> Coord -> S.Set Coord
-on cs c = S.insert c cs
-off :: S.Set Coord -> Coord -> S.Set Coord
-off cs c = S.delete c cs
+doAction :: MappedToInt Coord -> (LightAction, MappedToInt Coord) -> MappedToInt Coord
+doAction cs (Toggle, cs') = Map.unionWith (\a -> \b -> abs (b - a)) cs cs'
+doAction cs (On, cs') = Map.unionWith (\a -> \b -> b) cs cs'
+doAction cs (Off, cs') = Map.unionWith (\a -> \b -> b) cs cs'
 
 -- Parsers
 parseInput :: Parser [(LightAction, Coord, Coord)]

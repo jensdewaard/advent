@@ -114,6 +114,7 @@ test-suite advent-test
   main-is: Spec.hs
   other-modules:
       FloydWarshallTests
+      SharedTests
       Y2019Tests.Day01
       Y2019Tests.Day04
       Paths_advent
