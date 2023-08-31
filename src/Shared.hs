@@ -71,3 +71,4 @@ number = P.int
 fromRight :: Either a b -> b
 fromRight (Left _) = error "fromRight from Left"
 fromRight (Right r) = r
+
