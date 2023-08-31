@@ -1,5 +1,5 @@
 default:
-    @just --list
+    @just build
 
 build:
     @stack build

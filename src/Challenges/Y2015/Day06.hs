@@ -19,6 +19,9 @@ solutionB input = solve input parseInput (show . sum . foldSequence' . map sndEx
 foldSequence :: [(LightAction, MappedToInt Coord)] -> MappedToInt Coord
 foldSequence as = foldl doAction Map.empty as
 
+foldSequence' :: [(LightAction, MappedToInt Coord)] -> MappedToInt Coord
+foldSequence' as = foldl doAction' Map.empty as
+
 sndExpand :: (LightAction, Coord, Coord) -> (LightAction, MappedToInt Coord)
 sndExpand (a, c1, c2) = (a, Map.fromList $ map pairOne (rectFromTo c1 c2)) where
     pairOne x = (x, 1)
