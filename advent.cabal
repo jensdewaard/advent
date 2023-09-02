@@ -34,6 +34,7 @@ library
       Challenges.Y2015.Day06
       Challenges.Y2015.Day07
       Challenges.Y2015.Day08
+      Challenges.Y2015.Day09
       Challenges.Y2019
       Challenges.Y2019.Day01
       Challenges.Y2019.Day02
@@ -64,6 +65,7 @@ library
       Parser
       Parsing
       Shared
+      Shared.Tsp
   other-modules:
       Paths_advent
   hs-source-dirs:
