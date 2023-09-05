@@ -1,9 +1,12 @@
 module Challenges.Y2015.Day10 (solutionA, solutionB) where
 
 solutionA :: String -> String
-solutionA input = show $ length $ (iterate playGame input) !! 40
+solutionA = solve 40
 solutionB :: String -> String
-solutionB _ = ""
+solutionB = solve 50
+
+solve :: Int -> String -> String
+solve x s = show $ length $ (iterate playGame s) !! x
 
 playGame :: String -> String
 playGame "" = ""
