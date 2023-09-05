@@ -1,8 +1,11 @@
 module Challenges.Y2015.Day09 (solutionA, solutionB) where
 
+import Data.Graph.Inductive.Basic (undir)
+import Data.Graph.Inductive.Graph
+import Data.Graph.Inductive.PatriciaTree (Gr)
 import Data.List (permutations, nub)
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Shared (solve, mkLGraph)
 
 type City = String
 
@@ -17,9 +20,12 @@ getDist ((c1, c2, d):es) c1' c2' =
     if (c1 == c1' && c2 == c2') || (c1 == c2' && c2 == c1') 
     then d else getDist es c1' c2'
 
+cityGraph :: [(City, City, Int)] -> Gr City Int
+cityGraph es = undir $ mkLGraph (cities es) es
+
 solutionA :: String -> String
-solutionA input = solve input parser (\cs -> show $ minimum $ map (totalDist cs) $ permutations $ cities cs)
-solutionB input = solve input parser (\cs -> show $ maximum $ map (totalDist cs) $ permutations $ cities cs)
+solutionA input = solve input parser (prettify . cityGraph)
+solutionB input = ""
 
 totalDist :: [(City, City, Int)] -> [City] -> Int
 totalDist [] _ = error "empty edge list"
