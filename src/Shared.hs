@@ -5,6 +5,7 @@ module Shared where
 import qualified Data.Text as T
 import Text.ParserCombinators.Parsec
 import qualified Parsing as P
+import Data.List (notElem)
 
 solve :: String -> Parser a -> (a -> String) -> String
 solve input parser f = f $ parse' parser input 
@@ -72,3 +73,15 @@ fromRight :: Either a b -> b
 fromRight (Left _) = error "fromRight from Left"
 fromRight (Right r) = r
 
+until1 :: (a -> Bool) -> (a -> a) -> a -> a
+until1 p f x = until p f (f x)
+
+hasPair :: Eq a => [a] -> Bool
+hasPair [] = False
+hasPair [a] = False
+hasPair (a:a':as) = a == a' || hasPair (a':as)
+
+hasTwoPair :: Eq a => [a] -> Bool
+hasTwoPair [] = False
+hasTwoPair [a] = False
+hasTwoPair (a:a':as) = (a == a' && hasPair as) || hasTwoPair (a':as)
