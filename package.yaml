@@ -26,6 +26,8 @@ dependencies:
 - containers
 - data-memocombinators
 - dsp
+- aeson
+- scientific
 - fgl
 - heap
 - mtl
