@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Parser (Sample (Sample), sample)
+import Parser (ProgramArgs (ProgramArgs), args)
 import Options.Applicative
 import System.IO
 import System.Environment (getArgs)
@@ -12,7 +12,7 @@ import qualified Challenges.Y2022 as Y2022
 main :: IO ()
 main = runProg =<< execParser opts
     where
-        opts = info (sample <**> helper)
+        opts = info (args <**> helper)
             ( fullDesc
             <> progDesc "Run an advent of code solution"
             <> header "advent - running advent of code solutions" )
@@ -27,9 +27,9 @@ getYear 2015 = Y2015.getDay
 getYear _ = error "unsupported year"
 
 
-runProg :: Sample -> IO ()
+runProg :: ProgramArgs -> IO ()
 --runProg (Sample test year day) = getSol (test, year, day) >>= runSol >>= putStr
-runProg (Sample test year day) = do
+runProg (ProgramArgs test year day) = do
     (a, b) <- getSol (year, day)
     handle <- openFile (mkDataPath year day) ReadMode
     contents <- hGetContents handle

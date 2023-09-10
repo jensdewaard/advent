@@ -1,15 +1,15 @@
-module Parser (Sample (Sample), sample) where
+module Parser (ProgramArgs (ProgramArgs), args) where
 
 import Options.Applicative
 
-data Sample = Sample 
+data ProgramArgs = ProgramArgs 
     { test :: Bool
     , year :: Int
     , day  :: Int
     }
 
-sample :: Parser Sample
-sample = Sample
+args :: Parser ProgramArgs
+args = ProgramArgs
     <$> switch
         ( long "test" <> short 't' <> help "Run on a test input")
     <*> argument auto
