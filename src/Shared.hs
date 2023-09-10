@@ -2,14 +2,14 @@
 
 module Shared where
 
-import qualified Data.Text as T
-import Text.ParserCombinators.Parsec
-import qualified Parsing as P
-import Data.Tuple (swap)
 import Data.Graph.Inductive.Graph
 import Data.Graph.Inductive.PatriciaTree (Gr)
-import Data.List (find)
+import Data.List (find, notElem)
 import Data.Maybe (fromJust)
+import Data.Tuple (swap)
+import Text.ParserCombinators.Parsec
+import qualified Data.Text as T
+import qualified Parsing as P
 
 solve :: String -> Parser a -> (a -> String) -> String
 solve input parser f = f $ parse' parser input 
@@ -77,7 +77,6 @@ fromRight :: Either a b -> b
 fromRight (Left _) = error "fromRight from Left"
 fromRight (Right r) = r
 
-
 mkLGraph :: (Eq a) => [a] -> [(a,a,b)] -> Gr a b
 mkLGraph ns es = let
     nodes = map swap (indexNodes ns)
@@ -85,7 +84,6 @@ mkLGraph ns es = let
     mkEdge ns (n1, n2, e) = (simpl $ find (fstEq n1) (indexNodes ns), simpl $ find (fstEq n2) (indexNodes ns), e)
     edges = map (mkEdge ns) es
     in mkGraph nodes edges
-
 
 indexNodes :: [a] -> [(a,Int)]
 indexNodes ns = zip ns [1..]
@@ -95,3 +93,16 @@ fstEq y x = (fst x) == y
 
 simpl :: Maybe (a, Int) -> Int
 simpl = snd . fromJust
+
+until1 :: (a -> Bool) -> (a -> a) -> a -> a
+until1 p f x = until p f (f x)
+
+hasPair :: Eq a => [a] -> Bool
+hasPair [] = False
+hasPair [a] = False
+hasPair (a:a':as) = a == a' || hasPair (a':as)
+
+hasTwoPair :: Eq a => [a] -> Bool
+hasTwoPair [] = False
+hasTwoPair [a] = False
+hasTwoPair (a:a':as) = (a == a' && hasPair as) || hasTwoPair (a':as)
