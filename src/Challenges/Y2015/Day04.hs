@@ -1,4 +1,4 @@
-module Challenges.Y2015.Day04 (solutionA, solutionB, input) where
+module Challenges.Y2015.Day04 (solutionA, solutionB) where
 
 import Data.List (findIndex)
 import Data.Maybe (fromJust)
@@ -11,10 +11,6 @@ solutionA i = show $ (+1) $ fromJust . findIndex fiveZeroes $ map (hash i) [1..]
 
 solutionB :: String -> String
 solutionB i = show $ (+1) $ fromJust . findIndex sixZeroes $ map (hash i) [1..]
-
-input :: Bool -> IO String
-input False = return "ckczppom"
-input True = return "abcdef"
 
 hash :: String -> Int -> String
 hash s i = show $ md5 $ LB.fromString $ s ++ show i

@@ -1,4 +1,4 @@
-module Challenges.Y2015.Day05 (solutionA, solutionB, input) where
+module Challenges.Y2015.Day05 (solutionA, solutionB) where
 
 import Data.List (isInfixOf)
 
@@ -6,9 +6,6 @@ solutionA :: String -> String
 solutionA = show . length . filter id . map isNiceA . lines
 solutionB :: String -> String
 solutionB = show . length . filter id . map isNiceB . lines
-input :: Bool -> IO String
-input False = readFile "data/2015/05.txt"
-input True = return "ieodomkazucvgmuy"
 
 hasThreeVowels :: String -> Bool
 hasThreeVowels = (>= 3) . length . filter isVowel
