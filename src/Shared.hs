@@ -130,3 +130,12 @@ pathLength g [] = 0
 pathLength g [a] = 0
 pathLength g (a:b:ns) = l + pathLength g (b:ns) where
     l =  edgeLabel $ head $ filter (\(_ ,b', _) -> b' == b) $ out g a
+
+trd :: (a, b, c) -> c
+trd (_,_,c) = c
+
+fst3 :: (a, b, c) -> a
+fst3 (a,_,_) = a
+
+snd3 :: (a, b, c) -> b
+snd3 (_,b,_) = b
