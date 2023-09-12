@@ -5,7 +5,7 @@ import Data.Graph.Inductive.Graph
 import Data.Graph.Inductive.PatriciaTree (Gr)
 import Data.List (permutations, nub)
 import Text.ParserCombinators.Parsec
-import Shared (solve, mkLGraph)
+import Shared (solve, mkLGraph, tsp, tspWith)
 
 type City = String
 
@@ -24,8 +24,8 @@ cityGraph :: [(City, City, Int)] -> Gr City Int
 cityGraph es = undir $ mkLGraph (cities es) es
 
 solutionA :: String -> String
-solutionA input = solve input parser (prettify . cityGraph)
-solutionB input = ""
+solutionA input = solve input parser (show . tsp . cityGraph)
+solutionB input = solve input parser (show . (tspWith maximum) . cityGraph)
 
 totalDist :: [(City, City, Int)] -> [City] -> Int
 totalDist [] _ = error "empty edge list"

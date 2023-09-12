@@ -4,7 +4,7 @@ module Shared where
 
 import Data.Graph.Inductive.Graph
 import Data.Graph.Inductive.PatriciaTree (Gr)
-import Data.List (find, notElem)
+import Data.List (find, notElem, permutations)
 import Data.Maybe (fromJust)
 import Data.Tuple (swap)
 import Text.ParserCombinators.Parsec
@@ -106,3 +106,27 @@ hasTwoPair :: Eq a => [a] -> Bool
 hasTwoPair [] = False
 hasTwoPair [a] = False
 hasTwoPair (a:a':as) = (a == a' && hasPair as) || hasTwoPair (a':as)
+
+hamiltonian :: Graph gr => gr a b -> [Path]
+-- ^ The 'hamiltonian' function returns all hamiltonian paths in the graph.
+hamiltonian g = filter (validPath g) $ permutations $ nodes g
+
+tsp :: (Graph gr, Real b) => gr a b -> b
+tsp = tspWith minimum
+
+tspWith :: (Graph gr, Real b) => ([b] -> b) -> gr a b -> b
+tspWith f g = f $ map (pathLength g) $ hamiltonian g
+
+{- | The 'validPath' function returns true if there are edges in the given 
+    graph between all nodes in the given path.
+    -}
+validPath :: Graph gr => gr a b -> Path -> Bool
+validPath g [] = True
+validPath g [a] = True
+validPath g (a:b:ns) = hasEdge g (a,b) && validPath g (b:ns)
+
+pathLength :: (Graph gr, Real b) => gr a b -> Path -> b
+pathLength g [] = 0
+pathLength g [a] = 0
+pathLength g (a:b:ns) = l + pathLength g (b:ns) where
+    l =  edgeLabel $ head $ filter (\(_ ,b', _) -> b' == b) $ out g a
