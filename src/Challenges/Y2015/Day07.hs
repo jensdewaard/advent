@@ -24,10 +24,10 @@ data Gate = And Input Input
 parser = endBy1 parseLine newline
 
 solutionA :: String -> String
-solutionA input = solve input parser (show . getA .  mkCircuit)
+solutionA = solve parser (show . getA .  mkCircuit)
 
 solutionB :: String -> String
-solutionB input = solve input parser (show . solveB . mkCircuit)
+solutionB = solve parser (show . solveB . mkCircuit)
 
 solveB :: Circuit -> Word16
 solveB c = let

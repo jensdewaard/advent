@@ -4,10 +4,10 @@ import Text.ParserCombinators.Parsec
 import Shared (solve)
 
 solutionA :: String -> String
-solutionA input = solve input parser (show . sum . map (\(x,y) -> x - y) . map (\s -> (length s, length $ unescape $ unquote s)))
+solutionA = solve parser (show . sum . map (\(x,y) -> x - y) . map (\s -> (length s, length $ unescape $ unquote s)))
 
 solutionB :: String -> String
-solutionB input = solve input parser (show . sum .map (\(x,y) -> y - x) . map (\s -> (length s, (+2) . length $ escape s)))
+solutionB = solve parser (show . sum .map (\(x,y) -> y - x) . map (\s -> (length s, (+2) . length $ escape s)))
 
 parser :: Parser [String]
 parser = endBy1 (many1 (noneOf "\n")) newline

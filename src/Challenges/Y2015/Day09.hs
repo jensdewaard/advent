@@ -24,8 +24,8 @@ cityGraph :: [(City, City, Int)] -> Gr City Int
 cityGraph es = undir $ mkLGraph (cities es) es
 
 solutionA :: String -> String
-solutionA input = solve input parser (show . tsp . cityGraph)
-solutionB input = solve input parser (show . (tspWith maximum) . cityGraph)
+solutionA = solve parser (show . tsp . cityGraph)
+solutionB = solve parser (show . (tspWith maximum) . cityGraph)
 
 totalDist :: [(City, City, Int)] -> [City] -> Int
 totalDist [] _ = error "empty edge list"

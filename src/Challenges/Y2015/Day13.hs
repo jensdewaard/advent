@@ -10,9 +10,9 @@ import Shared (solve, fst3, trd, mkLGraph, pathLength, hamiltonian)
 import Text.ParserCombinators.Parsec
 
 solutionA :: String -> String
-solutionA input = solve input parser (show . tspWith' maximum . undir)
+solutionA = solve parser (show . tspWith' maximum . undir)
 solutionB :: String -> String
-solutionB input = solve input parser (show . tspWith' maximum . undir. extendWithMe)
+solutionB = solve parser (show . tspWith' maximum . undir. extendWithMe)
 
 tspWith' :: (DynGraph gr, Real b) => ([b] -> b) -> gr a b -> b
 tspWith' f g = f $ map (pathLength g) $ hamiltonianR g

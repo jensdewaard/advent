@@ -12,9 +12,9 @@ import Text.ParserCombinators.Parsec
 type MappedToInt a = Map a Int
 
 solutionA :: String -> String
-solutionA input = solve input parseInput (show . sum . foldSequence . (map sndExpand))
+solutionA = solve parseInput (show . sum . foldSequence . (map sndExpand))
 solutionB :: String -> String
-solutionB input = solve input parseInput (show . sum . foldSequence' . map sndExpand)
+solutionB = solve parseInput (show . sum . foldSequence' . map sndExpand)
 
 foldSequence :: [(LightAction, MappedToInt Coord)] -> MappedToInt Coord
 foldSequence as = foldl doAction Map.empty as
