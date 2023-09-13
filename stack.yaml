@@ -1,6 +1,6 @@
 packages:
 - .
-resolver: ghc-9.2
+resolver: ghc-9.6
   
 ghc-options:
   $everything: -haddock
