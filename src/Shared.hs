@@ -11,8 +11,8 @@ import Text.ParserCombinators.Parsec
 import qualified Data.Text as T
 import qualified Parsing as P
 
-solve :: Parser a -> (a -> String) -> String -> String
-solve parser f input = f $ parse' parser input 
+solve :: Show b => Parser a -> (a -> b) -> String -> String
+solve parser f input = show $ f $ parse' parser input 
 
 parse' :: Parser a -> String -> a
 parse' p i = case parse p "advent" i of
