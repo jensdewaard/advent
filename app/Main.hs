@@ -8,6 +8,7 @@ import System.Exit (exitWith, ExitCode (ExitSuccess, ExitFailure))
 import qualified Challenges.Y2015 as Y2015
 import qualified Challenges.Y2019 as Y2019
 import qualified Challenges.Y2022 as Y2022
+import qualified Challenges.Y2023 as Y2023
 
 main :: IO ()
 main = runProg =<< execParser opts
@@ -22,6 +23,7 @@ getSol (y, d) = return $ getYear y d
 
 getYear :: Int -> Int -> (String -> String, String -> String)
 getYear 2015 = Y2015.getDay
+getYear 2023 = Y2023.getDay
 --getYear 2019 = Y2019.getDay
 --getYear 2022 = Y2022.getDay
 getYear _ = error "unsupported year"
