@@ -15,6 +15,7 @@ import qualified Challenges.Y2015.Day11 as Day11
 import qualified Challenges.Y2015.Day12 as Day12
 import qualified Challenges.Y2015.Day13 as Day13
 import qualified Challenges.Y2015.Day14 as Day14
+import qualified Challenges.Y2015.Day15 as Day15
 
 getDay :: Int -> (String -> String, String -> String)
 --getDay test 1 = (Day01.input test, Day01.solutionA , Day01.solutionB)
@@ -31,4 +32,5 @@ getDay 11 = (Day11.solutionA, Day11.solutionB)
 getDay 12 = (Day12.solutionA, Day12.solutionB)
 getDay 13 = (Day13.solutionA, Day13.solutionB)
 getDay 14 = (Day14.solutionA, Day14.solutionB)
+getDay 15 = (Day15.solutionA, Day15.solutionB)
 getDay _ = error "invalid day"
