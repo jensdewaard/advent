@@ -1,7 +1,10 @@
 packages:
 - .
-resolver: ghc-9.2
-  
+resolver: lts-21.22
+
+docker:
+  enable: true
+
 ghc-options:
   $everything: -haddock
 extra-deps:
@@ -75,4 +78,4 @@ extra-deps:
 nix:
   packages:
   - zlib
-  enable: true
+  enable: false

@@ -4,7 +4,7 @@ import Shared (solve)
 import Data.List (transpose)
 
 solutionA :: String -> String
-solutionA = solve parser (maximum . scores 100 (const True))
+solutionA = undefined
 
 solutionB :: String -> String
 solutionB _ = ""
@@ -19,13 +19,7 @@ data Ingredient = Ingredient
     }
 
 scores :: Int -> [Ingredient] -> [Int]
-scores total ings =
-    [ product . map (max 0 . sum) $ transpose totes
-    | ms <- partitions (length ings) total
-    , let totes = zipWith (\n i -> map (n*) (scorings <*> pure i)) ms ings
-    , zipWith (\n i -> n * calories i) ms ings
-    ]
-    where scorings = [capacity, durability, flavor, texture]
+scores total ings = undefined
 
 
 instance Show Ingredient where
