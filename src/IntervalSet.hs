@@ -1,9 +1,21 @@
-module IntervalSet (Interval (Interval, Empty), IntervalSet, fromPair, contains, overlaps, union, includes, add, merge) where
+module IntervalSet (Interval (Interval, Empty), IntervalSet, IntervalSet.length, fromPair, contains, overlaps, union, includes, add, merge, ub, lb) where
 
 data Interval = Empty | Interval Int Int deriving (Show, Eq)
 
 fromPair :: (Int, Int) -> Interval
 fromPair (x, y) = Interval (min x y) (max x y)
+
+length :: Interval -> Int
+length Empty = 0
+length (Interval l u) = u - l
+
+lb :: Interval -> Int
+lb Empty = error "lower bound of empty interval"
+lb (Interval x y) = x
+
+ub :: Interval -> Int
+ub Empty = error "upper bound of empty interval"
+ub (Interval x y) = y
 
 type IntervalSet = [Interval]
 

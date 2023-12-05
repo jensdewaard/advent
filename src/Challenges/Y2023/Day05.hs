@@ -2,9 +2,11 @@ module Challenges.Y2023.Day05 where
 import Text.ParserCombinators.Parsec
 
 import Shared (solve)
+import qualified IntervalSet as Interval
+import IntervalSet (Interval (Interval))
 
 solutionA :: String -> String
-solutionA = solve parseInput (minimum . runPuzzle)
+solutionA = solve parseInput (minimum . map Interval.lb . runPuzzle)
 
 solutionB :: String -> String
 solutionB = undefined
@@ -21,9 +23,15 @@ data Puzzle = Puzzle {
 } deriving (Show)
 
 type Map = [Rule]
-type Rule = (Int, Int, Int)
+type Rule = (Interval, Interval)
 
-runPuzzle :: Puzzle -> [Int]
+mkIntervals :: [Int] -> [Interval]
+mkIntervals [] = []
+mkIntervals (i:is) = Interval.fromPair (i,i) : mkIntervals is
+
+runPuzzle :: Puzzle -> [Interval]
+-- runPuzzle p = map (applyM $ seedSoil p)
+--     $ mkIntervals $ seeds p
 runPuzzle p = map (applyM $ humiditiyLoc p)
     $ map (applyM $ tempHumidity p)
     $ map (applyM $ lightTemp p)
@@ -31,15 +39,17 @@ runPuzzle p = map (applyM $ humiditiyLoc p)
     $ map (applyM $ fertilizerWater p)
     $ map (applyM $ soilFertilizer p)
     $ map (applyM $ seedSoil p)
-    $ seeds p
+    $ mkIntervals $ seeds p
 
-applyM :: Map -> Int -> Int
+applyM :: Map -> Interval -> Interval
 applyM m i = case foldl (foldRule i) Nothing m of
     Nothing -> i
     Just x -> x
 
-foldRule :: Int -> Maybe Int -> (Int, Int, Int) -> Maybe Int
-foldRule i Nothing (d, s, r) = if i >= s && i < (s + r) then Just $ d + (i - s) else Nothing
+foldRule :: Interval -> Maybe Interval -> (Interval, Interval) -> Maybe Interval
+foldRule i Nothing (d, s) = if s `Interval.includes` i
+    then Just $ Interval.fromPair ((Interval.lb d) + ((Interval.lb i) - (Interval.lb s)), (Interval.lb d) + ((Interval.lb i) - (Interval.lb s)) + Interval.length i)
+    else Nothing
 foldRule i (Just x) r = Just x
 
 parseMap :: Parser Map
@@ -51,7 +61,7 @@ parseMap = do
         dest <- many1 digit
         skipMany1 space
         size <- many1 digit
-        return (read source, read dest, read size)
+        return (Interval.fromPair (read source, read source + read size), Interval.fromPair(read dest, read dest + read size))
         ) newline
     _ <- optional newline
     return rules
