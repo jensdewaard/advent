@@ -1,9 +1,15 @@
-module IntervalSet (Interval (Interval, Empty), IntervalSet, IntervalSet.length, fromPair, contains, overlaps, union, includes, add, merge, ub, lb) where
+module IntervalSet (Interval (Interval, Empty), IntervalSet, IntervalSet.length,distinct, singleton, fromList, fromPair, contains, overlaps, union, includes, add, merge, ub, lb) where
 
 data Interval = Empty | Interval Int Int deriving (Show, Eq)
 
+singleton :: Int -> Interval
+singleton i = Interval i i
+
 fromPair :: (Int, Int) -> Interval
 fromPair (x, y) = Interval (min x y) (max x y)
+
+fromList :: [Int] -> Interval
+fromList is = Interval (minimum is) (maximum is)
 
 length :: Interval -> Int
 length Empty = 0
@@ -19,6 +25,9 @@ ub (Interval x y) = y
 
 type IntervalSet = [Interval]
 
+distinct :: Interval -> Interval -> Bool
+distinct i j = not $ (overlaps i j || overlaps j i)
+
 contains :: Int -> IntervalSet -> Bool
 contains i = foldl (\b iv -> b || containsI i iv) False where
     containsI _ Empty = False
@@ -27,7 +36,7 @@ contains i = foldl (\b iv -> b || containsI i iv) False where
 overlaps :: Interval -> Interval -> Bool
 overlaps Empty _ = False
 overlaps _ Empty = False
-overlaps (Interval lbp ubp) (Interval lbq ubq) = lbq <= ubp && lbp <= ubq
+overlaps (Interval lbp ubp) (Interval lbq ubq) = lbp <= lbq && lbq <= ubp && ubp <= ubq
 
 union :: Interval -> Interval -> Interval
 union p Empty = p

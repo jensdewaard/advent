@@ -1,15 +1,18 @@
 module Challenges.Y2023.Day05 where
 import Text.ParserCombinators.Parsec
 
-import Shared (solve)
+import Shared (solve, chunksOf)
 import qualified IntervalSet as Interval
 import IntervalSet (Interval (Interval))
+import qualified Data.List as List
+import Data.Maybe (fromJust)
 
 solutionA :: String -> String
-solutionA = solve parseInput (minimum . map Interval.lb . runPuzzle)
+solutionA = solve parseInput (minimum . map Interval.lb . runPuzzle mkIntervals)
 
 solutionB :: String -> String
-solutionB = undefined
+solutionB = solve parseInput (minimum . map Interval.lb . runPuzzle mkIntervals')
+--solutionB = solve parseInput (runPuzzle mkIntervals')
 
 data Puzzle = Puzzle {
     seeds :: [Int],
@@ -26,31 +29,51 @@ type Map = [Rule]
 type Rule = (Interval, Interval)
 
 mkIntervals :: [Int] -> [Interval]
-mkIntervals [] = []
-mkIntervals (i:is) = Interval.fromPair (i,i) : mkIntervals is
+mkIntervals = map (\i -> Interval.fromPair (i,i))
 
-runPuzzle :: Puzzle -> [Interval]
+mkIntervals' :: [Int] -> [Interval]
+mkIntervals' = map (\[a,b] -> Interval.fromPair (a,a+b-1)) . chunksOf 2
+
+runPuzzle :: ([Int] -> [Interval]) -> Puzzle -> [Interval]
 -- runPuzzle p = map (applyM $ seedSoil p)
 --     $ mkIntervals $ seeds p
-runPuzzle p = map (applyM $ humiditiyLoc p)
-    $ map (applyM $ tempHumidity p)
-    $ map (applyM $ lightTemp p)
-    $ map (applyM $ waterLight p)
-    $ map (applyM $ fertilizerWater p)
-    $ map (applyM $ soilFertilizer p)
-    $ map (applyM $ seedSoil p)
-    $ mkIntervals $ seeds p
+runPuzzle f p = process p $ f $ seeds p 
 
-applyM :: Map -> Interval -> Interval
-applyM m i = case foldl (foldRule i) Nothing m of
-    Nothing -> i
+process :: Puzzle -> [Interval] -> [Interval]
+process p = concatMap (applyM $ humiditiyLoc p)
+    . concatMap (applyM $ tempHumidity p)
+    . concatMap (applyM $ lightTemp p)
+    . concatMap (applyM $ waterLight p)
+    . concatMap (applyM $ fertilizerWater p)
+    . concatMap (applyM $ soilFertilizer p)
+    . concatMap (applyM $ seedSoil p)
+
+applyM :: Map -> Interval -> [Interval]
+applyM map seeds = case foldl (foldRule map seeds) Nothing map of
+    Nothing -> [seeds]
     Just x -> x
 
-foldRule :: Interval -> Maybe Interval -> (Interval, Interval) -> Maybe Interval
-foldRule i Nothing (d, s) = if s `Interval.includes` i
-    then Just $ Interval.fromPair ((Interval.lb d) + ((Interval.lb i) - (Interval.lb s)), (Interval.lb d) + ((Interval.lb i) - (Interval.lb s)) + Interval.length i)
-    else Nothing
-foldRule i (Just x) r = Just x
+foldRule :: Map -> Interval -> Maybe [Interval] -> (Interval, Interval) -> Maybe [Interval]
+foldRule m i Nothing (d, s) 
+    -- "interval i is a subset of interval s"
+    | s `Interval.includes` i = 
+        Just $ List.singleton $ Interval.fromPair ((Interval.lb d) + ((Interval.lb i) - (Interval.lb s)), (Interval.lb d) + ((Interval.lb i) - (Interval.lb s)) + Interval.length i)
+    -- "interval s overlaps partly with the beginning of interval i"
+    | s `Interval.overlaps` i = Just $ --error ("s: " ++ show s ++ "  i: " ++ show i)
+        (fromJust $ foldRule m (Interval.fromPair (Interval.lb i, Interval.ub s)) Nothing (d, s)) ++
+        applyM m (Interval.fromPair (Interval.ub s + 1, Interval.ub i))
+    -- "interval i overlaps partly with the beginning of interval s"
+    | i `Interval.overlaps` s = Just $ -- error ("(i: " ++ show i ++ "  s:  " ++ show s)
+        applyM m (Interval.fromPair (Interval.lb i, Interval.lb s - 1)) ++
+        (fromJust $ foldRule m (Interval.fromPair (Interval.lb s, Interval.ub i)) Nothing (d,s))
+    -- "interval s is a subset of interval i"
+    | i `Interval.includes` s = Just $
+        applyM m (Interval.fromPair (Interval.lb i, Interval.lb s - 1)) ++
+        [d] ++
+        applyM m (Interval.fromPair (Interval.ub s + 1, Interval.ub i))
+    | Interval.distinct i s = Nothing
+    | otherwise = error ("unexpected interval relation " ++ show i ++ show s)
+foldRule m i (Just x) r = Just x
 
 parseMap :: Parser Map
 parseMap = do

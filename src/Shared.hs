@@ -14,6 +14,16 @@ import qualified Parsing as P
 solve :: Show b => Parser a -> (a -> b) -> String -> String
 solve parser f input = show $ f $ parse' parser input 
 
+chunksOf :: Int -> [e] -> [[e]]
+chunksOf i ls = map (take i) (build (splitter ls))
+ where
+  splitter :: [e] -> ([e] -> a -> a) -> a -> a
+  splitter [] _ n = n
+  splitter l c n = l `c` splitter (drop i l) c n
+
+build :: ((a -> [a] -> [a]) -> [a] -> [a]) -> [a]
+build g = g (:) []
+
 parse' :: Parser a -> String -> a
 parse' p i = case parse p "advent" i of
                   Left err -> error ("could not run parser " ++ show err)
