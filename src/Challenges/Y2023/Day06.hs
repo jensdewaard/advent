@@ -21,7 +21,7 @@ parseRace = do
     _ <- string "Distance:"
     skipMany space
     ds <- sepBy1 (many1 digit) spaces
-    return (read $ foldl (++) "" ts, read $ foldl (++) "" ds)
+    return (read $ concat ts, read $ concat ds)
 
 type Race = (Int, Int)
 parseInput :: Parser [Race]

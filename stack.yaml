@@ -76,6 +76,4 @@ extra-deps:
   - Cabal-syntax-3.8.1.0
 
 nix:
-  packages:
-  - zlib
   enable: true
