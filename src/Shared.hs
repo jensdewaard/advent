@@ -149,3 +149,7 @@ fst3 (a,_,_) = a
 
 snd3 :: (a, b, c) -> b
 snd3 (_,b,_) = b
+
+mult :: Num a => [a] -> a
+mult [] = 1
+mult (a:as) = a * mult as
