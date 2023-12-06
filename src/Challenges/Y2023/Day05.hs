@@ -40,6 +40,7 @@ runPuzzle :: ([Int] -> [Interval]) -> Puzzle -> [Interval]
 runPuzzle f p = process p $ f $ seeds p 
 
 process :: Puzzle -> [Interval] -> [Interval]
+-- process p = concatMap (applyM $ seedSoil p)
 process p = concatMap (applyM $ humiditiyLoc p)
     . concatMap (applyM $ tempHumidity p)
     . concatMap (applyM $ lightTemp p)
@@ -79,12 +80,12 @@ parseMap :: Parser Map
 parseMap = do
     _ <- manyTill anyToken newline -- <text>:
     rules <- sepEndBy (do
-        source <- many1 digit
-        skipMany1 space
         dest <- many1 digit
         skipMany1 space
+        source <- many1 digit
+        skipMany1 space
         size <- many1 digit
-        return (Interval.fromPair (read source, read source + read size), Interval.fromPair(read dest, read dest + read size))
+        return (Interval.fromPair (read dest, read dest + read size - 1), Interval.fromPair(read source, read source + read size - 1))
         ) newline
     _ <- optional newline
     return rules
