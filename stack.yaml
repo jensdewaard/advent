@@ -3,7 +3,7 @@ packages:
 resolver: lts-21.22
 
 docker:
-  enable: true
+  enable: false
 
 ghc-options:
   $everything: -haddock
@@ -78,4 +78,4 @@ extra-deps:
 nix:
   packages:
   - zlib
-  enable: false
+  enable: true
