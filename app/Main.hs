@@ -24,6 +24,7 @@ getSol (y, d) = return $ getYear y d
 
 getYear :: Int -> Int -> (String -> String, String -> String)
 getYear 2015 = Y2015.getDay
+getYear 2022 = Y2022.getDay
 getYear 2023 = Y2023.getDay
 --getYear 2019 = Y2019.getDay
 --getYear 2022 = Y2022.getDay
@@ -32,19 +33,20 @@ getYear _ = error "unsupported year"
 
 runProg :: ProgramArgs -> IO ()
 --runProg (Sample test year day) = getSol (test, year, day) >>= runSol >>= putStr
-runProg (ProgramArgs test year day) = do
+runProg (ProgramArgs year day) = do
     (a, b) <- getSol (year, day)
     handle <- openFile (mkDataPath year day) ReadMode
     contents <- hGetContents handle
+    solveAndTime "A" a contents
+    solveAndTime "B" b contents
+
+solveAndTime :: String -> (String -> String) -> String -> IO ()
+solveAndTime lbl f x = do
     time <- getCPUTime
-    let !a' = a contents
-    time_a <- getCPUTime
-    let !b' = b contents
-    time_b <- getCPUTime
-    let diff_a = showDiff $ fromIntegral (time_a - time) / (10^9)
-    let diff_b = showDiff $ fromIntegral (time_b - time_a) / (10^9)
-    let out = "A: " ++ a' ++ "\t(" ++ diff_a ++ ")" ++ "\n" ++ "B: " ++ b' ++ "\t(" ++ diff_b ++ ")\n"
-    putStr out
+    let !r = f x
+    now <- getCPUTime
+    let diff = showDiff $ fromIntegral (now - time) / (10 ^(9 :: Integer))
+    putStr (lbl ++ ": " ++ r ++ "\t" ++ diff ++ ")" ++ "\n")
 
 showDiff :: Double -> String
 showDiff diff = printf "Computation time: %0.5f ms" (diff :: Double)
