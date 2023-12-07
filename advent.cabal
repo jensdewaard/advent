@@ -71,6 +71,7 @@ library
       Challenges.Y2023.Day04
       Challenges.Y2023.Day05
       Challenges.Y2023.Day06
+      Challenges.Y2023.Day07
       DijkstraSimple
       FloydWarshall
       Intcode

@@ -12,7 +12,7 @@ import qualified Data.Text as T
 import qualified Parsing as P
 
 solve :: Show b => Parser a -> (a -> b) -> String -> String
-solve parser f input = show $ f $ parse' parser input 
+solve parser f input = show $ f $ parse' parser input
 
 chunksOf :: Int -> [e] -> [[e]]
 chunksOf i ls = map (take i) (build (splitter ls))
@@ -151,5 +151,12 @@ snd3 :: (a, b, c) -> b
 snd3 (_,b,_) = b
 
 mult :: Num a => [a] -> a
-mult [] = 1
-mult (a:as) = a * mult as
+mult = product
+
+mapl :: (a -> c) -> [(a,b)] -> [(c,b)]
+mapl _ [] = []
+mapl f ((a,b):acs) = (f a, b) : mapl f acs
+
+mapr :: (b -> c) -> [(a,b)] -> [(a,c)]
+mapr _ [] = []
+mapr f ((a,b):acs) = (a, f b) : mapr f acs
