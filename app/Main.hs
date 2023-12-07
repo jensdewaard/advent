@@ -45,11 +45,20 @@ solveAndTime lbl f x = do
     time <- getCPUTime
     let !r = f x
     now <- getCPUTime
-    let diff = showDiff $ fromIntegral (now - time) / (10 ^(9 :: Integer))
-    putStr (lbl ++ ": " ++ r ++ "\t" ++ diff ++ ")" ++ "\n")
+    --let diff = showDiff $ fromIntegral (now - time) / (10 ^(9 :: Integer))
+    let diff = showDiff (3900000 :: Double)
+    putStr (lbl ++ ": " ++ r ++ "\t Computation time: " ++ diff ++ ")" ++ "\n")
 
 showDiff :: Double -> String
-showDiff diff = printf "Computation time: %0.5f ms" (diff :: Double)
+showDiff diff
+    | diff <    1000 = printf "%0.3f ms" diff
+    | diff <   60000 = printf "%0.3f  s" (diff/1000)
+    | diff < 3600000 = printf "%0.2f m" (diff/36000)
+    | otherwise = let 
+        ms = round diff :: Int
+        h = round ( diff / 3600000 ) :: Int
+        m = (ms - (h*3600000)) `div` 60000
+        in printf "%dh%dm" h m
 
 mkDataPath :: Int -> Int -> String
 mkDataPath y d
