@@ -41,7 +41,7 @@ overlaps (Interval lbp ubp) (Interval lbq ubq) = lbp <= lbq && lbq <= ubp && ubp
 union :: Interval -> Interval -> Interval
 union p Empty = p
 union Empty q = q
-union (Interval lbp _) (Interval _ ubq) = fromPair (lbp, ubq)
+union (Interval lbp ubp) (Interval lbq ubq) = fromPair (min lbp lbq, max ubp ubq)
 
 includes :: Interval -> Interval -> Bool
 includes _ Empty = False

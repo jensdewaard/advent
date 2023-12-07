@@ -1,7 +1,8 @@
 module Challenges.Y2015.Day02 (input, solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (number, fromRight)
+import Shared (fromRight)
 import Data.List (sort)
+import Parsing (int)
 
 input :: Bool -> IO String
 input False = readFile "data/2015/02.txt"
@@ -31,14 +32,14 @@ requiredRibbon p = (w p * h p * l p) +
 parseInput :: String -> Either ParseError [Present]
 parseInput = parse parser "could not parse file"
 
-parser :: GenParser Char st [Present]
+parser :: Parser [Present]
 parser = sepBy present newline
 
-present :: GenParser Char st Present
+present :: Parser Present
 present = do
-    l <- number
+    l <- int
     _ <- string "x"
-    w <- number
+    w <- int
     _ <- string "x"
-    h <- number
+    h <- int
     return $ Present w h l

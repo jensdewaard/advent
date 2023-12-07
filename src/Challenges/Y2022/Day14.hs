@@ -71,13 +71,13 @@ lowestY = maximum . map (snd . fst)
 parseInput :: String -> Either ParseError Cave
 parseInput = parse file "could not parse file"
 
-file :: GenParser Char st Cave
+file :: Parser Cave
 file = concat <$> path `sepBy` newline
 
-path :: GenParser Char st [Filling]
+path :: Parser [Filling]
 path = map (, '#') . genPath <$> coords `sepBy` rightArrow
 
-rightArrow :: GenParser Char st String
+rightArrow :: Parser String
 rightArrow = string " -> "
 
 genPath :: [Coord] -> [Coord]

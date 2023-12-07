@@ -67,11 +67,11 @@ move D c = predY c
 move L c = predX c
 move R c = succX c
 
-coords :: GenParser Char st Coord
+coords :: Parser Coord
 coords = do
-    l <- number
+    l <- P.int
     _ <- string ","
-    r <- number
+    r <- P.int
     return (l, r)
 
 rectFromTo :: Coord -> Coord -> [Coord]
@@ -79,9 +79,6 @@ rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (\y -> (x, y)) (enumFromTo y1
 
 distanceC :: Coordinate a => a -> a -> Int
 distanceC p q = abs (xCoord p - xCoord q) + abs (yCoord p - yCoord q)
-
-number :: GenParser Char st Int
-number = P.int
 
 fromRight :: Either a b -> b
 fromRight (Left _) = error "fromRight from Left"

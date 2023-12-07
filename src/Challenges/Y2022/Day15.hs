@@ -1,82 +1,79 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NumericUnderscores #-}
+module Challenges.Y2022.Day15 (solutionA, solutionB) where
 
-module Challenges.Y2022.Day15 (Challenges.Y2022.Day15.parse, solveA, solveB) where
+import Shared ( Coord , solve, distanceC)
+import Text.ParserCombinators.Parsec
+import Parsing (int)
+import IntervalSet (Interval (Empty), fromPair, union, length)
 
-import Data.Set as S (Set, fromList, empty, union, difference, size)
-import Data.Either (fromRight)
-import Shared ( distanceC, number, Coord )
-import Text.ParserCombinators.Parsec as P
-    ( newline, string, ParseError, sepBy, parse )
-import qualified IntervalSet as IS
+solutionA :: String -> String
+solutionA = solve parseInput (IntervalSet.length . foldl union Empty . map fst . concatMap (yIs 2000000 . coverage))
 
-parse :: String -> [(Sensor, Beacon)]
-parse = fromRight [] . parseInput . init
+solutionB :: String -> String
+solutionB = solve parseInput (\sbs -> freq $ head $ findJust $ concatMap (map (consider sbs) . border) sbs)
+--solutionB = solve parseInput (filter (\(y,is) -> List.length is > 1) . Map.toList . foldl foldCoverage Map.empty . yLimit 0 4000000 . concatMap coverage)
 
-solveA :: [(Sensor, Beacon)] -> Int
-solveA ps = S.size $ difference os bs where
-    bs = fromList $ map snd ps
-    os = foldl union empty (map (fromList . uncurry (noneAtForY 2_000_000)) ps)
+yIs :: Int -> [(Interval, Int)] -> [(Interval, Int)]
+yIs _ [] = []
+yIs y (p:ps) = if snd p == y then p : yIs y ps else yIs y ps
 
-solveB :: [(Sensor, Beacon)] -> [IS.IntervalSet]
--- solveB ps =  foldl (zipWith IS.merge) [repeat IS.Empty] $ map setsForPair ps
---     where s = fst . head $ ps
---           b = snd . head $ ps
---           ps = [((8,7), (2,10))]
-solveB _ = []
+findJust :: [Maybe a] -> [a]
+findJust [] = []
+findJust ((Just a):_) = [a]
+findJust (Nothing:as) = findJust as
+
+freq :: Coord -> Int
+freq (x,y) = x * 4000000+y
+
+coverage :: (Sensor, Beacon) -> [(Interval, Int)]
+coverage (s@(sx, sy), b) = let
+    d = distanceC s b in
+    [(fromPair (sx - d + abs (sy - y), sx + d - abs (sy - y)), y) |
+        y <- [(sy - d)..(sy + d)]
+        ]
+
+consider :: [(Sensor, Beacon)] -> Coord -> Maybe Coord
+consider ss c@(x,y)
+    | x < 0 = Nothing
+    | x > 4000000 = Nothing
+    | y < 0 = Nothing
+    | y > 4000000 = Nothing
+    | otherwise = if any (check c) ss then Nothing else Just c
+
+check :: Coord -> (Sensor, Beacon) -> Bool
+check c (s,b) = distanceC s c <= distanceC s b 
+
+border :: (Sensor, Beacon) -> [Coord]
+border (s@(sx,sy), b) = let
+    d = distanceC s b + 1 in
+    [(x,y) | x <- [(sx - d)..(sx + d)],
+             y <- [(sy - d)..(sy + d)],
+             distanceC (x,y) s == d]
 
 -- data
 type Sensor = Coord
 type Beacon = Coord
 
-
-{- Coords where a beacon is not, given a Y, a sensor and its closest beacon -}
-noneAtForY :: Int -> Coord -> Coord -> [Coord]
-noneAtForY y s@(sx, _) b = let dist = distanceC s b
-    in
-    [(x, y) | x <- [sx - dist..sx+ dist], distanceC s (x,y) <= dist ]
-
-setsForPair :: (Sensor, Beacon) -> [IS.IntervalSet]
-setsForPair (s,b) = map (\y -> noneAtForY' y s b) [0..max_y]
-    where max_y = 20
-
-noneAtForY' :: Int -> Sensor -> Beacon -> IS.IntervalSet
-noneAtForY' y s@(sx, _) b = subs [0..max_x] ps where
-    max_x = 20
-    ps = [(x,y) | x <- [sx - dist..sx + dist], distanceC s (x,y) <= dist]
-    dist = distanceC s b
-    lbx = fst (last ps) + 1
-    ubx = fst (head ps) - 1
-    subs _ [] = [IS.fromPair (0, max_x)]
-    subs _ ys
-        | ubx < 0 && lbx > max_x = []
-        | ubx < 0 = [IS.fromPair (lbx, max_x)]
-        | lbx > max_x = [IS.fromPair (0, ubx)]
-        | otherwise = IS.add (IS.fromPair (fst (last ys) + 1 ,max_x)) [IS.fromPair (0, fst (head ys)- 1)]
-
-noneAt :: Coord -> Coord -> Set Coord
-noneAt s@(sx, sy) b = let dist = distanceC s b
-    in
-    fromList [(x, y) | x <- [sx - dist..sx+ dist], y <- [sy - dist..sy + dist], distanceC s (x,y) <= dist ]
-
-tf :: Coord -> Int
-tf (x, y) = x * 4_000_000 + y
-
-searchSpace :: Set Coord
-searchSpace = fromList [(x, y) | x <-  [0..4_000_000], y <- [0..4_000_000]]
-
-
 -- parsing
-parseInput :: String -> Either ParseError [(Sensor, Coord)]
-parseInput = P.parse file "could not parse file" where
-    file = line `sepBy` newline
-    line = do
-        _ <- string "Sensor at x="
-        sx <- number
-        _ <- string ", y="
-        sy <- number
-        _ <- string ": closest beacon is at x="
-        bx <- number
-        _ <- string ", y="
-        by <- number
-        return ((sx, sy), (bx, by))
+parseInput :: Parser [(Sensor, Beacon)]
+parseInput = sepBy1 (do
+        s <- sensor
+        _ <- string ": "
+        b <- beacon
+        return (s, b)
+    ) newline
+
+sensor :: Parser Sensor
+sensor = do
+    _ <- string "Sensor at x="
+    x <- int
+    _ <- string ", y="
+    y <- int
+    return (x, y)
+
+beacon :: Parser Beacon
+beacon = do
+    _ <- string "closest beacon is at x="
+    x <- int
+    _ <- string ", y="
+    y <- int
+    return (x,y)
