@@ -3,13 +3,18 @@ module Parser (ProgramArgs (ProgramArgs), args) where
 import Options.Applicative
 
 data ProgramArgs = ProgramArgs 
-    { year :: Int
-    , day  :: Int
+    { command :: String
+    , year :: Integer
+    , day  :: Integer
     }
 
 args :: Parser ProgramArgs
 args = ProgramArgs
-    <$> argument auto
+    <$> argument str
+        ( help "The command to perform on the challenge"
+        <> metavar "CMD"
+        )
+    <*> argument auto
         ( help "The year to run a challenge of" 
         <> metavar "YEAR"
         )

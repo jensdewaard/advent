@@ -87,6 +87,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wredundant-constraints
   build-depends:
       HUnit
+    , advent-of-code-api
     , aeson
     , array
     , base >=4.7 && <5
@@ -115,6 +116,7 @@ executable advent-exe
   build-depends:
       HUnit
     , advent
+    , advent-of-code-api
     , aeson
     , array
     , base >=4.7 && <5
@@ -148,6 +150,7 @@ test-suite advent-test
   build-depends:
       HUnit
     , advent
+    , advent-of-code-api
     , aeson
     , array
     , base >=4.7 && <5

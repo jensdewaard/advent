@@ -17,7 +17,7 @@ import qualified Challenges.Y2015.Day13 as Day13
 import qualified Challenges.Y2015.Day14 as Day14
 import qualified Challenges.Y2015.Day15 as Day15
 
-getDay :: Int -> (String -> String, String -> String)
+getDay :: Integer -> (String -> String, String -> String)
 --getDay test 1 = (Day01.input test, Day01.solutionA , Day01.solutionB)
 --getDay test 2 = (Day02.input test, Day02.solutionA , Day02.solutionB)
 --getDay test 3 = (Day03.input test, Day03.solutionA , Day03.solutionB)

@@ -3,13 +3,16 @@ module Main (main) where
 
 import Options.Applicative
 import Parser (ProgramArgs (ProgramArgs), args)
+
+import Advent
 import System.CPUTime
 import System.IO
+import Text.Printf
 import qualified Challenges.Y2015 as Y2015
 import qualified Challenges.Y2019 as Y2019
 import qualified Challenges.Y2022 as Y2022
 import qualified Challenges.Y2023 as Y2023
-import Text.Printf
+import Data.Text (unpack)
 
 main :: IO ()
 main = runProg =<< execParser opts
@@ -19,10 +22,10 @@ main = runProg =<< execParser opts
             <> progDesc "Run an advent of code solution"
             <> header "advent - running advent of code solutions" )
 
-getSol :: (Int, Int) -> IO (String -> String, String -> String)
+getSol :: (Integer, Integer) -> IO (String -> String, String -> String)
 getSol (y, d) = return $ getYear y d
 
-getYear :: Int -> Int -> (String -> String, String -> String)
+getYear :: Integer -> Integer -> (String -> String, String -> String)
 getYear 2015 = Y2015.getDay
 getYear 2022 = Y2022.getDay
 getYear 2023 = Y2023.getDay
@@ -33,12 +36,11 @@ getYear _ = error "unsupported year"
 
 runProg :: ProgramArgs -> IO ()
 --runProg (Sample test year day) = getSol (test, year, day) >>= runSol >>= putStr
-runProg (ProgramArgs year day) = do
-    (a, b) <- getSol (year, day)
-    handle <- openFile (mkDataPath year day) ReadMode
-    contents <- hGetContents handle
-    solveAndTime "A" a contents
-    solveAndTime "B" b contents
+runProg (ProgramArgs cmd year day) = do
+    case cmd of
+        "solve" -> solve year day
+        "get" -> get year day
+        _ -> error "unknown command"
 
 solveAndTime :: String -> (String -> String) -> String -> IO ()
 solveAndTime lbl f x = do
@@ -63,3 +65,18 @@ mkDataPath :: Int -> Int -> String
 mkDataPath y d
     | d <= 9 = "data/" ++ show y ++ "/0" ++ show d ++ ".txt"
     | otherwise = "data/" ++ show y ++ "/" ++ show d ++ ".txt"
+
+solve :: Integer -> Integer -> IO ()
+solve year day = do
+    (a, b) <- getSol (year, day)
+    cs <- runAoC_ (aocOpts year) $ AoCInput $ mkDay_ day
+    solveAndTime "A" a $ unpack cs
+    solveAndTime "B" b $ unpack cs
+
+aocOpts :: Integer -> AoCOpts
+aocOpts y = (defaultAoCOpts y "53616c7465645f5f9ecfcea4db39c2d7e733bb26d9bafd07f77a6a5bd9d1fcaa8bbbd185aeeb7b93b4dde7bc123116d32dfb1ea68bd5752da41dec7ad88c1b5e") { _aCache = Just "./cache"}
+
+get :: Integer -> Integer -> IO ()
+get year day = do
+    ps <- runAoC_ (aocOpts year) $ AoCPrompt $ mkDay_ day
+    putStr $ show ps

@@ -37,6 +37,7 @@ dependencies:
 - HUnit
 - optparse-applicative
 - time
+- advent-of-code-api
 
 ghc-options:
 - -Wall

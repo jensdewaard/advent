@@ -52,7 +52,7 @@ parseInput :: Parser ([Dir], [Node])
 parseInput = do
     ds <- many1 dir
     _ <- newline >> newline
-    ns <- node `sepBy1` newline
+    ns <- node `sepEndBy1` newline
     return (ds, sort ns)
 
 node :: Parser Node
