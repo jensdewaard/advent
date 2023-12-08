@@ -74,7 +74,7 @@ solve year day = do
     solveAndTime "B" b $ unpack cs
 
 aocOpts :: Integer -> AoCOpts
-aocOpts y = (defaultAoCOpts y "53616c7465645f5f9ecfcea4db39c2d7e733bb26d9bafd07f77a6a5bd9d1fcaa8bbbd185aeeb7b93b4dde7bc123116d32dfb1ea68bd5752da41dec7ad88c1b5e") { _aCache = Just "./cache"}
+aocOpts y = (defaultAoCOpts y "") { _aCache = Just "./cache"}
 
 get :: Integer -> Integer -> IO ()
 get year day = do
