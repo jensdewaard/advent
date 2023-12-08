@@ -1,16 +1,22 @@
+{-# LANGUAGE TupleSections #-}
 module Challenges.Y2023.Day08 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, fst3)
+import Shared (solve, fst3, endsWith)
 import Data.List (find, sort)
-import Data.Maybe (fromJust)
 
 solutionA :: String -> String
 solutionA = solve parseInput solveA
 solutionB :: String -> String
-solutionB = undefined
+solutionB = solve parseInput solveB
 
 solveA :: ([Dir], [Node]) -> Int
-solveA (ds, ns) = snd $ until atEnd (walk ds ns) ("AAA", 0)
+solveA (ds, ns) = solvePuzzle (ds,ns) atEndA ("AAA",0)
+
+solveB :: ([Dir], [Node]) -> Int
+solveB (ds, ns) = foldl lcm 1 $ map (solvePuzzle (ds,ns) atEndB) (findStarts ns)
+
+solvePuzzle :: ([Dir], [Node]) -> ((String, Int) -> Bool) -> (String, Int) -> Int
+solvePuzzle (ds, ns) atEnd start = snd $ until atEnd (walk ds ns) start
 
 walk :: [Dir] -> [Node] -> (String, Int) -> (String, Int)
 walk ds ns (n, i) = let
@@ -19,12 +25,21 @@ walk ds ns (n, i) = let
     nn = selectNext cd cn
     in (nn, i+1)
 
-atEnd :: (String, Int) -> Bool
-atEnd ("ZZZ", _) = True
-atEnd _ = False
+atEndA :: (String, Int) -> Bool
+atEndA ("ZZZ", _) = True
+atEndA _ = False
+
+atEndB :: (String, Int) -> Bool
+atEndB = endsWith 'Z' . fst
 
 findNode :: String -> [Node] -> Node
-findNode s = fromJust . find (\n -> fst3 n == s)
+findNode s ns = case find (\n -> fst3 n == s) ns of
+    Just x -> x
+    Nothing -> error ("cannot find node " ++ s)
+
+
+findStarts :: [Node] -> [(String, Int)]
+findStarts = map (,0) . filter (endsWith 'A') . map fst3
 
 selectNext :: Dir -> Node -> String
 selectNext L (_, l, _) = l
@@ -42,11 +57,11 @@ parseInput = do
 
 node :: Parser Node
 node = do
-    lbl <- many1 letter
+    lbl <- many1 alphaNum
     _ <- string " = ("
-    left <- many1 letter
+    left <- many1 alphaNum
     _ <- string ", "
-    right <- many1 letter
+    right <- many1 alphaNum
     _ <- string ")"
     return (lbl, left, right)
 

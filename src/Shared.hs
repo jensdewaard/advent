@@ -40,6 +40,9 @@ indexedList = indexedList' 1 where
     indexedList' n (a:as) = (n, a) : indexedList' (succ n) as
     indexedList' _ [] = []
 
+endsWith :: Eq a => a -> [a] -> Bool
+endsWith a as = last as == a
+
 -- Coords
 class Coordinate a where
     predX :: a -> a
