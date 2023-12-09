@@ -41,6 +41,7 @@ runProg (ProgramArgs cmd year day) = do
         "solve" -> solve year day
         "test" -> test year day
         "get" -> get year day
+        "start" -> start year day
         _ -> error "unknown command"
 
 solveAndTime :: String -> (String -> String) -> String -> IO ()
@@ -94,3 +95,12 @@ get year day = do
     opts <- aocOpts year
     ps <- runAoC_ opts $ AoCPrompt $ mkDay_ day
     putStr $ show ps
+
+start :: Integer -> Integer -> IO ()
+start year day = do
+    let d = (if day <= 9 then "0" else "") ++ show day
+    let content = "module Challenges.Y" ++ show year ++ ".Day" ++ d ++ " (solutionA, solutionB) where\nimport Text.ParserCombinators.Parsec\nimport Shared (solve)\n\nsolutionA :: String -> String\nsolutionA = solve parser (const \"\")\nsolutionB :: String -> String\nsolutionB = solve parser (const \"\")\n\nparser :: Parser ()\nparser = undefined"
+    handle <- openFile ("./src/Challenges/Y" ++ show year ++ "/Day" ++ d ++ ".hs") WriteMode
+    hPutStr handle content
+    hClose handle
+    return ()
