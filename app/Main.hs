@@ -70,7 +70,8 @@ mkDataPath y d
 solve :: Integer -> Integer -> IO ()
 solve year day = do
     (a, b) <- getSol (year, day)
-    cs <- runAoC_ (aocOpts year) $ AoCInput $ mkDay_ day
+    opts <- aocOpts year
+    cs <- runAoC_ opts $ AoCInput $ mkDay_ day
     solveAndTime "A" a $ unpack cs
     solveAndTime "B" b $ unpack cs
 
@@ -82,10 +83,14 @@ test year day = do
     solveAndTime "A" a contents
     solveAndTime "B" b contents
 
-aocOpts :: Integer -> AoCOpts
-aocOpts y = (defaultAoCOpts y "") { _aCache = Just "./cache"}
+aocOpts :: Integer -> IO AoCOpts
+aocOpts y = do 
+    handle <- openFile "./aoc-key" ReadMode
+    key <- hGetContents handle
+    return (defaultAoCOpts y key) { _aCache = Just "./cache"}
 
 get :: Integer -> Integer -> IO ()
 get year day = do
-    ps <- runAoC_ (aocOpts year) $ AoCPrompt $ mkDay_ day
+    opts <- aocOpts year
+    ps <- runAoC_ opts $ AoCPrompt $ mkDay_ day
     putStr $ show ps

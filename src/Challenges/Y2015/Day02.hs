@@ -1,45 +1,31 @@
-module Challenges.Y2015.Day02 (input, solutionA, solutionB) where
+module Challenges.Y2015.Day02 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (fromRight)
 import Data.List (sort)
 import Parsing (int)
+import Shared (solve)
 
-input :: Bool -> IO String
-input False = readFile "data/2015/02.txt"
-input True = return "3x11x24\n\
-\13x5x19\n\
-\1x9x27"
 solutionA :: String -> String
-solutionA = show . sum . map requiredPaper . Shared.fromRight . parseInput
+solutionA = solve parseInput (sum . map requiredPaper)
 solutionB :: String -> String
-solutionB = show . sum . map requiredRibbon . Shared.fromRight . parseInput
+solutionB = solve parseInput (sum . map requiredRibbon)
 
-data Present = Present
-    { w :: Int
-    , h :: Int
-    , l :: Int
-    } deriving Show
+requiredPaper :: (Int, Int, Int) -> Int
+requiredPaper (w,h,l) = 2*(w * h
+    + w * l
+    + l * h) + minimum [w * h, w * l, l * h]
 
-requiredPaper :: Present -> Int
-requiredPaper p = 2*(w p * h p
-    + w p * l p
-    + l p * h p) + minimum [w p * h p, w p * l p, l p * h p]
+requiredRibbon :: (Int, Int, Int) -> Int
+requiredRibbon (w,h,l) = (w * h * l) +
+    2 * sum (take 2 $ sort [w, l, h])
 
-requiredRibbon :: Present -> Int
-requiredRibbon p = (w p * h p * l p) +
-    2 * sum (take 2 $ sort [w p, l p , h p])
+parseInput :: Parser [(Int, Int, Int)]
+parseInput = sepEndBy present newline
 
-parseInput :: String -> Either ParseError [Present]
-parseInput = parse parser "could not parse file"
-
-parser :: Parser [Present]
-parser = sepBy present newline
-
-present :: Parser Present
+present :: Parser (Int, Int, Int)
 present = do
     l <- int
     _ <- string "x"
     w <- int
     _ <- string "x"
     h <- int
-    return $ Present w h l
+    return (w,h,l)

@@ -3,6 +3,7 @@ data/
 cache/
 *~
 report.html
+aoc-key
 
 # Devenv
 .devenv*
