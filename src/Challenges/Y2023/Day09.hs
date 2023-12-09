@@ -6,17 +6,12 @@ import Parsing (int)
 solutionA :: String -> String
 solutionA = solve parseInput (sum . map determineNext)
 solutionB :: String -> String
-solutionB = solve parseInput (sum . map extrapolate)
+solutionB = solve parseInput (sum . map (determineNext . reverse))
 
 determineNext :: [Integer] -> Integer
 determineNext ns
     | allEqual ns = head ns
     | otherwise = last ns + determineNext (diff ns)
-
-extrapolate :: [Integer] -> Integer
-extrapolate ns
-    | allEqual ns = head ns
-    | otherwise = head ns - extrapolate (diff ns)
 
 diff :: [Integer] -> [Integer]
 diff [] = []
