@@ -39,6 +39,7 @@ runProg :: ProgramArgs -> IO ()
 runProg (ProgramArgs cmd year day) = do
     case cmd of
         "solve" -> solve year day
+        "test" -> test year day
         "get" -> get year day
         _ -> error "unknown command"
 
@@ -61,10 +62,10 @@ showDiff diff
         m = (ms - (h*3600000)) `div` 60000
         in printf "%dh%dm" h m
 
-mkDataPath :: Int -> Int -> String
+mkDataPath :: Integer -> Integer -> String
 mkDataPath y d
-    | d <= 9 = "data/" ++ show y ++ "/0" ++ show d ++ ".txt"
-    | otherwise = "data/" ++ show y ++ "/" ++ show d ++ ".txt"
+    | d <= 9 = "cache/example/" ++ show y ++ "/0" ++ show d ++ ".txt"
+    | otherwise = "cache/example" ++ show y ++ "/" ++ show d ++ ".txt"
 
 solve :: Integer -> Integer -> IO ()
 solve year day = do
@@ -72,6 +73,14 @@ solve year day = do
     cs <- runAoC_ (aocOpts year) $ AoCInput $ mkDay_ day
     solveAndTime "A" a $ unpack cs
     solveAndTime "B" b $ unpack cs
+
+test :: Integer -> Integer -> IO ()
+test year day = do
+    (a,b) <- getSol (year,day)
+    handle <- openFile (mkDataPath year day) ReadMode
+    contents <- hGetContents handle
+    solveAndTime "A" a contents
+    solveAndTime "B" b contents
 
 aocOpts :: Integer -> AoCOpts
 aocOpts y = (defaultAoCOpts y "") { _aCache = Just "./cache"}

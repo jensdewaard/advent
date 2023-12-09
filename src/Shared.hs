@@ -160,3 +160,6 @@ mapl f ((a,b):acs) = (f a, b) : mapl f acs
 mapr :: (b -> c) -> [(a,b)] -> [(a,c)]
 mapr _ [] = []
 mapr f ((a,b):acs) = (a, f b) : mapr f acs
+
+allEqual :: Eq a => [a] -> Bool
+allEqual xs = all (== head xs) (tail xs)

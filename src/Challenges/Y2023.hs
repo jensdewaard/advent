@@ -8,6 +8,7 @@ import qualified Challenges.Y2023.Day05 as Day05
 import qualified Challenges.Y2023.Day06 as Day06
 import qualified Challenges.Y2023.Day07 as Day07
 import qualified Challenges.Y2023.Day08 as Day08
+import qualified Challenges.Y2023.Day09 as Day09
 
 getDay :: Integer -> (String-> String, String -> String)
 getDay 1 = (Day01.solutionA, Day01.solutionB)
@@ -18,3 +19,4 @@ getDay 5 = (Day05.solutionA, Day05.solutionB)
 getDay 6 = (Day06.solutionA, Day06.solutionB)
 getDay 7 = (Day07.solutionA, Day07.solutionB)
 getDay 8 = (Day08.solutionA, Day08.solutionB)
+getDay 9 = (Day09.solutionA, Day09.solutionB)
