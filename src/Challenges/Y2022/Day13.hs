@@ -14,7 +14,7 @@ solutionB :: String -> String
 solutionB = show . solveB . fromRight . parseInput
 
 solveA :: [(Packet, Packet)] -> Int
-solveA = sum . map fst . filter snd . indexedList . map (uncurry (<=))
+solveA = sum . map fst . filter snd . zip [1..] . map (uncurry (<=))
 
 solveB :: [(Packet, Packet)] -> Int
 solveB ps = succ iDiv * succ iDiv' where
@@ -39,7 +39,7 @@ pair = do
     return (l, r)
 
 packet :: GenParser Char st Packet
-packet = (do 
+packet = (do
         _ <- char '['
         p <- sepBy packet (char ',')
         _ <- char ']'

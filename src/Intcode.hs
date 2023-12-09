@@ -1,6 +1,6 @@
 module Intcode (ProgState (ProgState, memory, ptr), OpProgram, runOpProgram, parseProgram, opReplace ) where
 
-import Shared (splitOn)
+import Text.ParserCombinators.Parsec
 
 type OpProgram = [Int]
 
@@ -17,8 +17,8 @@ data ProgState = ProgState
     , ptr       :: Int
     }
 
-parseProgram :: String -> OpProgram
-parseProgram s = map read $ splitOn "," s
+parseProgram :: Parser OpProgram
+parseProgram = (read <$> many1 digit) `sepBy1` char ','
 
 runOpCode :: OpCode -> ProgState -> ProgState
 runOpCode OpFinished prog = prog

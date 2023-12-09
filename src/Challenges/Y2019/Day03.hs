@@ -1,45 +1,42 @@
-module Challenges.Y2019.Day03 where
+module Challenges.Y2019.Day03 (solutionA, solutionB) where
+import Text.ParserCombinators.Parsec
 
 import Shared
 import qualified Data.List as L
 
-input :: Bool -> IO String
-input _ = readFile "data/2019/03.txt"
-
 solutionA :: String -> String
 --solutionA _ = show 0
-solutionA inp = show $ closest (wires inp) (wireIntersections inp)
+solutionA = solve parseInput closest
 
--- 63655 is too high
 solutionB :: String -> String
-solutionB inp = show $ best (wires inp) (wireIntersections inp)
---solutionB inp = show $ (wireIntersections inp)
+solutionB = solve parseInput (best . wires)
 
-wireIntersections :: String -> [Coord]
-wireIntersections inp = intersections $ wires inp
+wires :: [Wire] -> [[Coord]]
+wires = map (wireToCoords (0,0))
 
-wires :: String -> [[Coord]]
-wires inp = map (wireToCoords (0,0)) $ parseInput inp
+closest :: [Wire] -> Int
+closest = minimum . filter (>0) . map manDist . intersections . wires
 
-closest :: [[Coord]] -> [Coord] -> Int
-closest _ ns = minimum $ filter (>0) $ map manDist ns
-
--- best:  wires    -> intersections -> distance along wire
-best :: [[Coord]] -> [Coord] -> Int
-best (wa : wb : _) is = minimum $ filter (>0) $ map (\c -> pathToLength wa c + pathToLength wb c) is
-best _  _ = 0
+best :: [[Coord]] -> Int
+best w@(wa : wb : _) = minimum . filter (>0) . map (\c -> pathToLength wa c + pathToLength wb c) $ intersections w
+best _ = 0
 
 pathToLength :: [Coord] -> Coord -> Int
 pathToLength (w : ws) c = if w == c then 0 else 1 + pathToLength ws c
 pathToLength [] _ = 0
 
-parseInput :: String -> [Wire]
-parseInput x = map (map readDir . splitOn ",") (lines x)
+parseInput :: Parser [Wire]
+parseInput = do
+    a <- sepBy1 dir (char ',')
+    _ <- newline
+    b <- sepBy1 dir (char ',')
+    return [a,b]
 
 intersections :: [[Coord]] -> [Coord]
 intersections (a : b : _) = a `L.intersect` b
 intersections _ = error "invalid number of wires"
 
+-- | The Manhattan distance from the Origin (0,0) to the Coordinate.
 manDist :: Coord -> Int
 manDist (x, y) = abs x + abs y
 
@@ -47,12 +44,11 @@ type Wire = [DirAndLength]
 
 data DirAndLength = DirLength Dir Int
 
-readDir :: String -> DirAndLength
-readDir ('U' : ss) = DirLength U (read ss)
-readDir ('L' : ss) = DirLength L (read ss)
-readDir ('R' : ss) = DirLength R (read ss)
-readDir ('D' : ss) = DirLength D (read ss)
-readDir _ = error "invalid direction vector"
+dir :: Parser DirAndLength
+dir = do
+    d <- (char 'U' >> return U) <|> (char 'L' >> return L) <|> (char 'R' >> return R) <|> (char 'D' >> return D)
+    n <- read <$> many1 digit
+    return $ DirLength d n
 
 wireToCoords :: Coord -> Wire -> [Coord]
 wireToCoords s (DirLength _ 0 : ds) = wireToCoords s ds

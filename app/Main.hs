@@ -29,7 +29,7 @@ getYear :: Integer -> Integer -> (String -> String, String -> String)
 getYear 2015 = Y2015.getDay
 getYear 2022 = Y2022.getDay
 getYear 2023 = Y2023.getDay
---getYear 2019 = Y2019.getDay
+getYear 2019 = Y2019.getDay
 --getYear 2022 = Y2022.getDay
 getYear _ = error "unsupported year"
 

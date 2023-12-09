@@ -1,43 +1,44 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TupleSections #-}
 
-module Shared where
+module Shared (solve, 
+chunksOf, endsWith, 
+Coordinate (..), Coord, move, coords, 
+Dir (..),
+rectFromTo, distanceC, 
+
+fromRight, mkLGraph, indexNodes, 
+fstEq, simpl, until1, 
+hasPair, hasTwoPair, 
+hamiltonian, tsp, tspWith, 
+validPath, pathLength,
+
+trd, fst3, snd3, mapl, mapr,
+allEqual) where
 
 import Data.Graph.Inductive.Graph
+    ( Graph(mkGraph), LEdge, edgeLabel, hasEdge, nodes, out, Path )
 import Data.Graph.Inductive.PatriciaTree (Gr)
-import Data.List (find, notElem, permutations)
+import Data.List (find, permutations)
 import Data.Maybe (fromJust)
 import Data.Tuple (swap)
 import Text.ParserCombinators.Parsec
-import qualified Data.Text as T
 import qualified Parsing as P
 
 solve :: Show b => Parser a -> (a -> b) -> String -> String
-solve parser f = show . f . parse' parser 
+solve parser f = show . f . parse' parser
 
-chunksOf :: Int -> [e] -> [[e]]
-chunksOf i ls = map (take i) (build (splitter ls))
- where
-  splitter :: [e] -> ([e] -> a -> a) -> a -> a
-  splitter [] _ n = n
-  splitter l c n = l `c` splitter (drop i l) c n
-  build :: ((a -> [a] -> [a]) -> [a] -> [a]) -> [a]
-  build g = g (:) []
+chunksOf :: Int -> [a] -> [[a]]
+chunksOf _ [] = []
+chunksOf n rs = take n rs : chunksOf n (drop n rs)
 
 parse' :: Parser a -> String -> a
 parse' p i = case parse p "advent" i of
                   Left err -> error ("could not run parser " ++ show err)
                   Right val -> val
 
-toLines :: String -> [String]
-toLines s = filter (/= "") $ map T.unpack $ T.splitOn (T.pack "\n") (T.pack s)
-
-splitOn :: String -> String -> [String]
-splitOn d s = map T.unpack $ T.splitOn (T.pack d) (T.pack s)
-
-indexedList :: [a] -> [(Int, a)]
-indexedList = indexedList' 1 where
-    indexedList' n (a:as) = (n, a) : indexedList' (succ n) as
-    indexedList' _ [] = []
+-- splitOn :: String -> String -> [String]
+-- splitOn d s = map T.unpack $ T.splitOn (T.pack d) (T.pack s)
 
 endsWith :: Eq a => a -> [a] -> Bool
 endsWith a as = last as == a
@@ -77,7 +78,7 @@ coords = do
     return (l, r)
 
 rectFromTo :: Coord -> Coord -> [Coord]
-rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (\y -> (x, y)) (enumFromTo y1 y2)) (enumFromTo x1 x2)
+rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (x,) (enumFromTo y1 y2)) (enumFromTo x1 x2)
 
 distanceC :: Coordinate a => a -> a -> Int
 distanceC p q = abs (xCoord p - xCoord q) + abs (yCoord p - yCoord q)
@@ -88,17 +89,17 @@ fromRight (Right r) = r
 
 mkLGraph :: (Eq a) => [a] -> [(a,a,b)] -> Gr a b
 mkLGraph ns es = let
-    nodes = map swap (indexNodes ns)
-    mkEdge :: Eq a => [a] -> (a,a,b) -> (LEdge b)
-    mkEdge ns (n1, n2, e) = (simpl $ find (fstEq n1) (indexNodes ns), simpl $ find (fstEq n2) (indexNodes ns), e)
-    edges = map (mkEdge ns) es
-    in mkGraph nodes edges
+    nds = map swap (indexNodes ns)
+    mkEdge :: Eq a => [a] -> (a,a,b) -> LEdge b
+    mkEdge nds' (n1, n2, e) = (simpl $ find (fstEq n1) (indexNodes nds'), simpl $ find (fstEq n2) (indexNodes nds'), e)
+    edgs = map (mkEdge ns) es
+    in mkGraph nds edgs
 
 indexNodes :: [a] -> [(a,Int)]
 indexNodes ns = zip ns [1..]
 
 fstEq :: Eq a => a -> (a,b) -> Bool
-fstEq y x = (fst x) == y
+fstEq y x = fst x == y
 
 simpl :: Maybe (a, Int) -> Int
 simpl = snd . fromJust
