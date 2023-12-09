@@ -65,7 +65,7 @@ showDiff diff
 mkDataPath :: Integer -> Integer -> String
 mkDataPath y d
     | d <= 9 = "cache/example/" ++ show y ++ "/0" ++ show d ++ ".txt"
-    | otherwise = "cache/example" ++ show y ++ "/" ++ show d ++ ".txt"
+    | otherwise = "cache/example/" ++ show y ++ "/" ++ show d ++ ".txt"
 
 solve :: Integer -> Integer -> IO ()
 solve year day = do

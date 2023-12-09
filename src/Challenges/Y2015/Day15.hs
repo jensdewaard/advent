@@ -1,15 +1,44 @@
 module Challenges.Y2015.Day15 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Shared (solve)
-import Data.List (transpose)
+import Parsing (int)
 
 solutionA :: String -> String
-solutionA = undefined
+solutionA = solve parser (\is -> maximum $ map (eqn is) combos)
+
+combos :: [[Int]]
+combos = [[a, b, c, d] |
+            a <- [0 .. 100],
+            b <- [0 .. 100],
+            c <- [0 .. 100],
+            d <- [0 .. 100],
+            a + b + c + d == 100]
+
+-- combos :: [(Int, Int)]
+--combos = [(a,b) | a <- [0..100], b <- [0..100], a + b == 100]
+
 
 solutionB :: String -> String
-solutionB _ = ""
+solutionB = solve parser (\is -> maximum $ map (eqnCal is) combos)
 
-data Ingredient = Ingredient 
+eqn :: [Ingredient] -> [Int] -> Int
+eqn ins amounts = let
+    cap = max 0 $ sum $ zipWith (*) (map capacity ins) amounts
+    dura = max 0 $ sum $ zipWith (*) (map durability ins) amounts
+    flav = max 0 $ sum $ zipWith (*) (map flavor ins) amounts
+    text = max 0 $ sum $ zipWith (*) (map texture ins) amounts
+    in cap * dura * flav * text
+
+eqnCal :: [Ingredient] -> [Int] -> Int
+eqnCal ins amounts = let
+    cap = max 0 $ sum $ zipWith (*) (map capacity ins) amounts
+    dura = max 0 $ sum $ zipWith (*) (map durability ins) amounts
+    flav = max 0 $ sum $ zipWith (*) (map flavor ins) amounts
+    text = max 0 $ sum $ zipWith (*) (map texture ins) amounts
+    cal = sum $ zipWith (*) (map calories ins) amounts
+    in cap * dura * flav * text * (if cal == 500 then 1 else 0)
+
+data Ingredient = Ingredient
     { name          :: String
     , capacity      :: Int
     , durability    :: Int
@@ -18,15 +47,15 @@ data Ingredient = Ingredient
     , calories      :: Int
     }
 
-scores :: Int -> [Ingredient] -> [Int]
-scores total ings = undefined
-
+instance Eq Ingredient where (==) i j = name i == name j
+instance Ord Ingredient where
+    compare i j = compare (name i) (name j)
 
 instance Show Ingredient where
-    show (Ingredient n cp d f t cl) = n ++ ": capacity " ++ show cp ++ ", durability " ++ show d ++ ", flavor " ++ show f ++ ", texture " ++ show t ++ ", calories " ++ show cl ++ "\n"
+    show (Ingredient n cp d f t cl) = "("++ n ++ ": capacity " ++ show cp ++ ", durability " ++ show d ++ ", flavor " ++ show f ++ ", texture " ++ show t ++ ", calories " ++ show cl ++ ")"
 
 parser :: Parser [Ingredient]
-parser = sepBy1 ingredient newline where
+parser = sepEndBy1 ingredient newline where
     ingredient = do
         n <- many1 letter
         _ <- string ": capacity "
@@ -38,18 +67,4 @@ parser = sepBy1 ingredient newline where
         _ <- string ", texture "
         t <- int
         _ <- string ", calories "
-        cl <- int
-        return $ Ingredient n cp d f t cl
-
-partitions :: Int -> Int -> [[Int]]
-partitions 1 t = [[t]]
-partitions n t = [ x : xs | x <- [0..t], xs <- partitions (n-1) $ t-x ]
-
-sign :: Parser (Int -> Int)
-sign = try (char '-' >> return negate) <|> return id
-
-int :: Parser Int
-int = do
-    f <- sign
-    n <- many1 digit
-    return (f $ read n)
+        Ingredient n cp d f t <$> int
