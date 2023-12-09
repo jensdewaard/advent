@@ -1,9 +1,9 @@
 module Challenges.Y2023.Day06 where
 import Text.ParserCombinators.Parsec
-import Shared (mult, solve)
+import Shared (solve)
 
 solutionA :: String -> String
-solutionA = solve parseInput (mult . map solveRace)
+solutionA = solve parseInput (product . map solveRace)
 solutionB :: String -> String
 solutionB = solve parseRace solveRace
 

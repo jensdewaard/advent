@@ -12,7 +12,7 @@ import qualified Data.Text as T
 import qualified Parsing as P
 
 solve :: Show b => Parser a -> (a -> b) -> String -> String
-solve parser f input = show $ f $ parse' parser input
+solve parser f = show . f . parse' parser 
 
 chunksOf :: Int -> [e] -> [[e]]
 chunksOf i ls = map (take i) (build (splitter ls))
@@ -20,9 +20,8 @@ chunksOf i ls = map (take i) (build (splitter ls))
   splitter :: [e] -> ([e] -> a -> a) -> a -> a
   splitter [] _ n = n
   splitter l c n = l `c` splitter (drop i l) c n
-
-build :: ((a -> [a] -> [a]) -> [a] -> [a]) -> [a]
-build g = g (:) []
+  build :: ((a -> [a] -> [a]) -> [a] -> [a]) -> [a]
+  build g = g (:) []
 
 parse' :: Parser a -> String -> a
 parse' p i = case parse p "advent" i of
@@ -109,12 +108,12 @@ until1 p f x = until p f (f x)
 
 hasPair :: Eq a => [a] -> Bool
 hasPair [] = False
-hasPair [a] = False
+hasPair [_] = False
 hasPair (a:a':as) = a == a' || hasPair (a':as)
 
 hasTwoPair :: Eq a => [a] -> Bool
 hasTwoPair [] = False
-hasTwoPair [a] = False
+hasTwoPair [_] = False
 hasTwoPair (a:a':as) = (a == a' && hasPair as) || hasTwoPair (a':as)
 
 hamiltonian :: Graph gr => gr a b -> [Path]
@@ -131,13 +130,13 @@ tspWith f g = f $ map (pathLength g) $ hamiltonian g
     graph between all nodes in the given path.
     -}
 validPath :: Graph gr => gr a b -> Path -> Bool
-validPath g [] = True
-validPath g [a] = True
+validPath _ [] = True
+validPath _ [_] = True
 validPath g (a:b:ns) = hasEdge g (a,b) && validPath g (b:ns)
 
 pathLength :: (Graph gr, Real b) => gr a b -> Path -> b
-pathLength g [] = 0
-pathLength g [a] = 0
+pathLength _ [] = 0
+pathLength _ [_] = 0
 pathLength g (a:b:ns) = l + pathLength g (b:ns) where
     l =  edgeLabel $ head $ filter (\(_ ,b', _) -> b' == b) $ out g a
 
@@ -149,9 +148,6 @@ fst3 (a,_,_) = a
 
 snd3 :: (a, b, c) -> b
 snd3 (_,b,_) = b
-
-mult :: Num a => [a] -> a
-mult = product
 
 mapl :: (a -> c) -> [(a,b)] -> [(c,b)]
 mapl _ [] = []
