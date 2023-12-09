@@ -1,6 +1,8 @@
-module Challenges.Y2019.Day01 where
+module Challenges.Y2019.Day01 (solutionA, solutionB) where
 
-import qualified Data.List as L
+import Text.ParserCombinators.Parsec
+import Shared (solve)
+import Parsing (int)
 
 fuelRequired :: Int -> Int
 fuelRequired m = (m `div` 3) - 2
@@ -13,15 +15,8 @@ fuelRequiredR m
             m' = fuelRequired m
             m'' = max (fuelRequiredR m') 0
 
-
-input :: Bool -> IO String
-input _ = readFile "data/2019/01.txt"
-
 solutionA :: String -> String
-solutionA inp = show $ sum $ map (fuelRequired . readInt) (L.lines inp)
+solutionA = solve (int `sepEndBy1` newline) (sum . map fuelRequired)
 
 solutionB :: String -> String
-solutionB inp = show $ sum $ map (fuelRequiredR . readInt) (L.lines inp)
-
-readInt :: String -> Int
-readInt = read
+solutionB = solve (int `sepEndBy1` newline) (sum .map fuelRequiredR)

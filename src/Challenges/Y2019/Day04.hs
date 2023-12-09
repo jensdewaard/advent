@@ -1,20 +1,23 @@
-module Challenges.Y2019.Day04 where
+module Challenges.Y2019.Day04 (solutionA, solutionB) where
 import Data.Char (digitToInt)
+import Text.ParserCombinators.Parsec
+import Parsing (int)
+import Shared (solve)
+import Data.Array (Ix(range))
 
 solutionA :: String -> String
-solutionA _ = show $ length [x | x <- [172851..675869], isValid x]
+solutionA = solve parseInput (length . filter isValid . range)
 
--- 889 is wrong
--- 905 is too low
--- 945 is wrong
--- 1449 is wrong
--- 1478 is too high
--- 1185 is wrong
 solutionB :: String -> String
-solutionB _ = show $ length [x | x <- [172851..675869], isValid' x]
+solutionB = solve parseInput (length . filter isValid' . range)
 
-input :: Bool -> IO String
-input _ = return ""
+parseInput :: Parser (Int, Int)
+parseInput = do
+    l <- int
+    _ <- char '-'
+    h <- int
+    return (l,h)
+
 
 isValid' :: Int -> Bool
 isValid' i = hasTwoButNotThree i' && isNotDecreasing i' where i' = show i
