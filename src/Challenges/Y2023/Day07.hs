@@ -1,3 +1,4 @@
+{-# Language ViewPatterns #-}
 module Challenges.Y2023.Day07 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Shared (solve, mapl)
@@ -19,10 +20,8 @@ upgrade (Hand (FiveOfAKind, cs)) = Hand(FiveOfAKind, cs)
 upgrade (Hand (FourOfAKind, cs)) = Hand(FiveOfAKind, cs)
 upgrade (Hand (FullHouse, cs)) = Hand (FiveOfAKind, cs)
 upgrade (Hand (ThreeOfAKind, cs)) = Hand (FourOfAKind, cs)
-upgrade (Hand (TwoPair, cs)) = case countCard J cs of
-    1 -> Hand (FullHouse, cs)
-    2 -> Hand (FourOfAKind, cs)
-    _ -> error "invalid number of jokers"
+upgrade (Hand (TwoPair, cs@(countCard J -> 1))) = Hand (FullHouse, cs)
+upgrade (Hand (TwoPair, cs)) = Hand (FourOfAKind, cs)
 upgrade (Hand (OnePair, cs)) = Hand (ThreeOfAKind, cs)
 upgrade (Hand (HighCard, cs)) = Hand (OnePair, cs)
 
@@ -101,7 +100,7 @@ compareJoker x y = compare x y
 
 -- Parsers
 parseInput :: Parser [(Hand, Int)]
-parseInput = sepBy1 hand newline
+parseInput = sepEndBy1 hand newline
 
 hand :: Parser (Hand, Int)
 hand = do
