@@ -1,7 +1,8 @@
 module Challenges.Y2023.Day03 where
 import Text.ParserCombinators.Parsec
 
-import Shared (solve, Coord)
+import Shared (solve)
+import Common.Coord (Coord)
 import Data.Char (isDigit)
 
 type Tag = (Coord, String)

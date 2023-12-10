@@ -1,7 +1,9 @@
+{-# LANGUAGE TupleSections #-}
 module Challenges.Y2015.Day06 (parseInput, solutionA, solutionB) where
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Shared (Coord, solve, rectFromTo)
+import Common.Coord (Coord)
+import Shared (solve)
 import Text.ParserCombinators.Parsec
 
 -- 14989458 too low
@@ -24,6 +26,9 @@ foldSequence' = foldl doAction' Map.empty
 sndExpand :: (LightAction, Coord, Coord) -> (LightAction, MappedToInt Coord)
 sndExpand (a, c1, c2) = (a, Map.fromList $ map pairOne (rectFromTo c1 c2)) where
     pairOne x = (x, 1)
+
+rectFromTo :: Coord -> Coord -> [Coord]
+rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (x,) (enumFromTo y1 y2)) (enumFromTo x1 x2)
 
 data LightAction = Toggle | On | Off deriving Eq
 

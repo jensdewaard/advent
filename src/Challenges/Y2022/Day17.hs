@@ -2,7 +2,7 @@
 module Challenges.Y2022.Day17 (minmax, solveA, input) where
 import Data.Maybe (fromJust)
 import Data.Foldable ( Foldable(toList) )
-import Shared (Coord)
+import Common.Coord (Coord)
 
 data Dir = L | R | D deriving (Eq, Show)
 type Surface = [Int]

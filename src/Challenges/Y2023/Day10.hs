@@ -1,47 +1,59 @@
 module Challenges.Y2023.Day10 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, Coord, distanceC)
+import Shared (solve, longest)
+import Common.Coord (Coord, Dir (..), dist, above, below, left, right, direction)
+import Common.Search (bfsN)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Bifunctor (second)
-import Data.Maybe (isJust, fromJust)
+import Data.Maybe (fromJust)
 import Data.List (delete)
+import Data.Set (Set)
+import qualified Data.Set as Set
 
 solutionA :: String -> String
-solutionA = solve parser (maxWalk . maximum .map length . solveA)
+solutionA = solve parser (flip div 2 . length . findLoop)
 solutionB :: String -> String
-solutionB = solve parser (const "")
+solutionB = solve parser (Set.size . solveB)
 
-maxWalk :: Int -> Int
-maxWalk n = n `div` 2
+solveB :: Map Coord Pipe -> Set Coord
+solveB m = let
+    pipe = findLoop m
+    coords = Set.fromList $ map fst pipe
+    candidates = Set.fromList (concatMap (rightof m) pipe) `Set.difference` coords
+    contained = Set.fromList (bfsN (neighbours m coords) (Set.toList candidates))
+    in contained
 
-solveA :: Map Coord Pipe -> [[Coord]]
-solveA m = filter (not . null) $ startFollow m s Start where s = start m
+-- inner :: Set Coord
+-- inner = Set.fromList (bfsN (openNeighbors input pipe) (Set.toList candidates))
 
-data Pipe = Hor | Vert | NE | NW | SW | SE | Start deriving (Eq, Show)
+findLoop :: Map Coord Pipe -> [(Coord, Dir)]
+findLoop m = let s = start m in
+  longest $ filter (not . null) $ startFollow m s Start
 
-startFollow :: Map Coord Pipe -> Coord -> Pipe -> [[Coord]]
-startFollow m c@(x,y) Start = map (\n -> follow m c n (Map.lookup n m)) [(x-1,y), (x,y-1),(x+1,y),(x,y+1)]
-startFollow _ _ _ = error "can only call StartFollow Start pipe"
+data Pipe = Hor | Vert | NE | NW | SW | SE | Start | Ground deriving (Eq, Show)
 
-follow :: Map Coord Pipe -> Coord -> Coord -> Maybe Pipe -> [Coord]
-follow m prev c q
-    | not $ connects (prev, Map.lookup prev m) (c, q) = []
+startFollow :: Map Coord Pipe -> Coord -> Pipe -> [[(Coord, Dir)]]
+startFollow m c Start = map (\n -> follow m c n (Map.lookup n m)) [right c, above c, below c, left c]
+startFollow _ _ _ = error "can only call StartFollow on Start pipe"
+
+follow :: Map Coord Pipe -> Coord -> Coord -> Maybe Pipe -> [(Coord, Dir)]
+follow _ _ _ (Just Ground) = []
 follow _ _ _ Nothing = []
-follow m prev c@(x,y) (Just Hor) = c : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [(x-1,y), (x+1, y)])
-follow m prev c@(x,y) (Just Vert) = c : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [(x,y-1), (x, y+1)])
-follow m prev c@(x,y) (Just NE) = c : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [(x,y-1), (x+1, y)])
-follow m prev c@(x,y) (Just NW) = c : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [(x,y-1), (x-1, y)])
-follow m prev c@(x,y) (Just SW) = c : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [(x,y+1), (x-1, y)])
-follow m prev c@(x,y) (Just SE) = c : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [(x,y+1), (x+1, y)])
-follow _ _rev c (Just Start)  = [c]
+follow m prev c q
+    | not $ connects (prev, fromJust $ Map.lookup prev m) (c, fromJust q) = []
+follow m prev c (Just Hor) = (c, direction prev c) : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [left c, right c])
+follow m prev c (Just Vert) = (c, direction prev c) : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [above c, below c])
+follow m prev c (Just NE) = (c, direction prev c) : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [above c, right c])
+follow m prev c (Just NW) = (c, direction prev c) : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [above c, left c])
+follow m prev c (Just SW) = (c, direction prev c) : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [below c, left c])
+follow m prev c (Just SE) = (c, direction prev c) : concatMap (\n -> follow m c n (Map.lookup n m)) (delete prev [below c, right c])
+follow _ prev c (Just Start) = [(c, direction prev c)]
 
-connects :: (Coord, Maybe Pipe) -> (Coord,Maybe Pipe) -> Bool
-connects (_, Nothing) _ = False
-connects _ (_, Nothing) = False
-connects (c@(cx,cy),Just p) (d@(dx,dy),Just q)
-    | distanceC c d > 1 = False
-    | p == Start || q == Start = True
+connects :: (Coord, Pipe) -> (Coord,Pipe) -> Bool
+connects (_, Ground) _ = False
+connects _ (_, Ground) = False
+connects (c@(cx,cy),p) (d@(dx,dy),q)
+    | dist c d > 1 = False
     | cy < dy = hasSouth p && hasNorth q
     | cx < dx = hasEast p && hasWest q
     | cy > dy = hasNorth p && hasSouth q
@@ -85,19 +97,36 @@ start m = start' $ Map.assocs m where
 parser :: Parser (Map Coord Pipe)
 parser = do
     ps <- concat <$> sepEndBy1 (many1 pipe) newline
-    return (Map.fromList $ map (second fromJust) $ filter (isJust . snd) ps)
+    return (Map.fromList ps)
 
-pipe :: Parser  (Coord, Maybe Pipe)
+pipe :: Parser  (Coord, Pipe)
 pipe = do
     pos <- getPosition
     let c = (sourceColumn pos - 1, sourceLine pos - 1)
-    p <- (char '.' >> return Nothing) <|>
-        (char '|' >> return (Just Vert)) <|>
-        (char '-' >> return (Just Hor))<|>
-        (char 'L' >> return (Just NE))<|>
-        (char 'J' >> return (Just NW)) <|>
-        (char 'F' >> return (Just SE)) <|>
-        (char '7' >> return (Just SW)) <|>
-        (char 'S' >> return (Just Start))
+    p <- (char '.' >> return Ground) <|>
+        (char '|' >> return Vert) <|>
+        (char '-' >> return Hor)<|>
+        (char 'L' >> return NE)<|>
+        (char 'J' >> return NW) <|>
+        (char 'F' >> return SE) <|>
+        (char '7' >> return SW) <|>
+        (char 'S' >> return Start)
     return (c, p)
 
+
+--- B
+neighbours :: Map Coord a -> Set.Set Coord -> Coord -> [Coord]
+neighbours input pipe x = [y | y <- [above x, left x, right x, below x], Map.member y input , Set.notMember y pipe]
+
+rightof :: Map Coord Pipe -> (Coord, Dir) -> [Coord]
+rightof input (x,dir) =
+  case input Map.! x of
+    Hor | dir == R -> [below x]
+    Hor | dir == L -> [above x]
+    Vert | dir == U -> [right x]
+    Vert | dir == D -> [left x]
+    SE | dir == L -> [above x, left x]
+    NW | dir == R -> [below x, right x]
+    SW | dir == U -> [above x, right x]
+    NE | dir == D -> [below x, left x]
+    _ -> []

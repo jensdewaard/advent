@@ -1,7 +1,8 @@
 module Challenges.Y2019.Day03 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 
-import Shared
+import Shared (solve)
+import Common.Coord (Coord, Dir (..))
 import qualified Data.List as L
 
 solutionA :: String -> String

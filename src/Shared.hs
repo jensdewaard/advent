@@ -1,11 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TupleSections #-}
 
 module Shared (solve, 
 chunksOf, endsWith, 
-Coordinate (..), Coord, move, coords, 
-Dir (..),
-rectFromTo, distanceC, 
 
 fromRight, mkLGraph, indexNodes, 
 fstEq, simpl, until1, 
@@ -14,7 +10,7 @@ hamiltonian, tsp, tspWith,
 validPath, pathLength,
 
 trd, fst3, snd3, mapl, mapr,
-allEqual) where
+allEqual, longest) where
 
 import Data.Graph.Inductive.Graph
     ( Graph(mkGraph), LEdge, edgeLabel, hasEdge, nodes, out, Path )
@@ -23,7 +19,6 @@ import Data.List (find, permutations)
 import Data.Maybe (fromJust)
 import Data.Tuple (swap)
 import Text.ParserCombinators.Parsec
-import qualified Parsing as P
 
 solve :: Show b => Parser a -> (a -> b) -> String -> String
 solve parser f = show . f . parse' parser
@@ -43,45 +38,8 @@ parse' p i = case parse p "advent" i of
 endsWith :: Eq a => a -> [a] -> Bool
 endsWith a as = last as == a
 
--- Coords
-class Coordinate a where
-    predX :: a -> a
-    succX :: a -> a
-    predY :: a -> a
-    succY :: a -> a
-    xCoord :: a -> Int
-    yCoord :: a -> Int
-
-type Coord = (Int, Int)
-
-instance Coordinate Coord where
-    predX (x, y) = (pred x, y)
-    succX (x, y) = (succ x, y)
-    predY (x, y) = (x, pred y)
-    succY (x, y) = (x, succ y)
-    xCoord = fst
-    yCoord = snd
-
-data Dir = U | D| L| R deriving (Show, Eq)
-
-move :: Coordinate a => Dir -> a -> a
-move U c = succY c
-move D c = predY c
-move L c = predX c
-move R c = succX c
-
-coords :: Parser Coord
-coords = do
-    l <- P.int
-    _ <- string ","
-    r <- P.int
-    return (l, r)
-
-rectFromTo :: Coord -> Coord -> [Coord]
-rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (x,) (enumFromTo y1 y2)) (enumFromTo x1 x2)
-
-distanceC :: Coordinate a => a -> a -> Int
-distanceC p q = abs (xCoord p - xCoord q) + abs (yCoord p - yCoord q)
+-- rectFromTo :: Coord -> Coord -> [Coord]
+-- rectFromTo (x1,y1) (x2, y2) = concatMap (\x -> map (x,) (enumFromTo y1 y2)) (enumFromTo x1 x2)
 
 fromRight :: Either a b -> b
 fromRight (Left _) = error "fromRight from Left"
@@ -160,3 +118,8 @@ mapr f ((a,b):acs) = (a, f b) : mapr f acs
 
 allEqual :: Eq a => [a] -> Bool
 allEqual xs = all (== head xs) (tail xs)
+
+-- | Return the longest list. Returns the first if there are multiple lists of the same length.
+longest :: [[a]] -> [a]
+longest [] = error "longest on empty list"
+longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' == l) ls 

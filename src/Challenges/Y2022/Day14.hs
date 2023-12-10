@@ -4,7 +4,9 @@
 module Challenges.Y2022.Day14 (input, solutionA, solutionB) where
 
 import Data.Maybe
-import Shared
+import Shared (fromRight)
+import Parsing (coords)
+import Common.Coord (Coord)
 import Text.ParserCombinators.Parsec
 
 input :: Bool -> IO String 

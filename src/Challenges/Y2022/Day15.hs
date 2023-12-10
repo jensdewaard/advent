@@ -1,6 +1,7 @@
 module Challenges.Y2022.Day15 (solutionA, solutionB) where
 
-import Shared ( Coord , solve, distanceC)
+import Shared ( solve)
+import Common.Coord (Coord, dist)
 import Text.ParserCombinators.Parsec
 import Parsing (int)
 import IntervalSet (Interval (Empty), fromPair, union, length)
@@ -26,7 +27,7 @@ freq (x,y) = x * 4000000+y
 
 coverage :: (Sensor, Beacon) -> [(Interval, Int)]
 coverage (s@(sx, sy), b) = let
-    d = distanceC s b in
+    d = dist s b in
     [(fromPair (sx - d + abs (sy - y), sx + d - abs (sy - y)), y) |
         y <- [(sy - d)..(sy + d)]
         ]
@@ -40,14 +41,14 @@ consider ss c@(x,y)
     | otherwise = if any (check c) ss then Nothing else Just c
 
 check :: Coord -> (Sensor, Beacon) -> Bool
-check c (s,b) = distanceC s c <= distanceC s b 
+check c (s,b) = dist s c <= dist s b 
 
 border :: (Sensor, Beacon) -> [Coord]
 border (s@(sx,sy), b) = let
-    d = distanceC s b + 1 in
+    d = dist s b + 1 in
     [(x,y) | x <- [(sx - d)..(sx + d)],
              y <- [(sy - d)..(sy + d)],
-             distanceC (x,y) s == d]
+             dist (x,y) s == d]
 
 -- data
 type Sensor = Coord
