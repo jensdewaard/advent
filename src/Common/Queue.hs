@@ -1,5 +1,5 @@
 {-# Language PatternSynonyms, ViewPatterns #-}
-module Common.Queue (Queue(Queue, Empty, (:<|)), (|>), singleton, fromList, push, pop, appendList) where
+module Common.Queue (Queue(Queue, Empty, (:<|)), (|>), (<|>), singleton, fromList, push, pop, appendList) where
 
 import Data.Foldable (Foldable(..))
 
@@ -21,6 +21,10 @@ singleton x = Queue [x] 1
 
 fromList :: [a] -> Queue a
 fromList xs = Queue xs (length xs)
+
+(<|>) :: Queue a -> Queue a -> Queue a
+(Queue x n) <|> (Queue y m) = Queue (x ++ y) (n+m)
+infix 6 <|>
 
 -- | Append multiple items to the end of the queue.
 appendList :: Queue a -> [a] -> Queue a
