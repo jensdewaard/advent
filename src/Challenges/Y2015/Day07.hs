@@ -6,21 +6,21 @@ import Data.Char (isDigit)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Word (Word16)
-import Data.Maybe (fromJust)
-import Text.ParserCombinators.Parsec (Parser, try, many1, lower, parse, digit, (<|>), string, alphaNum, newline, endBy1)
+import Text.ParserCombinators.Parsec hiding (State, getInput)
 import Shared (solve)
 
 type Wire = String
 type Input = Either Wire Word16
 type Circuit = Map Wire (Either Gate Word16)
 
-data Gate = And Input Input 
-    | Or Input Input 
-    | LShift Input Int 
+data Gate = And Input Input
+    | Or Input Input
+    | LShift Input Int
     | Not Input
     | Const Input
     deriving (Eq, Show)
 
+parser :: Parser [(Gate, Wire)]
 parser = endBy1 parseLine newline
 
 solutionA :: String -> String
@@ -36,10 +36,10 @@ solveB c = let
     in getA c'
 
 getA :: Circuit -> Word16
-getA m = evalState (getSignal "a") m
+getA = evalState (getSignal "a")
 
 mkCircuit :: [(Gate, Wire)] -> Circuit
-mkCircuit gs = mkCircuit' Map.empty gs where
+mkCircuit = mkCircuit' Map.empty where
     mkCircuit' m [] = m
     mkCircuit' m ((g,w):gs) = mkCircuit' (Map.insert w (Left g) m) gs
 
@@ -50,7 +50,7 @@ getSignal w = do
       Nothing -> error ("could not find wire with label " ++ show w)
       Just (Right val) -> return val
       Just (Left g) -> case g of
-                          And x y -> do 
+                          And x y -> do
                               x' <- getInput x
                               y' <- getInput y
                               let z = (.&.) x' y'
@@ -92,7 +92,12 @@ getInput (Left w) = do
 
 parseLine :: Parser (Gate, Wire)
 parseLine = do
-    g <- (try parseAndGate <|> try parseOrGate <|> try parseLShift <|> try parseRShift <|> try parseNotGate <|> try parseConst)
+    g <- try parseAndGate
+        <|> try parseOrGate
+        <|> try parseLShift
+        <|> try parseRShift
+        <|> try parseNotGate
+        <|> try parseConst
     _ <- string " -> "
     w <- many1 alphaNum
     return (g,w)
@@ -126,15 +131,15 @@ parseLShift :: Parser Gate
 parseLShift = do
     i <- many1 alphaNum
     _ <- string " LSHIFT "
-    n <- many1 digit
-    return (LShift (mkInput i) (read n))
+    n <- read <$> many1 digit
+    return (LShift (mkInput i) n)
 
 parseRShift :: Parser Gate
 parseRShift = do
     i <- many1 alphaNum
     _ <- string " RSHIFT "
-    n <- many1 digit
-    return (LShift (mkInput i) (0 - read n))
+    n <- read <$> many1 digit
+    return (LShift (mkInput i) (negate n))
 
 mkInput :: String -> Input
 mkInput s = if all isDigit s then Right $ read s else Left s

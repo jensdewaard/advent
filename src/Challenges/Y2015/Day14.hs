@@ -2,11 +2,13 @@ module Challenges.Y2015.Day14 (solutionA, solutionB) where
 
 import Text.ParserCombinators.Parsec
 import Shared (solve)
-import Data.List (group, sort, singleton)
+import Data.List (group, sort)
 import Control.Arrow ((&&&))
 
+solutionA :: String -> String
 solutionA = solve parser $ maximum . map (snd . distAt 2503)
-solutionB =  solve parser $ (\rs -> maximum2 [] $ occurences $ map fst $ (concatMap (leadersAt rs) [1..2503]))
+solutionB :: String -> String
+solutionB =  solve parser (\rs -> maximum2 [] $ occurences $ map fst $ concatMap (leadersAt rs) [1..2503])
 
 parser :: Parser [Reindeer]
 parser = sepBy1 reindeer newline where
@@ -31,10 +33,10 @@ leadersAt :: [Reindeer] -> Int -> [(String, Int)]
 leadersAt rs t = maximum2 [] $ map (distAt t) rs
 
 distAt :: Int -> Reindeer -> (String, Int)
-distAt t r@(n, s, f, _) = if t > cycleTime r 
-    then (n, s * f + (snd $ distAt (t - cycleTime r) r))
-    else
-        if t > f then (n,s * f) else (n,s * t)
+distAt t r@(n, s, f, _)
+  | t > cycleTime r = (n, s * f + snd (distAt (t - cycleTime r) r))
+  | t > f = (n,s * f)
+  | otherwise = (n,s * t)
 
 maximum2 :: Ord b => [(a,b)] -> [(a,b)] -> [(a,b)]
 maximum2 [] [] = error "empty list"
@@ -44,6 +46,7 @@ maximum2 cur@((_,b):_) ((a',b'):cs)
     | b' > b  = maximum2 [(a',b')] cs
     | b' < b  = maximum2 cur cs
     | b' == b = maximum2 (cur ++ [(a',b')]) cs
+    | otherwise = error "b' and b incomparable"
 
 occurences :: Ord a => [a] -> [(a, Int)]
 occurences = map (head &&& length) . group . sort

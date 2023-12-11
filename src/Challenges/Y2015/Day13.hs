@@ -1,11 +1,11 @@
+{-# Language TupleSections #-}
 module Challenges.Y2015.Day13 (solutionA, solutionB) where
 
 import Data.Graph.Inductive.Basic (undir)
-import Data.Graph.Inductive.Graph (prettify, DynGraph, Path, nodes, insNode, insEdges)
+import Data.Graph.Inductive.Graph (DynGraph, Path, nodes, insNode, insEdges)
 import Data.Graph.Inductive.NodeMap (mkNode_, fromGraph)
 import Data.Graph.Inductive.PatriciaTree (Gr)
 import Data.List (delete, find, nub)
-import Data.Maybe (fromJust)
 import Shared (solve, fst3, trd, mkLGraph, pathLength, hamiltonian)
 import Text.ParserCombinators.Parsec
 
@@ -22,13 +22,13 @@ hamiltonianR = map (\l -> l ++ [head l]) . hamiltonian
 
 extendWithMe :: DynGraph gr => gr String Int -> gr String Int
 extendWithMe g = insEdges es $ insNode n g where
-    es = map (\m -> (fst n,m,0)) $ nodes g
+    es = map (fst n, ,0) $ nodes g
     n = mkNode_ (fromGraph g) "me"
 
 parser :: Parser (Gr String Int)
 parser = do
     ls <- sepBy1 parseLine newline
-    let names = (nub $ map fst3 ls)
+    let names = nub $ map fst3 ls
     let happydiffs = merge ls
     return $ mkLGraph names happydiffs where
         parseSign = try (string " would lose " >> return (-1)) <|> try (string " would gain " >> return 1)
@@ -44,9 +44,9 @@ parser = do
 merge :: [(String, String, Int)] -> [(String, String, Int)]
 merge [] = []
 merge [a] = [a]
-merge ((a,b, n):es) = (a,b,n'):(merge (deleteM e es)) where
+merge ((a,b, n):es) = (a,b,n'):merge (deleteM e es) where
     e = find (\(a',b',_) -> a == b' && b == a') es
-    n' = n + if e == Nothing then 0 else trd $ fromJust e
+    n' = n + maybe 0 trd e
     deleteM Nothing ls = ls
     deleteM (Just x) ls = delete x ls
 

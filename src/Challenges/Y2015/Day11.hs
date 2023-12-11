@@ -11,7 +11,7 @@ solutionB = solutionA . solutionA
 
 increment :: String -> String
 increment s
-    | last s == 'z' = (increment $ init s) ++ ['a']
+    | last s == 'z' = increment (init s) ++ ['a']
     | otherwise = init s ++ [incrementC $ last s]
 
 incrementC :: Char -> Char
@@ -22,12 +22,12 @@ incrementC 'k' = 'm'
 incrementC c = (chr . (+1) . ord) c
 
 isValid :: String -> Bool
-isValid s = hasNoIOL s && hasTwoPair s && (hasStraight s) where
+isValid s = hasNoIOL s && hasTwoPair s && hasStraight s
 
 hasStraight :: String -> Bool
 hasStraight [] = False
-hasStraight [a] = False
-hasStraight [a,b] = False
+hasStraight [_] = False
+hasStraight [_,_] = False
 hasStraight (c:c':c'':cs) = (precedes c c' && precedes c' c'') || hasStraight (c':c'':cs) where
     precedes :: Char -> Char -> Bool
     precedes x y = ord y - ord x == 1

@@ -24,3 +24,4 @@ getDay 8 = (Day08.solutionA, Day08.solutionB)
 getDay 9 = (Day09.solutionA, Day09.solutionB)
 getDay 10 = (Day10.solutionA, Day10.solutionB)
 getDay 11 = (Day11.solutionA, Day11.solutionB)
+getDay _ = error "unsupported day"
