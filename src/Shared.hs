@@ -10,7 +10,7 @@ hamiltonian, tsp, tspWith,
 validPath, pathLength,
 
 trd, fst3, snd3, mapl, mapr,
-allEqual, longest) where
+allEqual, longest, mapIf) where
 
 import Data.Graph.Inductive.Graph
     ( Graph(mkGraph), LEdge, edgeLabel, hasEdge, nodes, out, Path )
@@ -123,3 +123,9 @@ allEqual xs = all (== head xs) (tail xs)
 longest :: [[a]] -> [a]
 longest [] = error "longest on empty list"
 longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' == l) ls 
+
+-- | Applies a function f to a member a of a list, if predicate p holds, otherwise keeps 
+--   the original value of a.
+mapIf :: (a -> Bool) -> (a -> a) -> [a] -> [a]
+mapIf _ _ [] = []
+mapIf p f (x:xs) = (if p x then f x else x) : mapIf p f xs 

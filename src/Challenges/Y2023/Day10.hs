@@ -2,7 +2,7 @@ module Challenges.Y2023.Day10 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Shared (solve, longest)
 import Common.Coord (Coord, Dir (..), dist, above, below, left, right, direction)
-import Common.Search (bfsN)
+import Common.Search (bfs)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromJust)
@@ -17,10 +17,10 @@ solutionB = solve parser (Set.size . solveB)
 
 solveB :: Map Coord Pipe -> Set Coord
 solveB m = let
-    pipe = findLoop m
-    coords = Set.fromList $ map fst pipe
-    candidates = Set.fromList (concatMap (rightof m) pipe) `Set.difference` coords
-    contained = Set.fromList (bfsN (neighbours m coords) (Set.toList candidates))
+    p = findLoop m
+    coords = Set.fromList $ map fst p
+    candidates = Set.fromList (concatMap (rightof m) p) `Set.difference` coords
+    contained = Set.fromList (bfs (neighbours m coords) (Set.toList candidates))
     in contained
 
 -- inner :: Set Coord
@@ -116,7 +116,7 @@ pipe = do
 
 --- B
 neighbours :: Map Coord a -> Set.Set Coord -> Coord -> [Coord]
-neighbours input pipe x = [y | y <- [above x, left x, right x, below x], Map.member y input , Set.notMember y pipe]
+neighbours input p x = [y | y <- [above x, left x, right x, below x], Map.member y input , Set.notMember y p]
 
 rightof :: Map Coord Pipe -> (Coord, Dir) -> [Coord]
 rightof input (x,dir) =
