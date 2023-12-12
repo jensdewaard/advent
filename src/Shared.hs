@@ -10,7 +10,7 @@ hamiltonian, tsp, tspWith,
 validPath, pathLength,
 
 trd, fst3, snd3, mapl, mapr,
-allEqual, longest, mapIf) where
+allEqual, longest, mapIf, prepend) where
 
 import Data.Graph.Inductive.Graph
     ( Graph(mkGraph), LEdge, edgeLabel, hasEdge, nodes, out, Path )
@@ -129,3 +129,6 @@ longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' 
 mapIf :: (a -> Bool) -> (a -> a) -> [a] -> [a]
 mapIf _ _ [] = []
 mapIf p f (x:xs) = (if p x then f x else x) : mapIf p f xs 
+
+prepend :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
+prepend (a,b) (as,bs) = (a ++ as, b ++ bs)
