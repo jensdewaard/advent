@@ -5,6 +5,12 @@
         "name": "Run stack build",
         "request": "launch",
         "type": "node-terminal"
+    },
+    {
+        "command": "stack run test 2023 12",
+        "name": "Run a challenge",
+        "request": "launch",
+        "type": "node-terminal"
     }
     ]
 }
