@@ -50,7 +50,7 @@ solveAndTime lbl f x = do
     let !r = f x
     now <- getCPUTime
     let diff = showDiff $ fromIntegral (now - time) / (10 ^(9 :: Integer))
-    putStr (lbl ++ ": " ++ r ++ "\t Computation time: " ++ diff ++ ")" ++ "\n")
+    putStr (lbl ++ ": " ++ r ++ "\t (Computation time: " ++ diff ++ ")" ++ "\n")
 
 showDiff :: Double -> String
 showDiff diff
