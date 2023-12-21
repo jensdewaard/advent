@@ -38,6 +38,7 @@ dependencies:
 - optparse-applicative
 - time
 - advent-of-code-api
+- split
 
 ghc-options:
 - -Wall
