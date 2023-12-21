@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Shared (solve, 
+module Shared (solve, (==>),
 chunksOf, endsWith, 
 
 fromRight, mkLGraph, indexNodes, 
@@ -22,6 +22,11 @@ import Text.ParserCombinators.Parsec
 
 solve :: Show b => Parser a -> (a -> b) -> String -> String
 solve parser f = show . f . parse' parser
+
+(==>) :: Show b => Parser a -> (a -> b) -> String -> String
+p ==> f = solve p f
+
+infix 6 ==>
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []

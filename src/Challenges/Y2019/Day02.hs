@@ -1,17 +1,17 @@
 module Challenges.Y2019.Day02 (solutionA, solutionB) where
 
-import Shared (solve)
+import Shared ((==>))
 import Intcode
 import qualified Data.Bifunctor
 
 solutionA :: String -> String
-solutionA = solve parseProgram (head . memory . runOpProgram mkProg)
+solutionA = parseProgram ==> (head . memory . runOpProgram . mkProg)
 
 mkProg :: OpProgram  -> ProgState
 mkProg = snd . flip initMemory (12,2)
 
 solutionB :: String -> String
-solutionB = solve parseProgram (\prog -> 
+solutionB = parseProgram ==> (\prog -> 
     answer 
     $ fst 
     $ head 
