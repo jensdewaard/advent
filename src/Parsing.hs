@@ -14,3 +14,6 @@ coords = do
     _ <- string ","
     r <- int
     return (l, r)
+
+symbol :: Parser Char
+symbol = char '-' <|> char '+' <|> char '=' <|> char '*'
