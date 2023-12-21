@@ -111,6 +111,7 @@ library
     , data-memocombinators
     , dsp
     , fgl
+    , hashable
     , heap
     , mtl
     , optparse-applicative
@@ -141,6 +142,7 @@ executable advent-exe
     , data-memocombinators
     , dsp
     , fgl
+    , hashable
     , heap
     , mtl
     , optparse-applicative
@@ -176,6 +178,7 @@ test-suite advent-test
     , data-memocombinators
     , dsp
     , fgl
+    , hashable
     , heap
     , mtl
     , optparse-applicative

@@ -39,6 +39,7 @@ dependencies:
 - time
 - advent-of-code-api
 - split
+- hashable
 
 ghc-options:
 - -Wall
