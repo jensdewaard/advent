@@ -1,11 +1,11 @@
 {-# LANGUAGE BangPatterns #-}
-module Common.Search (bfs, bfsUntil, dfsUntil, dijkstra) where
+module Common.Search (bfs, bfsUntil, dfs, dfsUntil, dijkstra) where
 
 import qualified Data.PQueue.Min as PM
 import qualified Data.Set as Set ( empty, insert, member )
 import Data.List ( foldl' )
 import Common.Queue as Queue
-    ( Queue( (:<|), Empty), pop, fromList, appendList, (<|>), (|>))
+    ( Queue( (:<|), Empty), fromList, appendList, (<|>))
 
 --
 dfsUntil :: Ord a => (a -> Bool) -> (a -> [a]) -> [a] -> [a]
@@ -20,6 +20,9 @@ dfsUntil predicate next start = loop Set.empty (fromList start)
           v' = Set.insert x visited
           q' = fromList (next x) <|> q
     loop _ _ = error "cannot pop from non-empty queue"
+
+dfs :: Ord a => (a -> [a]) -> [a] -> [a]
+dfs = dfsUntil (const False)
 
 --- BFS
 bfsUntil :: Ord a => (a -> Bool) -> (a -> [a]) -> [a] -> [a]
