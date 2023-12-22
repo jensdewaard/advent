@@ -5,8 +5,9 @@ import Data.List (sort)
 
 type Coord = (Int, Int)
 
-data Dir = U | D| L| R deriving (Show, Eq)
+data Dir = U | D| L| R deriving (Show, Eq, Ord)
 
+-- | Move into a direction d from the given coordinate.
 move :: Dir -> Coord -> Coord
 move U c = above c
 move D c = below c
