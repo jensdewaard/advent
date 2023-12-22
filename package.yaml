@@ -40,6 +40,7 @@ dependencies:
 - advent-of-code-api
 - split
 - hashable
+- pqueue
 
 ghc-options:
 - -Wall

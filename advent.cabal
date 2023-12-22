@@ -86,6 +86,7 @@ library
       Challenges.Y2023.Day14
       Challenges.Y2023.Day15
       Challenges.Y2023.Day16
+      Challenges.Y2023.Day17
       Common.Coord
       Common.Queue
       Common.Search
@@ -117,6 +118,7 @@ library
     , mtl
     , optparse-applicative
     , parsec
+    , pqueue
     , pureMD5
     , scientific
     , split
@@ -148,6 +150,7 @@ executable advent-exe
     , mtl
     , optparse-applicative
     , parsec
+    , pqueue
     , pureMD5
     , scientific
     , split
@@ -184,6 +187,7 @@ test-suite advent-test
     , mtl
     , optparse-applicative
     , parsec
+    , pqueue
     , pureMD5
     , scientific
     , split

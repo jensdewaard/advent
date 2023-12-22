@@ -1,7 +1,8 @@
-module Common.Coord (Coord, Dir(..), move, dist, above, below, belowN, left, right, rightN, direction, showMap, showMapWith) where
+module Common.Coord (Coord, Dir(..), move, moveN, dist, above, below, belowN, left, right, rightN, direction, showMap, showMapWith, cardinal, reverse ) where
 
 import Data.Bifunctor (second)
 import Data.List (sort)
+import Prelude hiding (reverse)
 
 type Coord = (Int, Int)
 
@@ -14,11 +15,20 @@ move D c = below c
 move L c = left c
 move R c = right c
 
+moveN :: Int -> Dir -> Coord -> Coord
+moveN n U c = aboveN n c
+moveN n L c = leftN n c
+moveN n R c = rightN n c
+moveN n D c = belowN n c
+
 dist :: Coord -> Coord -> Int
 dist (px, py) (qx,qy) = abs (px - qx) + abs (py - qy)
 
 above :: Coord -> Coord
 above (x,y) = (x,y-1)
+
+aboveN :: Int -> Coord -> Coord
+aboveN n (x,y) = (x,y-n)
 
 below :: Coord -> Coord
 below = belowN 1
@@ -28,6 +38,9 @@ belowN n (x,y) = (x, y+n)
 
 left :: Coord -> Coord
 left (x,y) = (x-1, y)
+
+leftN :: Int -> Coord -> Coord
+leftN n (x,y) = (x-n,y)
 
 right :: Coord -> Coord
 right = rightN 1
@@ -59,3 +72,9 @@ showMap m = unlines $ map (showLine ms) [1..maxY] where
 
 showLine :: [(Coord, Char)] -> Int -> String
 showLine m y = let xs = filter (\c -> snd (fst c) == y) m in map snd xs
+
+reverse :: Dir -> Dir
+reverse U = D
+reverse L = R
+reverse R = L
+reverse D = U
