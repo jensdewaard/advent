@@ -87,6 +87,7 @@ library
       Challenges.Y2023.Day15
       Challenges.Y2023.Day16
       Challenges.Y2023.Day17
+      Challenges.Y2023.Day18
       Common.Coord
       Common.Queue
       Common.Search

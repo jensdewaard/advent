@@ -1,12 +1,16 @@
-module Common.Coord (Coord, Dir(..), move, moveN, dist, above, below, belowN, left, right, rightN, direction, showMap, showMapWith, cardinal, reverse ) where
+module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right, rightN, direction, showMap, showMapWith, cardinal, reverse, area) where
 
 import Data.Bifunctor (second)
-import Data.List (sort)
+import Data.List (sort, tails)
 import Prelude hiding (reverse)
+import GHC.Float (int2Float)
 
 type Coord = (Int, Int)
 
 data Dir = U | D| L| R deriving (Show, Eq, Ord)
+
+origin :: Coord
+origin = (0,0)
 
 -- | Move into a direction d from the given coordinate.
 move :: Dir -> Coord -> Coord
@@ -66,7 +70,7 @@ showMapWith :: (a -> Char) -> [(Coord,a)] -> String
 showMapWith f m = showMap $ map (second f) m
 
 showMap :: [(Coord, Char)] -> String
-showMap m = unlines $ map (showLine ms) [1..maxY] where 
+showMap m = unlines $ map (showLine ms) [1..maxY] where
     ms = sort m
     maxY = maximum $ map (snd .fst) ms
 
@@ -78,3 +82,6 @@ reverse U = D
 reverse L = R
 reverse R = L
 reverse D = U
+
+area :: Integral a => [(a, a)] -> a
+area xs = sum [x1 * y2 - x2 * y1 | (y1, x1) : (y2 ,x2) : _ <- tails xs] `quot` 2

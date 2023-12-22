@@ -1,6 +1,6 @@
-module Parsing (int, coords, symbol, grid) where
+module Parsing (int, coords, symbol, grid, dir) where
 import Text.ParserCombinators.Parsec
-import Common.Coord (Coord)
+import Common.Coord (Coord, Dir (..))
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -29,3 +29,7 @@ grid f = do
           let p = (sourceColumn pos, sourceLine pos)
           c <- f
           return (p,c)
+
+dir :: Parser Dir
+dir = do (char 'U' >> return U) <|> (char 'L' >> return L)
+  <|> (char 'R' >> return R) <|> (char 'D' >> return D)
