@@ -1,11 +1,12 @@
-module Challenges.Y2023.Day05 where
+module Challenges.Y2023.Day05 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 
 import Shared (solve, chunksOf)
 import qualified IntervalSet as Interval
-import IntervalSet (Interval (Interval))
+import IntervalSet (Interval (..), Comparison (..), compare)
 import qualified Data.List as List
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
+import Prelude hiding (compare,LT,GT)
 
 solutionA :: String -> String
 solutionA = solve parseInput (minimum . map Interval.lb . runPuzzle mkIntervals)
@@ -37,7 +38,7 @@ mkIntervals' = map (\[a,b] -> Interval.fromPair (a,a+b-1)) . chunksOf 2
 runPuzzle :: ([Int] -> [Interval]) -> Puzzle -> [Interval]
 -- runPuzzle p = map (applyM $ seedSoil p)
 --     $ mkIntervals $ seeds p
-runPuzzle f p = process p $ f $ seeds p 
+runPuzzle f p = process p $ f $ seeds p
 
 process :: Puzzle -> [Interval] -> [Interval]
 -- process p = concatMap (applyM $ seedSoil p)
@@ -50,56 +51,49 @@ process p = concatMap (applyM $ humiditiyLoc p)
     . concatMap (applyM $ seedSoil p)
 
 applyM :: Map -> Interval -> [Interval]
-applyM map seeds = case foldl (foldRule map seeds) Nothing map of
-    Nothing -> [seeds]
-    Just x -> x
+applyM m ss = fromMaybe [ss] (foldl (foldRule m ss) Nothing m)
 
 foldRule :: Map -> Interval -> Maybe [Interval] -> (Interval, Interval) -> Maybe [Interval]
-foldRule m i Nothing (d, s) 
-    -- "interval i is a subset of interval s"
-    | s `Interval.includes` i = 
-        Just $ List.singleton $ Interval.fromPair ((Interval.lb d) + ((Interval.lb i) - (Interval.lb s)), (Interval.lb d) + ((Interval.lb i) - (Interval.lb s)) + Interval.length i)
-    -- "interval s overlaps partly with the beginning of interval i"
-    | s `Interval.overlaps` i = Just $ --error ("s: " ++ show s ++ "  i: " ++ show i)
-        (fromJust $ foldRule m (Interval.fromPair (Interval.lb i, Interval.ub s)) Nothing (d, s)) ++
+foldRule m i Nothing (d, s) = case s `compare` i of
+    OUT ->
+        Just $ List.singleton $ Interval.fromPair (Interval.lb d + (Interval.lb i - Interval.lb s), Interval.lb d + (Interval.lb i - Interval.lb s) + Interval.length i)
+    LTE -> Just $ 
+        fromJust (foldRule m (Interval.fromPair (Interval.lb i, Interval.ub s)) Nothing (d, s)) ++
         applyM m (Interval.fromPair (Interval.ub s + 1, Interval.ub i))
-    -- "interval i overlaps partly with the beginning of interval s"
-    | i `Interval.overlaps` s = Just $ -- error ("(i: " ++ show i ++ "  s:  " ++ show s)
+    GTE -> Just $ 
         applyM m (Interval.fromPair (Interval.lb i, Interval.lb s - 1)) ++
-        (fromJust $ foldRule m (Interval.fromPair (Interval.lb s, Interval.ub i)) Nothing (d,s))
-    -- "interval s is a subset of interval i"
-    | i `Interval.includes` s = Just $
+        fromJust (foldRule m (Interval.fromPair (Interval.lb s, Interval.ub i)) Nothing (d,s))
+    IN -> Just $
         applyM m (Interval.fromPair (Interval.lb i, Interval.lb s - 1)) ++
         [d] ++
         applyM m (Interval.fromPair (Interval.ub s + 1, Interval.ub i))
-    | Interval.distinct i s = Nothing
-    | otherwise = error ("unexpected interval relation " ++ show i ++ show s)
-foldRule m i (Just x) r = Just x
+    LT -> Nothing
+    GT -> Nothing
+foldRule _ _ (Just x) _ = Just x
 
 parseMap :: Parser Map
 parseMap = do
-    _ <- manyTill anyToken newline -- <text>:
-    rules <- sepEndBy (do
+    _ <- manyTill anyToken newline
+    rules <- (do
         dest <- many1 digit
         skipMany1 space
         source <- many1 digit
         skipMany1 space
         size <- many1 digit
-        return (Interval.fromPair (read dest, read dest + read size - 1), Interval.fromPair(read source, read source + read size - 1))
-        ) newline
+        return (Interval.fromPair (read dest, read dest + read size - 1), Interval.fromPair (read source, read source + read size - 1))
+        ) `sepEndBy` newline
     _ <- optional newline
     return rules
 
 parseInput :: Parser Puzzle
 parseInput = do
     _ <- string "seeds: "
-    seeds <- sepBy1 (many1 digit) (char ' ')
-    newline >> newline
+    sds <- sepBy1 (many1 digit) (char ' ')
+    _ <- newline >> newline
     ss <- parseMap
     sf <- parseMap
     fw <- parseMap
     wl <- parseMap
     lt <- parseMap
     th <- parseMap
-    hl <- parseMap
-    return $ Puzzle (map read seeds) ss sf fw wl lt th hl
+    Puzzle (map read sds) ss sf fw wl lt th <$> parseMap

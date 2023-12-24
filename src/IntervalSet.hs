@@ -1,6 +1,23 @@
-module IntervalSet (Interval (Interval, Empty), IntervalSet, IntervalSet.length,distinct, singleton, fromList, fromPair, contains, overlaps, union, includes, add, merge, ub, lb) where
+module IntervalSet (Interval (..), Comparison (..), IntervalSet.compare, IntervalSet.length, distinct, singleton, fromList, fromPair, overlaps, union, includes, ub, lb, borders) where
 
-data Interval = Empty | Interval Int Int deriving (Show, Eq)
+data Interval = Empty | Interval Int Int deriving (Show, Eq, Ord)
+
+data Comparison = LT -- ^ The first interval is completely less than the second.
+    | LTE  -- ^ The first interval overlaps with the beginning of the second.
+    | GT  -- ^ The first interval is completely greater than the second.
+    | GTE  -- ^ The first interval overlaps with the end of the second.
+    | IN   -- ^ The first interval is a subset of the second.
+    | OUT  -- ^ The first interval is a superset of the second.
+
+compare :: Interval -> Interval -> Comparison
+compare i j
+    | i `overlaps` j = LTE
+    | j `overlaps` i = GTE
+    | j `includes` i = IN
+    | i `includes` j = OUT
+    | ub i < lb j = IntervalSet.LT
+    | ub j < lb i = IntervalSet.GT
+    | otherwise = error ("unable to compare intervals " ++ show i ++ " " ++ show j)
 
 singleton :: Int -> Interval
 singleton i = Interval i i
@@ -13,25 +30,18 @@ fromList is = Interval (minimum is) (maximum is)
 
 length :: Interval -> Int
 length Empty = 0
-length (Interval l u) = u - l
+length (Interval l u) = u - l + 1
 
 lb :: Interval -> Int
 lb Empty = error "lower bound of empty interval"
-lb (Interval x y) = x
+lb (Interval x _) = x
 
 ub :: Interval -> Int
 ub Empty = error "upper bound of empty interval"
-ub (Interval x y) = y
-
-type IntervalSet = [Interval]
+ub (Interval _ y) = y
 
 distinct :: Interval -> Interval -> Bool
-distinct i j = not $ (overlaps i j || overlaps j i)
-
-contains :: Int -> IntervalSet -> Bool
-contains i = foldl (\b iv -> b || containsI i iv) False where
-    containsI _ Empty = False
-    containsI i' (Interval lb ub) = lb <= i' && i' <= ub
+distinct i j = not (overlaps i j || overlaps j i)
 
 overlaps :: Interval -> Interval -> Bool
 overlaps Empty _ = False
@@ -47,24 +57,6 @@ includes :: Interval -> Interval -> Bool
 includes _ Empty = False
 includes Empty _ = False
 includes (Interval lbp ubp) (Interval lbq ubq) = lbp <= lbq && ubq <= ubp
-
-add :: Interval -> IntervalSet -> IntervalSet
-add i ss = sanitize $ add' i ss
-
-merge :: IntervalSet -> IntervalSet -> IntervalSet 
-merge = foldl (flip add)
-
-add' :: Interval -> IntervalSet -> IntervalSet
-add' Empty s = s
-add' i [] = [i]
-add' i (s : ss)
-    | s `includes` i = s : ss
-    | s `overlaps` i = union i s : ss
-    | i `borders` s  = union i s : ss
-    | otherwise      = s : add i ss
-
-sanitize :: IntervalSet -> IntervalSet
-sanitize = foldr add' []
 
 borders :: Interval -> Interval -> Bool
 borders Empty _ = False
