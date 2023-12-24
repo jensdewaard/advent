@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Shared (solve, 
+module Shared (solve, (==>),
 chunksOf, endsWith, 
 
 fromRight, mkLGraph, indexNodes, 
@@ -8,7 +8,7 @@ fstEq, simpl, until1,
 hasPair, hasTwoPair, 
 hamiltonian, tsp, tspWith, 
 validPath, pathLength,
-
+findCycle,
 trd, fst3, snd3, mapl, mapr,
 allEqual, longest, mapIf, prepend) where
 
@@ -22,6 +22,11 @@ import Text.ParserCombinators.Parsec
 
 solve :: Show b => Parser a -> (a -> b) -> String -> String
 solve parser f = show . f . parse' parser
+
+(==>) :: Show b => Parser a -> (a -> b) -> String -> String
+p ==> f = solve p f
+
+infix 6 ==>
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
@@ -132,3 +137,16 @@ mapIf p f (x:xs) = (if p x then f x else x) : mapIf p f xs
 
 prepend :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
 prepend (a,b) (as,bs) = (a ++ as, b ++ bs)
+
+findCycle :: Eq a => [a] -> ([a],[a])
+findCycle xxs = fCycle xxs xxs
+  where fCycle (x:xs) (_:y:ys)
+         | x == y              = fStart xxs xs
+         | otherwise           = fCycle xs ys
+        fCycle _      _        = (xxs,[]) -- not cyclic
+        fStart (x:xs) (y:ys)
+         | x == y              = ([], x:fLength x xs)
+         | otherwise           = let (as,bs) = fStart xs ys in (x:as,bs)
+        fLength x (y:ys)
+         | x == y              = []
+         | otherwise           = y:fLength x ys

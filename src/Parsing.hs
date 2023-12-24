@@ -1,6 +1,8 @@
-module Parsing where
+module Parsing (int, coords, symbol, grid, dir) where
 import Text.ParserCombinators.Parsec
-import Common.Coord (Coord)
+import Common.Coord (Coord, Dir (..))
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 int :: Parser Int
 int = do
@@ -14,3 +16,20 @@ coords = do
     _ <- string ","
     r <- int
     return (l, r)
+
+symbol :: Parser Char
+symbol = char '-' <|> char '+' <|> char '=' <|> char '*'
+
+grid :: Parser a -> Parser (Map Coord a)
+grid f = do
+  ps <- concat <$> many1 position `sepEndBy1` newline
+  return $ Map.fromList ps
+  where position = do 
+          pos <- getPosition
+          let p = (sourceColumn pos, sourceLine pos)
+          c <- f
+          return (p,c)
+
+dir :: Parser Dir
+dir = do (char 'U' >> return U) <|> (char 'L' >> return L)
+  <|> (char 'R' >> return R) <|> (char 'D' >> return D)
