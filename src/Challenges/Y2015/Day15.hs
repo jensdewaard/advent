@@ -1,6 +1,6 @@
 module Challenges.Y2015.Day15 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 import Parsing (int)
 
 solutionA :: String -> String

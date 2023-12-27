@@ -1,6 +1,6 @@
 module Challenges.Y2015.Day18 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 import Common.Coord (Coord)
 import Data.Map (Map)
 import Data.Maybe (isJust, fromJust)

@@ -1,13 +1,13 @@
 module Challenges.Y2022.Day15 (solutionA, solutionB) where
 
-import Shared ( solve)
+import Common.Prelude
 import Common.Coord (Coord, dist)
+import Common.Interval (Interval (Empty), fromPair, union, length)
 import Text.ParserCombinators.Parsec
 import Parsing (int)
-import IntervalSet (Interval (Empty), fromPair, union, length)
 
 solutionA :: String -> String
-solutionA = solve parseInput (IntervalSet.length . foldl union Empty . map fst . concatMap (yIs 2000000 . coverage))
+solutionA = solve parseInput (Common.Interval.length . foldl union Empty . map fst . concatMap (yIs 2000000 . coverage))
 
 solutionB :: String -> String
 solutionB = solve parseInput (\sbs -> freq $ head $ findJust $ concatMap (map (consider sbs) . border) sbs)

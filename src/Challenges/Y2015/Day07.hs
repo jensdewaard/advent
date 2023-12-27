@@ -7,7 +7,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Word (Word16)
 import Text.ParserCombinators.Parsec hiding (State, getInput)
-import Shared (solve)
+import Common.Prelude
 
 type Wire = String
 type Input = Either Wire Word16

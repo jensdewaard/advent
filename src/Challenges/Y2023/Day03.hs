@@ -1,7 +1,7 @@
 module Challenges.Y2023.Day03 where
 import Text.ParserCombinators.Parsec
 
-import Shared (solve)
+import Common.Prelude
 import Common.Coord (Coord)
 import Data.Char (isDigit)
 

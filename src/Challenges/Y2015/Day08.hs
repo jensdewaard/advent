@@ -1,7 +1,7 @@
 module Challenges.Y2015.Day08 (solutionA, solutionB) where
 
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 
 solutionA :: String -> String
 solutionA = solve parser (show . sum . map (uncurry (-) . (\s -> (length s, length $ unescape $ unquote s))))

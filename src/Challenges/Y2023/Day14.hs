@@ -1,6 +1,7 @@
 module Challenges.Y2023.Day14 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, findCycle)
+import Common.Prelude
+import Common.List (findCycle)
 import Data.List (transpose, intercalate, sort)
 import Data.List.Split (splitOn)
 

@@ -1,7 +1,7 @@
 module Challenges.Y2015.Day03 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Coord (move, Coord, Dir (..))
-import Shared (solve)
+import Common.Prelude
 import Data.List (nub)
 import DSP.Basic (uninterleave)
 

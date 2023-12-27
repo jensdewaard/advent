@@ -1,7 +1,7 @@
 module Challenges.Y2019.Day01 (solutionA, solutionB) where
 
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 import Parsing (int)
 
 fuelRequired :: Int -> Int

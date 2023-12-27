@@ -93,15 +93,17 @@ library
       Challenges.Y2023.Day18
       Challenges.Y2023.Day19
       Common.Coord
+      Common.Graph
+      Common.Interval
+      Common.List
+      Common.Prelude
       Common.Queue
       Common.Search
       DijkstraSimple
       FloydWarshall
       Intcode
-      IntervalSet
       Parser
       Parsing
-      Shared
   other-modules:
       Paths_advent
   hs-source-dirs:

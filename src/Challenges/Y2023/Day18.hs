@@ -1,6 +1,6 @@
 module Challenges.Y2023.Day18 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 import Common.Coord (Dir(..), moveN, origin)
 import qualified Common.Coord as Coord
 import Parsing (dir, int)

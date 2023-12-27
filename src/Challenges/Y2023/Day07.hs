@@ -1,14 +1,15 @@
 {-# Language ViewPatterns #-}
 module Challenges.Y2023.Day07 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, mapl)
+import Common.Prelude
 import Data.List (nub, sortBy)
+import Data.Bifunctor (first)
 import Data.Ord (comparing, Down (Down))
 
 solutionA :: String -> String
 solutionA = solve parseInput (winnings compare)
 solutionB :: String -> String
-solutionB = solve parseInput (winnings compareHandJoker . mapl upgrade)
+solutionB = solve parseInput (winnings compareHandJoker . map (first upgrade))
 
 winnings :: ((Hand, Int) -> (Hand, Int) -> Ordering) -> [(Hand, Int)] -> Int
 winnings st = sum . zipWith (curry (\(rank,(_,bid)) -> rank * bid)) [1..] . sortBy st

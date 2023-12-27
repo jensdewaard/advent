@@ -1,6 +1,6 @@
 module Challenges.Y2023.Day11 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, mapIf)
+import Common.Prelude
 import Common.Coord (Coord, belowN, rightN, dist)
 import Data.Bifunctor (first)
 

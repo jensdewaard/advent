@@ -3,15 +3,15 @@
 module Challenges.Y2022.Day13 (solutionA, solutionB) where
 
 import qualified Data.List as L
-import Shared
 import Text.ParserCombinators.Parsec
 import Data.Maybe (fromJust)
+import Data.Either (fromRight)
 
 solutionA :: String -> String
-solutionA = show . solveA . fromRight . parseInput
+solutionA = show . solveA . fromRight [] . parseInput
 
 solutionB :: String -> String
-solutionB = show . solveB . fromRight . parseInput
+solutionB = show . solveB . fromRight [] . parseInput
 
 solveA :: [(Packet, Packet)] -> Int
 solveA = sum . map fst . filter snd . zip [1..] . map (uncurry (<=))

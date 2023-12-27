@@ -4,7 +4,7 @@
 module Challenges.Y2022.Day14 (input, solutionA, solutionB) where
 
 import Data.Maybe
-import Shared (fromRight)
+import Data.Either (fromRight)
 import Parsing (coords)
 import Common.Coord (Coord)
 import Text.ParserCombinators.Parsec
@@ -17,10 +17,10 @@ input True = return "498,4 -> 498,6 -> 496,6\
 \503,4 -> 502,4 -> 502,9 -> 494,9"
 
 solutionA :: String -> String
-solutionA = show . solveA . fromRight . parseInput 
+solutionA = show . solveA . fromRight [] . parseInput 
 
 solutionB :: String -> String
-solutionB = show . solveB . fromRight . parseInput
+solutionB = show . solveB . fromRight [] . parseInput
 
 solve' :: (Int -> Cave -> Coord -> Cave) -> Cave -> Int
 solve' f c = countSand $ f (lowestY c) c (500,0)

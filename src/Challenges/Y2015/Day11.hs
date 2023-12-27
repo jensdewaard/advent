@@ -1,10 +1,9 @@
 module Challenges.Y2015.Day11 (solutionA, solutionB) where
 
 import Data.Char (ord, chr)
-import Shared (until1, hasTwoPair)
 
 solutionA :: String -> String
-solutionA = until1 isValid increment
+solutionA = until isValid increment . increment
 
 solutionB :: String -> String
 solutionB = solutionA . solutionA
@@ -23,6 +22,16 @@ incrementC c = (chr . (+1) . ord) c
 
 isValid :: String -> Bool
 isValid s = hasNoIOL s && hasTwoPair s && hasStraight s
+
+hasPair :: Eq a => [a] -> Bool
+hasPair [] = False
+hasPair [_] = False
+hasPair (a:a':as) = a == a' || hasPair (a':as)
+
+hasTwoPair :: Eq a => [a] -> Bool
+hasTwoPair [] = False
+hasTwoPair [_] = False
+hasTwoPair (a:a':as) = (a == a' && hasPair as) || hasTwoPair (a':as)
 
 hasStraight :: String -> Bool
 hasStraight [] = False

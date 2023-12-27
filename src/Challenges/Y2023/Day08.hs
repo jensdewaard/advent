@@ -1,7 +1,8 @@
 {-# LANGUAGE TupleSections #-}
 module Challenges.Y2023.Day08 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, fst3, endsWith)
+import Common.Prelude
+import Common.List (endsWith)
 import Data.List (find, sort)
 
 solutionA :: String -> String

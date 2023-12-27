@@ -1,6 +1,7 @@
 module Challenges.Y2023.Day10 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, longest)
+import Common.List (longest)
+import Common.Prelude
 import Common.Coord (Coord, Dir (..), dist, above, below, left, right, direction)
 import Common.Search (bfs)
 import Data.Map (Map)

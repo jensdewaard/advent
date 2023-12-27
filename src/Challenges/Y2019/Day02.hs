@@ -1,6 +1,6 @@
 module Challenges.Y2019.Day02 (solutionA, solutionB) where
 
-import Shared ((==>))
+import Common.Prelude
 import Intcode
 import qualified Data.Bifunctor
 

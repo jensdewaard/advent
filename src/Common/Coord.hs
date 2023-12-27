@@ -1,9 +1,8 @@
-module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right, rightN, direction, showMap, showMapWith, cardinal, reverse, area) where
+module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right, rightN, direction, showMap, showMapWith, cardinal, reverse, area, diag) where
 
 import Data.Bifunctor (second)
 import Data.List (sort, tails)
 import Prelude hiding (reverse)
-import GHC.Float (int2Float)
 
 type Coord = (Int, Int)
 

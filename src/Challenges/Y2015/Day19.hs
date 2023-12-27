@@ -1,7 +1,7 @@
 {-# Language NumericUnderscores, TupleSections #-}
 module Challenges.Y2015.Day19 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 import Data.List (isPrefixOf, nub, sortBy)
 import Data.Tuple (swap)
 import Common.Search (dfsUntil)

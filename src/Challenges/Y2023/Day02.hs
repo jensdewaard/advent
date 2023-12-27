@@ -1,7 +1,7 @@
 module Challenges.Y2023.Day02 where
 import Text.ParserCombinators.Parsec
 
-import Shared (solve)
+import Common.Prelude
 import qualified Data.Map as Map
 import Data.Map (Map)
 

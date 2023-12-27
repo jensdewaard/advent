@@ -6,7 +6,7 @@ import Data.List (find)
 import Data.Maybe (fromJust)
 import Data.Text (pack, unpack, replace)
 
-import Shared (solve)
+import Common.Prelude
 
 solutionA :: String -> String
 solutionA = solve parseInput sum

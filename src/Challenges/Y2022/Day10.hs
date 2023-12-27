@@ -2,7 +2,8 @@ module Challenges.Y2022.Day10 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 
 import Data.List (isPrefixOf)
-import Shared
+import Common.List (chunksOf)
+import Common.Prelude
 
 solutionA :: String -> String
 solutionA = solve parseInput (\cs -> let ss = scanl runInstruction 1 cs in sum $ map (strengthAtCycle ss) [20, 60, 100, 140, 180, 220])

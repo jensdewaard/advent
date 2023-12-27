@@ -1,6 +1,6 @@
 module Challenges.Y2023.Day13 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared ((==>))
+import Common.Prelude ((==>))
 import Data.List (transpose)
 
 solutionA :: String -> String

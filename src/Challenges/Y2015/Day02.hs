@@ -2,7 +2,7 @@ module Challenges.Y2015.Day02 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Data.List (sort)
 import Parsing (int)
-import Shared (solve)
+import Common.Prelude
 
 solutionA :: String -> String
 solutionA = solve parseInput (sum . map requiredPaper)

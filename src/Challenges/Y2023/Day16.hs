@@ -4,7 +4,7 @@ import Data.List (nub)
 import Data.Map (Map)
 import Data.Maybe (isJust)
 import qualified Data.Map as Map
-import Shared (solve)
+import Common.Prelude
 import Common.Coord (Coord, Dir (..), move)
 import Common.Search (bfs)
 

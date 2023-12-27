@@ -1,7 +1,7 @@
 {-# LANGUAGE InstanceSigs #-}
 module Challenges.Y2023.Day15 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 import Data.Char (ord, digitToInt)
 import Data.Maybe (fromJust)
 import Data.List (delete)

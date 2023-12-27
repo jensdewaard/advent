@@ -1,6 +1,6 @@
 module Challenges.Y2015.Day22 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve)
+import Common.Prelude
 import Common.Search (bfs)
 import Data.List (singleton, minimumBy)
 import Parsing (int)

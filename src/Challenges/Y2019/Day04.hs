@@ -2,7 +2,7 @@ module Challenges.Y2019.Day04 (solutionA, solutionB) where
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec
 import Parsing (int)
-import Shared (solve)
+import Common.Prelude
 import Data.Array (Ix(range))
 
 solutionA :: String -> String

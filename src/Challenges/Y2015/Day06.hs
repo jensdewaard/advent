@@ -3,7 +3,7 @@ module Challenges.Y2015.Day06 (parseInput, solutionA, solutionB) where
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Common.Coord (Coord)
-import Shared (solve)
+import Common.Prelude
 import Text.ParserCombinators.Parsec
 
 -- 14989458 too low

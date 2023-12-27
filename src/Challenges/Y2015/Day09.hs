@@ -4,7 +4,8 @@ import Data.Graph.Inductive.Basic (undir)
 import Data.Graph.Inductive.PatriciaTree (Gr)
 import Data.List (nub)
 import Text.ParserCombinators.Parsec
-import Shared (solve, mkLGraph, tsp, tspWith)
+import Common.Graph (tsp, tspWith, mkLGraph)
+import Common.Prelude
 
 type City = String
 

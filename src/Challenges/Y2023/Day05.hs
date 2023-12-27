@@ -1,12 +1,13 @@
 module Challenges.Y2023.Day05 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 
-import Shared (solve, chunksOf)
-import qualified IntervalSet as Interval
-import IntervalSet (Interval (..), Comparison (..), compare)
-import qualified Data.List as List
+import Common.Interval (Interval (..), Comparison (..), compare)
 import Data.Maybe (fromJust, fromMaybe)
 import Prelude hiding (compare,LT,GT)
+import Common.Prelude
+import Common.List (chunksOf)
+import qualified Common.Interval as Interval
+import qualified Data.List as List
 
 solutionA :: String -> String
 solutionA = solve parseInput (minimum . map Interval.lb . runPuzzle mkIntervals)

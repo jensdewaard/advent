@@ -1,6 +1,6 @@
 module Challenges.Y2023.Day09 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
-import Shared (solve, allEqual)
+import Common.Prelude
 import Parsing (int)
 
 solutionA :: String -> String
@@ -8,15 +8,14 @@ solutionA = solve parseInput (sum . map determineNext)
 solutionB :: String -> String
 solutionB = solve parseInput (sum . map (determineNext . reverse))
 
-determineNext :: [Integer] -> Integer
-determineNext ns
-    | allEqual ns = head ns
-    | otherwise = last ns + determineNext (diff ns)
+determineNext :: (Eq a, Num a) => [a] -> a
+determineNext [] = error "cannot determine next element of empty sequence"
+determineNext (n:ns) = if all (==n) ns
+    then n
+    else last ns + determineNext (diff ns)
 
-diff :: [Integer] -> [Integer]
-diff [] = []
-diff [_] = []
-diff (a:b:cs) = (b-a) : diff (b:cs)
+diff :: Num a => [a] -> [a]
+diff ns = zipWith (-) ns (tail ns)
 
 parseInput :: Parser [[Integer]]
 parseInput = history `sepEndBy1` newline where

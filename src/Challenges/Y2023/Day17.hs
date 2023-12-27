@@ -2,12 +2,12 @@
 module Challenges.Y2023.Day17 (solutionA, solutionB) where
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec hiding (State)
-import Shared (solve)
+import Common.Prelude
 import Data.List (delete)
 import Data.Map (Map)
 import Data.Maybe (isJust, fromJust)
 import qualified Data.Map as Map
-import Common.Coord (Coord, Dir (..), move, moveN, reverse, dist)
+import Common.Coord (Coord, Dir (..), moveN, reverse, dist)
 import Parsing (grid)
 import Prelude hiding (reverse)
 import Common.Search (dijkstra)

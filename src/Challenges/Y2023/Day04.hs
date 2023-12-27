@@ -2,7 +2,7 @@ module Challenges.Y2023.Day04 where
 import Text.ParserCombinators.Parsec
 
 import Data.List (intersect, union, sortBy)
-import Shared (solve)
+import Common.Prelude
 
 solutionA :: String -> String
 solutionA = solve parseInput (sum . map score)

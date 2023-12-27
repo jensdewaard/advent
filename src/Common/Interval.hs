@@ -1,4 +1,4 @@
-module IntervalSet (Interval (..), Comparison (..), IntervalSet.compare, IntervalSet.length, distinct, singleton, fromList, fromPair, overlaps, union, includes, ub, lb, borders) where
+module Common.Interval (Interval (..), Comparison (..), Common.Interval.compare, Common.Interval.length, distinct, singleton, fromList, fromPair, overlaps, union, includes, ub, lb, borders) where
 
 data Interval = Empty | Interval Int Int deriving (Show, Eq, Ord)
 
@@ -15,8 +15,8 @@ compare i j
     | j `overlaps` i = GTE
     | j `includes` i = IN
     | i `includes` j = OUT
-    | ub i < lb j = IntervalSet.LT
-    | ub j < lb i = IntervalSet.GT
+    | ub i < lb j = Common.Interval.LT
+    | ub j < lb i = Common.Interval.GT
     | otherwise = error ("unable to compare intervals " ++ show i ++ " " ++ show j)
 
 singleton :: Int -> Interval

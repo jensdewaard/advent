@@ -6,7 +6,8 @@ import Data.Graph.Inductive.Graph (DynGraph, Path, nodes, insNode, insEdges)
 import Data.Graph.Inductive.NodeMap (mkNode_, fromGraph)
 import Data.Graph.Inductive.PatriciaTree (Gr)
 import Data.List (delete, find, nub)
-import Shared (solve, fst3, trd, mkLGraph, pathLength, hamiltonian)
+import Common.Graph (mkLGraph, pathLength, hamiltonian)
+import Common.Prelude
 import Text.ParserCombinators.Parsec
 
 solutionA :: String -> String

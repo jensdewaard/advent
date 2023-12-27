@@ -1,13 +1,14 @@
 {-# LANGUAGE TupleSections #-}
 module Challenges.Y2023.Day19 (solutionA, solutionB) where
-import Text.ParserCombinators.Parsec
-import Data.Map (Map, fromList)
-import Data.Maybe (maybeToList)
-import qualified Data.Map as Map
-import Shared (solve)
-import Parsing (int)
+
+import Common.Prelude (solve)
 import Common.Search (dfs)
 import Data.Bifunctor (first)
+import Data.Map (Map, fromList)
+import Data.Maybe (maybeToList)
+import Parsing (int)
+import Text.ParserCombinators.Parsec
+import qualified Data.Map as Map
 
 solutionA :: String -> String
 solutionA = solve parser (sum . map (addUp . fst) . filterFinal . uncurry processAll . first addEnds)

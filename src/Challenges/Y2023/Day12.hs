@@ -1,6 +1,6 @@
 module Challenges.Y2023.Day12 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec 
-import Shared (solve)
+import Common.Prelude
 import Parsing (int)
 import Data.Function (fix)
 import Data.List (intercalate)
