@@ -7,7 +7,7 @@ import Data.Maybe (fromJust)
 import Data.List (delete)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Parsing (symbol)
+import Common.Parsing (symbol)
 import Data.Hashable
 
 solutionA :: String -> String

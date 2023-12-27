@@ -3,7 +3,7 @@ import Text.ParserCombinators.Parsec
 import Common.Prelude
 import Common.Search (bfs)
 import Data.List (singleton, minimumBy)
-import Parsing (int)
+import Common.Parsing (int)
 import Prelude hiding (round)
 
 solutionA :: String -> String

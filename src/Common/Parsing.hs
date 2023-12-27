@@ -1,4 +1,4 @@
-module Parsing (int, coords, symbol, grid, dir) where
+module Common.Parsing (int, coords, symbol, grid, dir) where
 import Text.ParserCombinators.Parsec
 import Common.Coord (Coord, Dir (..))
 import Data.Map (Map)

@@ -1,7 +1,7 @@
 module Challenges.Y2023.Day12 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec 
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 import Data.Function (fix)
 import Data.List (intercalate)
 import Data.MemoCombinators (memo2, list, )

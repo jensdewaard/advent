@@ -1,7 +1,7 @@
 module Challenges.Y2015.Day15 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 
 solutionA :: String -> String
 solutionA = solve parser (\is -> maximum $ map (eqn is) combos)
@@ -13,10 +13,6 @@ combos = [[a, b, c, d] |
             c <- [0 .. 100],
             d <- [0 .. 100],
             a + b + c + d == 100]
-
--- combos :: [(Int, Int)]
---combos = [(a,b) | a <- [0..100], b <- [0..100], a + b == 100]
-
 
 solutionB :: String -> String
 solutionB = solve parser (\is -> maximum $ map (eqnCal is) combos)

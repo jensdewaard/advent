@@ -1,8 +1,7 @@
 module Challenges.Y2022.Day01 where
 
-import Data.List
-import Data.Maybe
-import Parsing (int)
+import Data.List ( sortBy )
+import Common.Parsing (int)
 import Text.ParserCombinators.Parsec
 
 partA :: [Elf] -> Int

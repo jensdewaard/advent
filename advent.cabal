@@ -96,6 +96,7 @@ library
       Common.Graph
       Common.Interval
       Common.List
+      Common.Parsing
       Common.Prelude
       Common.Queue
       Common.Search
@@ -103,7 +104,6 @@ library
       FloydWarshall
       Intcode
       Parser
-      Parsing
   other-modules:
       Paths_advent
   hs-source-dirs:

@@ -5,7 +5,7 @@ module Challenges.Y2022.Day14 (input, solutionA, solutionB) where
 
 import Data.Maybe
 import Data.Either (fromRight)
-import Parsing (coords)
+import Common.Parsing (coords)
 import Common.Coord (Coord)
 import Text.ParserCombinators.Parsec
 

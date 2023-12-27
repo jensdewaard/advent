@@ -2,7 +2,7 @@ module Challenges.Y2019.Day01 (solutionA, solutionB) where
 
 import Text.ParserCombinators.Parsec
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 
 fuelRequired :: Int -> Int
 fuelRequired m = (m `div` 3) - 2

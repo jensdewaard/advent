@@ -1,7 +1,7 @@
 module Challenges.Y2023.Day09 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 
 solutionA :: String -> String
 solutionA = solve parseInput (sum . map determineNext)

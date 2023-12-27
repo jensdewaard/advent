@@ -1,6 +1,6 @@
 module Challenges.Y2015.Day20 (solutionA, solutionB) where
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 import Data.Map (Map, toList)
 import qualified Data.Map as Map
 

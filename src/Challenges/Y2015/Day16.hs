@@ -1,7 +1,7 @@
 module Challenges.Y2015.Day16 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 import Data.Set (fromList, isSubsetOf, Set, singleton)
 
 solutionA :: String -> String

@@ -3,7 +3,7 @@ import Text.ParserCombinators.Parsec
 import Common.Prelude
 import Common.Coord (Dir(..), moveN, origin)
 import qualified Common.Coord as Coord
-import Parsing (dir, int)
+import Common.Parsing (dir, int)
 import Numeric (readHex)
 
 solutionA :: String -> String

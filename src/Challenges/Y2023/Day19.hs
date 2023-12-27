@@ -6,7 +6,7 @@ import Common.Search (dfs)
 import Data.Bifunctor (first)
 import Data.Map (Map, fromList)
 import Data.Maybe (maybeToList)
-import Parsing (int)
+import Common.Parsing (int)
 import Text.ParserCombinators.Parsec
 import qualified Data.Map as Map
 

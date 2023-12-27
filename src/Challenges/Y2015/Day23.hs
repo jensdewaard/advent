@@ -3,7 +3,7 @@
 module Challenges.Y2015.Day23 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 import Data.Map (Map)
 import qualified Data.Map as Map
 

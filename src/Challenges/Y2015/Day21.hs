@@ -2,7 +2,7 @@ module Challenges.Y2015.Day21 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Data.List (minimumBy, maximumBy)
 import Common.Prelude
-import Parsing (int)
+import Common.Parsing (int)
 
 solutionA :: String -> String
 solutionA = solve parser (\b -> minCost $ filter (wouldWin 100 b) $ map (foldl equip (0,0,0)) loadouts)

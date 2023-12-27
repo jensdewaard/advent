@@ -8,7 +8,7 @@ import Data.Map (Map)
 import Data.Maybe (isJust, fromJust)
 import qualified Data.Map as Map
 import Common.Coord (Coord, Dir (..), moveN, reverse, dist)
-import Parsing (grid)
+import Common.Parsing (grid)
 import Prelude hiding (reverse)
 import Common.Search (dijkstra)
 
