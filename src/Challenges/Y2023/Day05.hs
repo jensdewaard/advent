@@ -25,23 +25,23 @@ data Puzzle = Puzzle {
     lightTemp :: Map,
     tempHumidity :: Map,
     humiditiyLoc :: Map
-} deriving (Show)
+} 
 
 type Map = [Rule]
-type Rule = (Interval, Interval)
+type Rule = (Interval Int, Interval Int)
 
-mkIntervals :: [Int] -> [Interval]
+mkIntervals :: [Int] -> [Interval Int]
 mkIntervals = map (\i -> Interval.fromPair (i,i))
 
-mkIntervals' :: [Int] -> [Interval]
+mkIntervals' :: [Int] -> [Interval Int]
 mkIntervals' = map (\[a,b] -> Interval.fromPair (a,a+b-1)) . chunksOf 2
 
-runPuzzle :: ([Int] -> [Interval]) -> Puzzle -> [Interval]
+runPuzzle :: ([Int] -> [Interval Int]) -> Puzzle -> [Interval Int]
 -- runPuzzle p = map (applyM $ seedSoil p)
 --     $ mkIntervals $ seeds p
 runPuzzle f p = process p $ f $ seeds p
 
-process :: Puzzle -> [Interval] -> [Interval]
+process :: Puzzle -> [Interval Int] -> [Interval Int]
 -- process p = concatMap (applyM $ seedSoil p)
 process p = concatMap (applyM $ humiditiyLoc p)
     . concatMap (applyM $ tempHumidity p)
@@ -51,10 +51,10 @@ process p = concatMap (applyM $ humiditiyLoc p)
     . concatMap (applyM $ soilFertilizer p)
     . concatMap (applyM $ seedSoil p)
 
-applyM :: Map -> Interval -> [Interval]
+applyM :: Map -> Interval Int -> [Interval Int]
 applyM m ss = fromMaybe [ss] (foldl (foldRule m ss) Nothing m)
 
-foldRule :: Map -> Interval -> Maybe [Interval] -> (Interval, Interval) -> Maybe [Interval]
+foldRule :: Map -> Interval Int -> Maybe [Interval Int] -> (Interval Int, Interval Int) -> Maybe [Interval Int]
 foldRule m i Nothing (d, s) = case s `compare` i of
     OUT ->
         Just $ List.singleton $ Interval.fromPair (Interval.lb d + (Interval.lb i - Interval.lb s), Interval.lb d + (Interval.lb i - Interval.lb s) + Interval.length i)

@@ -8,9 +8,9 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 solutionA :: String -> String
-solutionA = solve parser (b . runProgram startState)
+solutionA = solve parser (b . runProgram (startState 0))
 solutionB :: String -> String
-solutionB = solve parser (b . runProgram startStateB)
+solutionB = solve parser (b . runProgram (startState 1))
 
 runProgram :: ProgramState -> [Instruction] ->  ProgramState
 runProgram ps@ProgramState{ptr = p} is =
@@ -25,11 +25,9 @@ data ProgramState = ProgramState {
     memory :: Map Register Int
     } deriving (Eq, Show)
 
-startState = ProgramState { ptr = 0, memory = m} where
-    m = Map.fromList [(A,0),(B,0)]
-
-startStateB = ProgramState { ptr = 0, memory = m} where
-    m = Map.fromList [(A,1),(B,0)]
+startState :: Int -> ProgramState
+startState i = ProgramState { ptr = 0, memory = m} where
+    m = Map.fromList [(A,i),(B,0)]
 
 exec :: ProgramState -> Instruction -> ProgramState
 exec m (Half r) = m {

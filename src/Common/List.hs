@@ -1,8 +1,21 @@
-module Common.List (chunksOf, endsWith, longest, prepend, findCycle) where
+module Common.List (chunksOf, endsWith, longest, prepend, findCycle, takeUntil) where
+  
+import Common.Prelude
     
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
 chunksOf n rs = take n rs : chunksOf n (drop n rs)
+
+-- | Take elements from a list until the prefix list satisfies a predicate
+--   or the source list is empty.
+takeUntil :: Predicate [a] -> [a] -> [a]
+takeUntil _ [] = []
+takeUntil p as = go p [] as where
+  go :: ([a] -> Bool) -> [a] -> [a] -> [a]
+  go _ prefix [] = prefix
+  go prd prefix (x:xs) = if prd prefix
+    then prefix 
+    else go prd (prefix ++ [x]) xs
 
 endsWith :: Eq a => a -> [a] -> Bool
 endsWith a as = last as == a

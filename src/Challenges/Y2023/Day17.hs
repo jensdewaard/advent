@@ -2,7 +2,7 @@
 module Challenges.Y2023.Day17 (solutionA, solutionB) where
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec hiding (State)
-import Common.Prelude
+import Common.Prelude ( solve )
 import Data.List (delete)
 import Data.Map (Map)
 import Data.Maybe (isJust, fromJust)

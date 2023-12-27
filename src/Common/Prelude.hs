@@ -29,3 +29,5 @@ snd3 (_,b,_) = b
 mapIf :: (a -> Bool) -> (a -> a) -> [a] -> [a]
 mapIf _ _ [] = []
 mapIf p f l = map (\x -> if p x then f x else x) l
+
+type Predicate a = a -> Bool

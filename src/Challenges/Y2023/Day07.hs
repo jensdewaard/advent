@@ -1,4 +1,5 @@
 {-# Language ViewPatterns #-}
+{-# LANGUAGE InstanceSigs #-}
 module Challenges.Y2023.Day07 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Prelude
@@ -36,7 +37,8 @@ data HandType = FiveOfAKind | FourOfAKind | FullHouse | ThreeOfAKind | TwoPair |
 data Card = A | K | Q | J | T | Number Int deriving (Eq, Show)
 
 instance Ord Hand where
-    Hand (t1, c1) `compare` Hand (t2, c2) = if t1 == t2 then compare c1 c2 else compare t1 t2
+    compare :: Hand -> Hand -> Ordering
+    Hand (t1, c1) `compare` Hand (t2, c2) = compare t1 t2 <> compare c1 c2
 
 instance Ord HandType where
     FiveOfAKind `compare` FiveOfAKind = EQ

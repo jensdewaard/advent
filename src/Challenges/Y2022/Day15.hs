@@ -13,7 +13,7 @@ solutionB :: String -> String
 solutionB = solve parseInput (\sbs -> freq $ head $ findJust $ concatMap (map (consider sbs) . border) sbs)
 --solutionB = solve parseInput (filter (\(y,is) -> List.length is > 1) . Map.toList . foldl foldCoverage Map.empty . yLimit 0 4000000 . concatMap coverage)
 
-yIs :: Int -> [(Interval, Int)] -> [(Interval, Int)]
+yIs :: Int -> [(Interval Int, Int)] -> [(Interval Int, Int)]
 yIs _ [] = []
 yIs y (p:ps) = if snd p == y then p : yIs y ps else yIs y ps
 
@@ -25,7 +25,7 @@ findJust (Nothing:as) = findJust as
 freq :: Coord -> Int
 freq (x,y) = x * 4000000+y
 
-coverage :: (Sensor, Beacon) -> [(Interval, Int)]
+coverage :: (Sensor, Beacon) -> [(Interval Int, Int)]
 coverage (s@(sx, sy), b) = let
     d = dist s b in
     [(fromPair (sx - d + abs (sy - y), sx + d - abs (sy - y)), y) |
