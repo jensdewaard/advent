@@ -6,7 +6,7 @@ import Prelude hiding (reverse)
 
 type Coord = (Int, Int)
 
-data Dir = U | D| L| R deriving (Show, Eq, Ord)
+data Dir = U | D | L| R deriving (Show, Eq, Ord)
 
 origin :: Coord
 origin = (0,0)
