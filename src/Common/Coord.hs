@@ -1,4 +1,4 @@
-module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right, rightN, direction, showMap, showMapWith, cardinal, reverse, area, diag) where
+module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right,  turnLeft, turnRight, rightN, direction, showMap, showMapWith, cardinal, reverse, area, diag) where
 
 import Data.Bifunctor (second)
 import Data.List (sort, tails)
@@ -24,6 +24,7 @@ moveN n L c = leftN n c
 moveN n R c = rightN n c
 moveN n D c = belowN n c
 
+-- | Computes the Manhattan distance between two points.
 dist :: Coord -> Coord -> Int
 dist (px, py) (qx,qy) = abs (px - qx) + abs (py - qy)
 
@@ -81,6 +82,18 @@ reverse U = D
 reverse L = R
 reverse R = L
 reverse D = U
+
+turnLeft :: Dir -> Dir
+turnLeft U = L
+turnLeft L = D
+turnLeft D = R
+turnLeft R = U
+
+turnRight :: Dir -> Dir
+turnRight U = R
+turnRight R = D
+turnRight D = L
+turnRight L = U
 
 area :: Integral a => [(a, a)] -> a
 area xs = sum [x1 * y2 - x2 * y1 | (y1, x1) : (y2 ,x2) : _ <- tails xs] `quot` 2

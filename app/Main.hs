@@ -9,6 +9,7 @@ import System.CPUTime
 import System.IO
 import Text.Printf
 import qualified Challenges.Y2015 as Y2015
+import qualified Challenges.Y2016 as Y2016
 import qualified Challenges.Y2019 as Y2019
 import qualified Challenges.Y2022 as Y2022
 import qualified Challenges.Y2023 as Y2023
@@ -27,6 +28,7 @@ getSol (y, d) = return $ getYear y d
 
 getYear :: Integer -> Integer -> (String -> String, String -> String)
 getYear 2015 = Y2015.getDay
+getYear 2016 = Y2016.getDay
 getYear 2022 = Y2022.getDay
 getYear 2023 = Y2023.getDay
 getYear 2019 = Y2019.getDay
@@ -99,7 +101,7 @@ get year day = do
 start :: Integer -> Integer -> IO ()
 start year day = do
     let d = (if day <= 9 then "0" else "") ++ show day
-    let content = "module Challenges.Y" ++ show year ++ ".Day" ++ d ++ " (solutionA, solutionB) where\nimport Common.Prelude\nimport Text.ParserCombinators.Parsec (Parser)\n\nsolutionA :: String -> String\nsolutionA = solve parser (const \"\")\nsolutionB :: String -> String\nsolutionB = solve parser (const \"\")\n\nparser :: Parser ()\nparser = undefined"
+    let content = "module Challenges.Y" ++ show year ++ ".Day" ++ d ++ " (solutionA, solutionB) where\nimport Common.Prelude\nimport Text.ParserCombinators.Parsec\n\nsolutionA :: String -> String\nsolutionA = solve parser (const \"\")\nsolutionB :: String -> String\nsolutionB = solve parser (const \"\")\n\nparser :: Parser ()\nparser = undefined"
     handle <- openFile ("./src/Challenges/Y" ++ show year ++ "/Day" ++ d ++ ".hs") WriteMode
     hPutStr handle content
     hClose handle

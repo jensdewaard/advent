@@ -3,17 +3,17 @@ module Common.Prelude where
 import Text.ParserCombinators.Parsec (Parser, parse)
 
 solve :: Show b => Parser a -> (a -> b) -> String -> String
-solve parser f = show . f . parse' parser
+solve parser f = show . f . parse' parser where
+    parse' :: Parser a -> String -> a
+    parse' p i = case parse p "advent" i of
+                    Left err -> error ("could not run parser " ++ show err)
+                    Right val -> val
 
 (==>) :: Show b => Parser a -> (a -> b) -> String -> String
 p ==> f = solve p f
 
 infix 6 ==>
 
-parse' :: Parser a -> String -> a
-parse' p i = case parse p "advent" i of
-                  Left err -> error ("could not run parser " ++ show err)
-                  Right val -> val
 
 trd :: (a, b, c) -> c
 trd (_,_,c) = c
