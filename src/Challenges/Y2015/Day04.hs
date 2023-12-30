@@ -1,4 +1,4 @@
-module Challenges.Y2015.Day04 (solutionA, solutionB) where
+module Challenges.Y2015.Day04 (solutionA, solutionB, hash, fiveZeroes) where
 
 import Data.List (findIndex)
 import Data.Maybe (fromJust)
