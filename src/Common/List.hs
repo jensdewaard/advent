@@ -1,7 +1,7 @@
-module Common.List (chunksOf, endsWith, longest, prepend, findCycle, takeUntil) where
-  
+module Common.List (chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith) where
+
 import Common.Prelude
-    
+
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
 chunksOf n rs = take n rs : chunksOf n (drop n rs)
@@ -14,16 +14,25 @@ takeUntil p as = go p [] as where
   go :: ([a] -> Bool) -> [a] -> [a] -> [a]
   go _ prefix [] = prefix
   go prd prefix (x:xs) = if prd prefix
-    then prefix 
+    then prefix
     else go prd (prefix ++ [x]) xs
 
 endsWith :: Eq a => a -> [a] -> Bool
 endsWith a as = last as == a
 
+sumWith :: Num b => (a -> b) -> [a] -> b
+sumWith f =  sum . map f
+
+-- | The number of occurences of an element in a list.
+occur :: Eq a => [a] -> [(a, Int)]
+occur [] = []
+occur (a:as) = let n = 1 + length (filter (==a) as) in
+  (a, n) : occur (filter (a /=) as)
+
 -- | Return the longest list. Returns the first if there are multiple lists of the same length.
 longest :: [[a]] -> [a]
 longest [] = error "longest on empty list"
-longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' == l) ls 
+longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' == l) ls
 
 prepend :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
 prepend (a,b) (as,bs) = (a ++ as, b ++ bs)

@@ -50,6 +50,11 @@ library
       Challenges.Y2015.Day22
       Challenges.Y2015.Day23
       Challenges.Y2015.Day24
+      Challenges.Y2016
+      Challenges.Y2016.Day01
+      Challenges.Y2016.Day02
+      Challenges.Y2016.Day03
+      Challenges.Y2016.Day04
       Challenges.Y2019
       Challenges.Y2019.Day01
       Challenges.Y2019.Day02
@@ -93,6 +98,7 @@ library
       Challenges.Y2023.Day17
       Challenges.Y2023.Day18
       Challenges.Y2023.Day19
+      Common.Char
       Common.Coord
       Common.Graph
       Common.Interval
