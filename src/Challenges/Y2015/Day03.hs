@@ -3,6 +3,7 @@ import Text.ParserCombinators.Parsec
 import Common.Coord (move, Coord, Dir (..))
 import Common.Prelude
 import Data.List (nub)
+import Data.Bifunctor (bimap)
 import DSP.Basic (uninterleave)
 
 solutionA :: String -> String
@@ -11,16 +12,10 @@ solutionA = solve parseInput (length . nub . routeSanta)
 solutionB :: String -> String
 solutionB = solve parseInput (length
     . nub
-    . pconcat
-    . pmap routeSanta
+    . uncurry (++)
+    . bimap routeSanta routeSanta
     . uninterleave
     ) 
-
-pmap :: (a -> b) -> (a,a) -> (b,b)
-pmap f (x, y) = (f x, f y)
-
-pconcat :: ([a], [a]) -> [a]
-pconcat (xs, ys) = xs ++ ys
 
 routeSanta :: [Dir] -> [Coord]
 routeSanta = scanl (flip move) (0,0)
