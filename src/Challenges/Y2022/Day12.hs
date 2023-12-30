@@ -1,52 +1,39 @@
-#!/usr/bin/env nix-shell
-#!nix-shell --pure -i runghc -p "haskellPackages.ghcWithPackages (pkgs: [ pkgs.turtle pkgs.heap ])"
+module Challenges.Y2022.Day12 (solutionA, solutionB) where
 
-module Challenges.Y2022.Day12 where
+import Common.Coord (Coord, cardinal)
+import Common.Prelude
+import Common.Parsing (grid)
+import Data.Map (Map)
+import qualified Data.Map as Map
+import Text.ParserCombinators.Parsec ( letter, Parser )
+import Data.Char ( ord )
+import Common.Search (dijkstra)
 
-import Data.List
-import Data.Char
-import Data.Graph
-import Data.Maybe
-import DijkstraSimple as D
+solutionA :: String -> String
+solutionA = parser ==> \m -> dijkstra
+  (adjacentNodes m) -- adjacency
+  [(startNode m, 0)]   -- 
+  (+) -- combination
+  (const 1) -- estimation
+  (\c -> m Map.! c == 'E') --end state
 
-main :: IO ()
-main = do
-    m <- readFile "inputs/12.txt"
-    let w = length . head $ lines m
-    let m' = filter (/= '\n') m
-    let coords = indexToCoordW w 
-    let label = labelForW w
-    let s = fromJust $ elemIndex 'S' m'
-    let e = fromJust $ elemIndex 'E' m'
-    --let s = label (0,0)
-    --let e = label (1,2)
-    let (g, nodeFromVertex, vertexFromKey) = 
-            graphFromEdges [(n,n, a) | n <- [0..length m' - 1], let a = map label $ adjacentNodes m' w (coords n)]
-    let coordsL = map coords [0..length m' - 1]
-    --print g
+solutionB :: String -> String
+solutionB = parser ==> \m -> dijkstra 
+  (adjacentNodes m)
+  (map (\(c,_) -> (c,0)) $ filter (\(_,t) -> t == 'a') (Map.assocs m))
+  (+) (const 1) (\c -> m Map.! c == 'E')
 
-    --print $ D.findShortestDistance g s e
-    let as = s : [a | a <- [0..length m' - 1], m' !! a == 'a' ]
-    let ds = map (\s -> D.findShortestDistance g s e) as
-    --print ds
-    print $ minimum ds
+startNode :: Map a Char -> a
+startNode m = fst $ head $ filter (\(_,t) -> t == 'S') (Map.assocs m)
 
-adjacentNodes :: String -> Int -> (Int, Int) -> [(Int, Int)]
-adjacentNodes m w n = [p | p <- map (indexToCoordW w) [0..length m - 1], adjacent m w n p]
+parser :: Parser (Map Coord Char)
+parser = grid letter
 
-adjacent :: String -> Int -> (Int, Int) -> (Int, Int) -> Bool
-adjacent s w p@(x,y) q@(x', y')
-  | p == q = False
-  | abs (x - x') > 1 = False
-  | abs (y - y') > 1 = False
-  | abs (x - x') == 1 && abs (y - y') == 1 = False
-  | otherwise = hdiff (s !! labelForW w p) (s !! labelForW w q) <= 1
-
-labelForW :: Int -> (Int, Int) -> Int
-labelForW w (x,y) = y*w + x
-
-indexToCoordW :: Int -> Int -> (Int, Int)
-indexToCoordW w i = (mod i w, div i w)
+adjacentNodes :: Map Coord Char -> Coord -> [(Coord, Int)]
+adjacentNodes m c = [(c', 1) | c' <- cardinal c,
+    Map.member c' m,
+    hdiff (m Map.! c) (m Map.! c') <= 1
+  ]
 
 hdiff :: Char -> Char -> Int
 hdiff 'S' b = hdiff 'a' b
