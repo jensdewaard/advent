@@ -1,4 +1,4 @@
-module Common.List (chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith) where
+module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR) where
 
 import Common.Prelude
 
@@ -22,6 +22,10 @@ endsWith a as = last as == a
 
 sumWith :: Num b => (a -> b) -> [a] -> b
 sumWith f =  sum . map f
+
+-- | Count the number of elements in a list that satisfy a predicate.
+count :: Predicate a -> [a] -> Int
+count pred = length . filter pred
 
 -- | The number of occurences of an element in a list.
 occur :: Eq a => [a] -> [(a, Int)]
@@ -51,3 +55,15 @@ findCycle xxs = fCycle xxs xxs
          | x == y              = []
          | otherwise           = y:fLength x ys
         fLength _ _            = error "fLength called on empty list"
+
+-- | Rotate a list n places to the left, e.g. 
+--   rotate 2 ['#','#','#','@'] becomes 
+--   ['#','@','#','#'].
+rotate :: Int -> [a] -> [a]
+rotate n xs = bs ++ as where (as, bs) = splitAt (n `mod` length xs) xs
+
+-- | Rotate a list n places to the right, e.g. 
+--   rotateR 2 ['#','@','#','#'] becomes 
+--   ['#','#','#','@'].
+rotateR :: Int -> [a] -> [a]
+rotateR n xs = rotate (length xs - n) xs
