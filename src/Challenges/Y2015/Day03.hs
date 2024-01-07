@@ -4,7 +4,7 @@ import Common.Coord (move, Coord, Dir (..))
 import Common.Prelude
 import Data.List (nub)
 import Data.Bifunctor (bimap)
-import DSP.Basic (uninterleave)
+import Common.List (uninterleave)
 
 solutionA :: String -> String
 solutionA = solve parseInput (length . nub . routeSanta)

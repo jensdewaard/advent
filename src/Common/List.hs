@@ -1,7 +1,8 @@
-module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll) where
+module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll, uninterleave) where
 
 import Common.Prelude
 import Data.List (delete)
+import Data.Bifunctor (first, second)
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
@@ -71,3 +72,14 @@ rotateR n xs = rotate (length xs - n) xs
 
 deleteAll :: Eq a => [a] -> [a] -> [a]
 deleteAll ds ls = foldl (flip delete) ls ds
+
+uninterleave :: [a] -> ([a],[a])
+uninterleave [] = ([],[])
+uninterleave [a] = ([a],[])
+uninterleave (a:as) = first (a :) as' where
+  as' = uninterleave' as
+  uninterleave' :: [a] -> ([a],[a])
+  uninterleave' [] = ([],[])
+  uninterleave' [b] = ([],[b])
+  uninterleave' (b:bs) = second (b :) bs' where
+    bs' = uninterleave bs

@@ -132,7 +132,6 @@ library
     , bytestring
     , containers
     , data-memocombinators
-    , dsp
     , fgl
     , hashable
     , heap
@@ -164,7 +163,6 @@ executable advent-exe
     , bytestring
     , containers
     , data-memocombinators
-    , dsp
     , fgl
     , hashable
     , heap
@@ -201,7 +199,6 @@ test-suite advent-test
     , bytestring
     , containers
     , data-memocombinators
-    , dsp
     , fgl
     , hashable
     , heap
