@@ -1,6 +1,7 @@
-module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR) where
+module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll) where
 
 import Common.Prelude
+import Data.List (delete)
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
@@ -67,3 +68,6 @@ rotate n xs = bs ++ as where (as, bs) = splitAt (n `mod` length xs) xs
 --   ['#','#','#','@'].
 rotateR :: Int -> [a] -> [a]
 rotateR n xs = rotate (length xs - n) xs
+
+deleteAll :: Eq a => [a] -> [a] -> [a]
+deleteAll ds ls = foldl (flip delete) ls ds
