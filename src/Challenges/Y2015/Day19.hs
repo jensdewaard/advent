@@ -1,4 +1,4 @@
-{-# Language NumericUnderscores, TupleSections #-}
+{-# LANGUAGE TupleSections #-}
 module Challenges.Y2015.Day19 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Prelude

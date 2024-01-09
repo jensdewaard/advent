@@ -1,7 +1,7 @@
-module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll, uninterleave) where
+module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll, uninterleave, splitOn) where
 
 import Common.Prelude
-import Data.List (delete)
+import Data.List (delete, isPrefixOf)
 import Data.Bifunctor (first, second)
 
 chunksOf :: Int -> [a] -> [[a]]
@@ -83,3 +83,20 @@ uninterleave (a:as) = first (a :) as' where
   uninterleave' [b] = ([],[b])
   uninterleave' (b:bs) = second (b :) bs' where
     bs' = uninterleave bs
+
+splitOn :: Eq a => [a] -> [a] -> [[a]]
+splitOn _ [] = []
+splitOn split list = case indexOf split list of
+  Nothing -> [list]
+  Just i  -> take i list : splitOn split (drop (i + length split) list) 
+
+-- | Returns the first index of the needle if contained in the haystack
+--   and Nothing otherwise.
+--   e.g. indexOf "foo" "hafoobar" = 2.
+indexOf :: Eq a => [a] -> [a] -> Maybe Int
+indexOf = indexOf' 0 where
+    indexOf' :: Eq a => Int -> [a] -> [a] -> Maybe Int
+    indexOf' _ _ [] = Nothing
+    indexOf' index needle haystack = if needle `isPrefixOf` haystack 
+      then Just index 
+      else indexOf' (index+1) needle (tail haystack)

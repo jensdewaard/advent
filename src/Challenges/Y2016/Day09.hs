@@ -3,10 +3,7 @@ import Common.Prelude
 import Text.ParserCombinators.Parsec
 import Data.List (singleton)
 import Common.Parsing (int)
-import Data.Maybe (fromJust)
-import Data.List.Split (splitOn)
-import GHC.OldList (stripPrefix)
-import Data.Bifunctor
+import Common.List (splitOn)
 
 solutionA :: String -> String
 solutionA = solve parser length
@@ -22,7 +19,6 @@ decompressedLength ('(':xs) =
   in (m * decompressedLength rep) + decompressedLength (drop n ys)
 decompressedLength (_:xs) = 1 + decompressedLength xs
 decompressedLength [] = 0
-
 
 parser :: Parser [Char]
 parser = concat <$> many (marker <|> (singleton <$> letter)) where

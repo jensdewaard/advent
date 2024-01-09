@@ -129,7 +129,6 @@ library
     , aeson
     , array
     , base >=4.7 && <5
-    , bytestring
     , containers
     , data-memocombinators
     , fgl
@@ -160,7 +159,6 @@ executable advent-exe
     , aeson
     , array
     , base >=4.7 && <5
-    , bytestring
     , containers
     , data-memocombinators
     , fgl
@@ -196,7 +194,6 @@ test-suite advent-test
     , aeson
     , array
     , base >=4.7 && <5
-    , bytestring
     , containers
     , data-memocombinators
     , fgl
