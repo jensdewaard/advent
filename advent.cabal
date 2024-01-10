@@ -114,7 +114,6 @@ library
       Common.Prelude
       Common.Queue
       Common.Search
-      DijkstraSimple
       FloydWarshall
       Intcode
       Parser
@@ -127,7 +126,6 @@ library
       HUnit
     , advent-of-code-api
     , aeson
-    , array
     , base >=4.7 && <5
     , containers
     , data-memocombinators
@@ -157,7 +155,6 @@ executable advent-exe
     , advent
     , advent-of-code-api
     , aeson
-    , array
     , base >=4.7 && <5
     , containers
     , data-memocombinators
@@ -192,7 +189,6 @@ test-suite advent-test
     , advent
     , advent-of-code-api
     , aeson
-    , array
     , base >=4.7 && <5
     , containers
     , data-memocombinators

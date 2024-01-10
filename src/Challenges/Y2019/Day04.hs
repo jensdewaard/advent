@@ -3,21 +3,19 @@ import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec
 import Common.Parsing (int)
 import Common.Prelude
-import Data.Array (Ix(range))
 
 solutionA :: String -> String
-solutionA = solve parseInput (length . filter isValid . range)
+solutionA = solve parseInput (length . filter isValid)
 
 solutionB :: String -> String
-solutionB = solve parseInput (length . filter isValid' . range)
+solutionB = solve parseInput (length . filter isValid')
 
-parseInput :: Parser (Int, Int)
+parseInput :: Parser [Int]
 parseInput = do
     l <- int
     _ <- char '-'
     h <- int
-    return (l,h)
-
+    return [l..h]
 
 isValid' :: Int -> Bool
 isValid' i = hasTwoButNotThree i' && isNotDecreasing i' where i' = show i
