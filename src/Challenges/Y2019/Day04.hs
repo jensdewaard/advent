@@ -1,4 +1,4 @@
-module Challenges.Y2019.Day04 (solutionA, solutionB) where
+module Challenges.Y2019.Day04 (solutionA, solutionB, isValid, hasTwoButNotThree) where
 import Data.Char (digitToInt)
 import Text.ParserCombinators.Parsec
 import Common.Parsing (int)

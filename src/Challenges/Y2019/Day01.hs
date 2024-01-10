@@ -1,4 +1,4 @@
-module Challenges.Y2019.Day01 (solutionA, solutionB) where
+module Challenges.Y2019.Day01 (solutionA, solutionB, fuelRequired, fuelRequiredR) where
 
 import Text.ParserCombinators.Parsec
 import Common.Prelude
