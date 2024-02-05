@@ -11,9 +11,9 @@ import Common.Queue as Queue
 dfsUntil :: Ord a => (a -> Bool) -> (a -> [a]) -> [a] -> [a]
 dfsUntil predicate next start = loop Set.empty (fromList start)
   where
-    loop _ Empty = []
+    loop _ Empty = mempty
     loop visited (x :<| q)
-      | predicate x = [x]
+      | predicate x = pure x
       | Set.member x visited = loop visited q
       | otherwise = x : loop v' q'
         where

@@ -1,5 +1,5 @@
 {-# LANGUAGE InstanceSigs #-}
-module Common.Interval (Interval (..), Comparison (..), Common.Interval.compare, Common.Interval.length, distinct, singleton, fromList, fromPair, overlaps, union, includes, ub, lb, borders) where
+module Common.Interval (Interval (..), Comparison (..), Common.Interval.compare, Common.Interval.length, distinct, singleton, fromList, fromPair, overlaps, union, includes, ub, lb) where
 
 import Data.Ord (comparing)
 
@@ -71,11 +71,6 @@ includes :: (Ord a) =>Interval a -> Interval a -> Bool
 includes _ Empty = False
 includes Empty _ = False
 includes (Interval lbp ubp) (Interval lbq ubq) = lbp <= lbq && ubq <= ubp
-
-borders :: (Ord a, Num a) =>Interval a -> Interval a -> Bool
-borders Empty _ = False
-borders _ Empty = False
-borders (Interval _ ubp) (Interval lbq _) = lbq - ubp == 1
 
 instance Ord a => Semigroup (Interval a) where
     (<>) :: Interval a -> Interval a -> Interval a

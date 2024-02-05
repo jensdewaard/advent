@@ -43,8 +43,8 @@ process ws i (_,(l,r:rs)) = if mkPred r i
 
 mkPred :: Rule -> Item -> Bool
 mkPred (Rule 'o' _ _ _) _ = True
-mkPred (Rule attr comp val _) i =
-    getComparison comp (getAttribute attr i) val
+mkPred (Rule attr comp v _) i =
+    getComparison comp (getAttribute attr i) v
 
 getComparison :: Char -> Int -> Int -> Bool
 getComparison '>' = (>)
@@ -87,8 +87,8 @@ workflow = do
 
 rule :: Parser Rule
 rule = try (do
-    attr <- (char 'x') <|> (char 'm') <|> (char 'a') <|> (char 's')
-    comp <- (char '<') <|> (char '>')
+    attr <- char 'x' <|> char 'm' <|> char 'a' <|> char 's'
+    comp <- char '<' <|> char '>'
     value <- int
     _ <- char ':'
     lbl <- many1 alphaNum

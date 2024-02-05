@@ -14,8 +14,8 @@ solutionB :: String -> String
 solutionB = solve parseInput' sum
 
 parseInput :: Parser [Int]
-parseInput = sepBy1 parseLine newline
-parseInput' = sepBy1 parseLine' newline
+parseInput = sepEndBy1 parseLine newline
+parseInput' = sepEndBy1 parseLine' newline
 
 parseLine :: Parser Int
 --parseLine l = read $ (firstDigit l ++ lastDigit l)
