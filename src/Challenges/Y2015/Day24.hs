@@ -2,24 +2,21 @@ module Challenges.Y2015.Day24 (solutionA, solutionB) where
 import Text.ParserCombinators.Parsec
 import Common.Prelude
 import Common.Parsing (int)
-import Data.List (permutations)
-import Common.List (takeUntil)
+import Data.List (subsequences)
 
 solutionA :: String -> String
-solutionA = solve parser (group3)
+solutionA = solve parser (group 3)
 solutionB :: String -> String
-solutionB = solve parser (const "")
+solutionB = solve parser (group 4)
 
-group3 :: [Int] -> [([Int], [Int], [Int])]
-group3 presents = let groupTotal = sum presents `div` 3 in [(one,two,three) |
-        ps <- permutations presents,
-        let one = takeUntil ((>= groupTotal) . sum) ps,
-        sum one == groupTotal,
-        let ps' = drop (length one) ps,
-        let two = takeUntil ((>= groupTotal) . sum) ps',
-        sum two == groupTotal,
-        let three = drop (length two) ps'
-    ]
+group :: Int -> [Int] -> Int
+group n weights = let
+      groupSize = sum weights `div` n
+      combos = filter (\l -> sum l == groupSize) $ subsequences weights
+      minLength = minimum (map length combos)
+      qes = filter (>0) $ map product $ filter (\l -> length l == minLength) combos
+      in
+      minimum qes
 
 parser :: Parser [Int]
 parser = int `sepEndBy1` newline
