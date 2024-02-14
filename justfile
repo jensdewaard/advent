@@ -11,5 +11,5 @@ profile year day:
 run year day:
     @stack run solve {{year}} {{day}}
 
-test:
-    @stack test
+test year day:
+    @stack run test {{year}} {{day}}
