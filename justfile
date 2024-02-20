@@ -14,3 +14,6 @@ run year day:
 test year day:
     @stack test
     @stack run test {{year}} {{day}}
+
+start year day:
+    @stack run start {{year}} {{day}}

@@ -1,5 +1,5 @@
-{-# LANGUAGE BangPatterns #-}
-module Common.Search (bfs, bfsUntil, dfs, dfsUntil, dijkstra, dijkstraOn) where
+{-# LANGUAGE BangPatterns, TupleSections #-}
+module Common.Search (bfs, bfsUntil, dfs, dfsUntil, dijkstra, dijkstraOn, simple) where
 
 import qualified Data.PQueue.Min as PM
 import qualified Data.Set as Set ( empty, insert, member )
@@ -70,3 +70,10 @@ dijkstra :: (Ord state, Ord cost) =>
   -> (state -> Bool) -- acceptance function
   -> Maybe (state, cost)
 dijkstra = dijkstraOn id
+
+simple :: (Ord state) =>
+    (state -> [state])
+    -> state
+    -> (state -> Bool)
+    -> Maybe (state, Int)
+simple next start = dijkstra (map (,1) . next) [(start, 0)] (+) (const 1) 
