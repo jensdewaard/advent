@@ -12,4 +12,5 @@ run year day:
     @stack run solve {{year}} {{day}}
 
 test year day:
+    @stack test
     @stack run test {{year}} {{day}}

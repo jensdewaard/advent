@@ -8,17 +8,17 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 solutionA :: String -> String
-solutionA = solve parser (b . runProgram (startState 0))
+solutionA = solve parser (a_ . runProgram (startState 0))
 solutionB :: String -> String
-solutionB = solve parser (b . runProgram (startState 1))
+solutionB = solve parser (a_ . runProgram (startState 1))
 
 runProgram :: ProgramState -> [Instruction] ->  ProgramState
 runProgram ps@ProgramState{ptr = p} is =
     if p >= length is || p < 0 then ps 
     else let ps' = exec ps (is !! p) in runProgram ps' is
 
-b :: ProgramState -> Int
-b ProgramState { ptr = _, memory = m } = m Map.! B
+a_ :: ProgramState -> Int
+a_ ProgramState { memory = m } = m Map.! A
 
 data ProgramState = ProgramState { 
     ptr :: Int,
@@ -27,7 +27,7 @@ data ProgramState = ProgramState {
 
 startState :: Int -> ProgramState
 startState i = ProgramState { ptr = 0, memory = m} where
-    m = Map.fromList [(A,i),(B,0)]
+    m = Map.fromList [(A,0),(B,0), (C,i), (D,0)]
 
 exec :: ProgramState -> Instruction -> ProgramState
 exec m (Half r) = m {
@@ -55,8 +55,11 @@ exec m (JumpIfEven r o) = m {
 exec m (JumpIfOne r o) = m {
     ptr = ptr m + if memory m Map.! r == 1 then o else 1
 }
-exec m (JumpNotZero r o) = m {
-    ptr = ptr m + if (==0) (memory m Map.! r) then o else 1
+exec m (JumpNotZeroReg r o) = m {
+    ptr = ptr m + if (/=0) (memory m Map.! r) then o else 1
+                             }
+exec m (JumpNotZeroVal v o) = m {
+    ptr = ptr m + if v/=0 then o else 1
                              }
 exec m (CopyReg r r') = m {
     ptr = succ $ ptr m,
@@ -77,7 +80,8 @@ data Instruction = Half Register
     | Jump Int
     | JumpIfEven Register Int
     | JumpIfOne Register Int
-    | JumpNotZero Register Int
+    | JumpNotZeroReg Register Int
+    | JumpNotZeroVal Int Int
     deriving (Eq, Ord, Show)
 
 parser :: Parser [Instruction]
@@ -106,7 +110,12 @@ instruction =
         _ <- string "jnz "
         r <- register
         _ <- string " "
-        JumpNotZero r <$> int)
+        JumpNotZeroReg r <$> int)
+    <|> try (do
+        _ <- string "jnz "
+        v <- int
+        _ <- string " "
+        JumpNotZeroVal v <$> int)
     <|> try (do
         _ <- string "cpy "
         r <- register
