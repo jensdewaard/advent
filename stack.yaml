@@ -73,6 +73,8 @@ extra-deps:
   - vector-0.13.0.0
   - vector-stream-0.1.0.0
   - witherable-0.4.2
+  - cryptonite-0.30
+  - cryptohash-0.11.9
 
 nix:
   packages:

@@ -38,6 +38,9 @@ dependencies:
 - split
 - hashable
 - pqueue
+- cryptonite
+- bytestring
+- memory
 
 ghc-options:
 - -Wall

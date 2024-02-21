@@ -65,6 +65,7 @@ library
       Challenges.Y2016.Day11
       Challenges.Y2016.Day12
       Challenges.Y2016.Day13
+      Challenges.Y2016.Day14
       Challenges.Y2019
       Challenges.Y2019.Day01
       Challenges.Y2019.Day02
@@ -130,11 +131,14 @@ library
     , advent-of-code-api
     , aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , cryptonite
     , data-memocombinators
     , fgl
     , hashable
     , heap
+    , memory
     , mtl
     , optparse-applicative
     , parsec
@@ -159,11 +163,14 @@ executable advent-exe
     , advent-of-code-api
     , aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , cryptonite
     , data-memocombinators
     , fgl
     , hashable
     , heap
+    , memory
     , mtl
     , optparse-applicative
     , parsec
@@ -194,11 +201,14 @@ test-suite advent-test
     , advent-of-code-api
     , aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , cryptonite
     , data-memocombinators
     , fgl
     , hashable
     , heap
+    , memory
     , mtl
     , optparse-applicative
     , parsec
