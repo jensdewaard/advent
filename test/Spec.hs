@@ -1,4 +1,5 @@
 import qualified Common.CharTests as Char
+import qualified Common.MathTests as Math
 import qualified Common.IntervalTests as Interval
 import qualified FloydWarshallTests as FW
 import qualified Y2019Tests.Day01 as Y19D1
@@ -10,6 +11,7 @@ main = do
     counts <- runTestTT (TestList [
         Char.tests,
         Interval.tests,
+        Math.tests,
         FW.tests,
         Y19D1.tests,
         Y19D4.tests

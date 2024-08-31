@@ -114,6 +114,7 @@ library
       Common.Graph
       Common.Interval
       Common.List
+      Common.Math
       Common.Parsing
       Common.Prelude
       Common.Queue
@@ -188,6 +189,7 @@ test-suite advent-test
   other-modules:
       Common.CharTests
       Common.IntervalTests
+      Common.MathTests
       FloydWarshallTests
       Y2019Tests.Day01
       Y2019Tests.Day04
