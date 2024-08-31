@@ -47,6 +47,13 @@ packages:
   original:
     hackage: StateVar-1.2.2
 - completed:
+    hackage: advent-of-code-api-0.2.9.1@sha256:ceb8adc0b04d13f121358e334a99c04acc2db5291ba23ea9ba783c9d4c2c194f,2275
+    pantry-tree:
+      sha256: d3ddc0c197a1546fe7719fa6d5ffebfe9d0fe8487de0be22577f1cfa9807825c
+      size: 1185
+  original:
+    hackage: advent-of-code-api-0.2.9.1@sha256:ceb8adc0b04d13f121358e334a99c04acc2db5291ba23ea9ba783c9d4c2c194f,2275
+- completed:
     hackage: ansi-terminal-0.11.4@sha256:410737137c798e23339a08435a5511785ebf1db08700e37debbd7801cf73fc82,3584
     pantry-tree:
       sha256: 49bc6ef92292ee8b663a40cf5170af1efaaa4ed84155b65ad41eabf1faf9b18f
@@ -68,19 +75,19 @@ packages:
   original:
     hackage: assoc-1.1
 - completed:
-    hackage: base-orphans-0.9.0@sha256:0bdd3486d3a1bcbed0513b46af4a13ca74b395313fa5b6e0068d6b7413b76a04,3205
+    hackage: base-orphans-0.9.2@sha256:455d863c96cf4b1804772c630a235f535fdb52ca9137a4150967b521ee4734ab,3236
     pantry-tree:
-      sha256: 47868c1badc9812bf9ad81ad8aa52e3f920e28568c33dcd602dbfa86b5f6674e
-      size: 1272
+      sha256: 0c2954f9010e509d2b53f190fc3390e682639addb8e9dddfe40e633b4d5403d8
+      size: 1273
   original:
-    hackage: base-orphans-0.9.0
+    hackage: base-orphans-0.9.2@sha256:455d863c96cf4b1804772c630a235f535fdb52ca9137a4150967b521ee4734ab,3236
 - completed:
-    hackage: bifunctors-5.5.15@sha256:5ebaf9a1996de38ad9d77bec37a5585b6461b34f39446e8f1cadae7689a12bfd,3850
+    hackage: bifunctors-5.6.2@sha256:e6a6e576b9e027ca374383c2d3a43753bce42c63c72724d3a35208a982d68c0f,3201
     pantry-tree:
-      sha256: bd0078109e197194f4daa103c0d9f520ed2e6550ef0b11de2c17bd1ad0d3f19c
-      size: 1758
+      sha256: 5d804f96ef9033c8993061ccbe211b9c9717cba5774a156f4f9aeeba249b591d
+      size: 1466
   original:
-    hackage: bifunctors-5.5.15@sha256:5ebaf9a1996de38ad9d77bec37a5585b6461b34f39446e8f1cadae7689a12bfd,3850
+    hackage: bifunctors-5.6.2@sha256:e6a6e576b9e027ca374383c2d3a43753bce42c63c72724d3a35208a982d68c0f,3201
 - completed:
     hackage: binary-0.8.9.1@sha256:81f468c1c75fd6535152ab69b2d32ac6cfcc03e345267b069abe4da56ec95801,6523
     pantry-tree:
@@ -137,6 +144,20 @@ packages:
       size: 903
   original:
     hackage: crypto-api-0.13.3@sha256:e572c0cdc58ba6773ea200ea5261d6bf5fc116d910b52cf1c671d85b940ed6fc,2366
+- completed:
+    hackage: cryptohash-0.11.9@sha256:59d9494ba0cc9eef087ecba2e12e4d3e2d3b0327dd1542af552e3dca0e7de70d,4230
+    pantry-tree:
+      sha256: f916b60e1f935ee554beacae455b9d3bc79c083e6235d5f4b519cb6df00e4032
+      size: 2259
+  original:
+    hackage: cryptohash-0.11.9
+- completed:
+    hackage: cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
+    pantry-tree:
+      sha256: df1cbe4cc40d569cc75ffed40bc5deac43cb085653980b42b9b6a5d4b745a30a
+      size: 23323
+  original:
+    hackage: cryptonite-0.30
 - completed:
     hackage: data-array-byte-0.1.0.1@sha256:2ef1bd3511e82ba56f7f23cd793dd2da84338a1e7c2cbea5b151417afe3baada,1989
     pantry-tree:
@@ -200,13 +221,6 @@ packages:
       size: 682
   original:
     hackage: entropy-0.4.1.10@sha256:219a10d58386831dd742982e85841c16822f5c219b7cc6e5afff86f956c5b935,2784
-- completed:
-    hackage: fgl-5.8.0.0@sha256:c28a8742408a7f81793e525f9bf8e2783ad3e475e77e7d5018dc55407ab607ea,3706
-    pantry-tree:
-      sha256: 88e6fadb03c176bd0359c325a9b7007b79065fadce063c2289640306e6b3599a
-      size: 2748
-  original:
-    hackage: fgl-5.8.0.0@sha256:c28a8742408a7f81793e525f9bf8e2783ad3e475e77e7d5018dc55407ab607ea,3706
 - completed:
     hackage: filepath-1.4.100.4@sha256:2de84756d3907308230e34fcc7c1917a73f218f6d53838618b7d5b95dd33e2c3,5536
     pantry-tree:
@@ -334,19 +348,19 @@ packages:
   original:
     hackage: semialign-1.3
 - completed:
-    hackage: semigroupoids-5.3.7@sha256:ac093739682f0dc7a37698b423590dc0f1ca89fed908fbbc5a73a44beefa7d18,7721
+    hackage: semigroupoids-6.0.1@sha256:f65892f65f941c7368334bdfdcdb9db2ad3952502e94e88785a5a428fa2f3f4e,7539
     pantry-tree:
-      sha256: 210c79c309f5f2837a699c18ffaf795a8c4944c218ca1938475c55a805b3d614
-      size: 2404
+      sha256: 7936ba7838c01e1c5e36b04082e32d23bb7a2b2ce93fdef414dcd195501a8bfb
+      size: 2403
   original:
-    hackage: semigroupoids-5.3.7@sha256:ac093739682f0dc7a37698b423590dc0f1ca89fed908fbbc5a73a44beefa7d18,7721
+    hackage: semigroupoids-6.0.1
 - completed:
-    hackage: splitmix-0.1.0.4@sha256:804e2574bc7e32d08cbab91e47ee6287b4df7d50851d73f9e778f94a9a7814c7,6521
+    hackage: splitmix-0.1.0.5@sha256:caa9b4a92abf1496c7f6a3c0f4e357426a54880077cb9f04e260a8bfa034b77b,6596
     pantry-tree:
-      sha256: b56f706c092dc0ac4875ef45bd18719386358c56667f6b604a733b66f9e4657f
+      sha256: 6eb34b55fb0eb1c41fe539fb8ece181e31e82f4c89abf2b1aaf46df4b274797d
       size: 1519
   original:
-    hackage: splitmix-0.1.0.4@sha256:804e2574bc7e32d08cbab91e47ee6287b4df7d50851d73f9e778f94a9a7814c7,6521
+    hackage: splitmix-0.1.0.5
 - completed:
     hackage: strict-0.5@sha256:76f07389001fa7a9036cbf13a1753c0f16556bde3b79c862a8bbe1201aac2326,4074
     pantry-tree:
@@ -459,23 +473,9 @@ packages:
       size: 384
   original:
     hackage: witherable-0.4.2
-- completed:
-    hackage: cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
-    pantry-tree:
-      sha256: df1cbe4cc40d569cc75ffed40bc5deac43cb085653980b42b9b6a5d4b745a30a
-      size: 23323
-  original:
-    hackage: cryptonite-0.30
-- completed:
-    hackage: cryptohash-0.11.9@sha256:59d9494ba0cc9eef087ecba2e12e4d3e2d3b0327dd1542af552e3dca0e7de70d,4230
-    pantry-tree:
-      sha256: f916b60e1f935ee554beacae455b9d3bc79c083e6235d5f4b519cb6df00e4032
-      size: 2259
-  original:
-    hackage: cryptohash-0.11.9
 snapshots:
 - completed:
-    sha256: afd5ba64ab602cabc2d3942d3d7e7dd6311bc626dcb415b901eaf576cb62f0ea
-    size: 640060
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/22.yaml
-  original: lts-21.22
+    sha256: 098936027eaa1ef14e2b8eb39d9933a973894bb70a68684a1bbf00730249879b
+    size: 720001
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/33.yaml
+  original: lts-22.33
