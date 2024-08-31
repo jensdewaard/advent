@@ -1,4 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Main (main) where
 
 import Options.Applicative
@@ -90,7 +91,9 @@ aocOpts :: Integer -> IO AoCOpts
 aocOpts y = do 
     handle <- openFile "./aoc-key" ReadMode
     key <- hGetContents handle
-    return (defaultAoCOpts y key) { _aCache = Just "./cache"}
+    let uAgent = AoCUserAgent {_auaRepo="github.com/jensdewaard/advent", _auaEmail="adventofcode.com.diffused666@passmail.net"}
+    let opts = defaultAoCOpts uAgent y key
+    return opts { _aCache = Just "./cache"}
 
 get :: Integer -> Integer -> IO ()
 get year day = do
