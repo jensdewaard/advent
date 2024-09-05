@@ -76,6 +76,8 @@ extra-deps:
   - vector-stream-0.1.0.0
   - witherable-0.4.2
 
+notify-if-nix-on-path: false
+
 nix:
   packages:
     - zlib
