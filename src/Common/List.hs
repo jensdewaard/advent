@@ -1,4 +1,5 @@
-module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll, uninterleave, splitOn) where
+{-# LANGUAGE GADTs #-}
+module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll, uninterleave, splitOn, swapElems, moveElem) where
 
 import Common.Prelude
 import Data.List (delete, isPrefixOf)
@@ -27,7 +28,7 @@ sumWith f =  sum . map f
 
 -- | Count the number of elements in a list that satisfy a predicate.
 count :: Predicate a -> [a] -> Int
-count pred = length . filter pred
+count predicate = length . filter predicate
 
 -- | The number of occurences of an element in a list.
 occur :: Eq a => [a] -> [(a, Int)]
@@ -88,7 +89,7 @@ splitOn :: Eq a => [a] -> [a] -> [[a]]
 splitOn _ [] = []
 splitOn split list = case indexOf split list of
   Nothing -> [list]
-  Just i  -> take i list : splitOn split (drop (i + length split) list) 
+  Just i  -> take i list : splitOn split (drop (i + length split) list)
 
 -- | Returns the first index of the needle if contained in the haystack
 --   and Nothing otherwise.
@@ -97,6 +98,32 @@ indexOf :: Eq a => [a] -> [a] -> Maybe Int
 indexOf = indexOf' 0 where
     indexOf' :: Eq a => Int -> [a] -> [a] -> Maybe Int
     indexOf' _ _ [] = Nothing
-    indexOf' index needle haystack = if needle `isPrefixOf` haystack 
-      then Just index 
+    indexOf' index needle haystack = if needle `isPrefixOf` haystack
+      then Just index
       else indexOf' (index+1) needle (tail haystack)
+
+swapElems :: Int -> Int -> [a] -> [a]
+swapElems i j xs
+  | i > length xs = error "index i out of bounds"
+  | j > length xs = error "index j out of bounds"
+  | i == j = xs
+  | i > j  = swapElems j i xs
+swapElems i j xs = let
+              elemI = xs !! i
+              elemJ = xs !! j
+              initial = take i xs
+              middle = take (j - i - 1) $ drop (i+1) xs
+              final = drop (j+1) xs
+                   in initial ++ [elemJ] ++ middle ++ [elemI] ++ final
+
+moveElem :: Int -> Int -> [a] -> [a]
+moveElem i j s
+  | i == j = s
+moveElem x y s = let
+        initial = take x s
+        elemX = s !! x
+        final = drop (x+1) s
+        s' = initial ++ final
+        initial' = take y s'
+        final' = drop y s'
+                     in initial' ++ [elemX] ++ final'

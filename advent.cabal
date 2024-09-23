@@ -72,6 +72,7 @@ library
       Challenges.Y2016.Day18
       Challenges.Y2016.Day19
       Challenges.Y2016.Day20
+      Challenges.Y2016.Day21
       Challenges.Y2019
       Challenges.Y2019.Day01
       Challenges.Y2019.Day02
@@ -195,8 +196,10 @@ test-suite advent-test
   other-modules:
       Common.CharTests
       Common.IntervalTests
+      Common.ListTests
       Common.MathTests
       FloydWarshallTests
+      Y2016Tests.Day21
       Y2019Tests.Day01
       Y2019Tests.Day04
       Paths_advent
