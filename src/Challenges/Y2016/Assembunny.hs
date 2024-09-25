@@ -1,16 +1,25 @@
-module Challenges.Y2016.Assembunny (runProgram, startState, Instruction, instruction, a_) where
+module Challenges.Y2016.Assembunny (runProgram, mkProgram, Instruction, instruction, a_) where
 import Common.Parsing (int)
 import Data.Map (Map)
 import Text.ParserCombinators.Parsec
 import qualified Data.Map as Map
 
-runProgram :: ProgramState -> [Instruction] ->  ProgramState
-runProgram ps@ProgramState{ptr = p} is =
-    if p >= length is || p < 0 then ps
-    else let ps' = exec ps (is !! p) in runProgram ps' is
+runProgram :: ProgramState ->  ProgramState
+runProgram ps@ProgramState{ptr = p} =
+    if p >= length (ins ps) || p < 0
+       then ps
+       else let ps' = exec ps (ins ps !! p) in runProgram ps'
+
+mkProgram :: [Int] -> [Instruction] -> ProgramState
+mkProgram mems instructions = ProgramState {
+    ptr = 0,
+    ins = instructions,
+    memory = Map.fromList $ zip [A,B,C,D] mems
+    }
 
 data ProgramState = ProgramState {
     ptr :: Int,
+    ins :: [Instruction],
     memory :: Map Register Int
     } deriving (Eq, Show)
 
@@ -117,7 +126,3 @@ register = (char 'a' >> return A) <|>
 
 a_ :: ProgramState -> Int
 a_ ProgramState { memory = m } = m Map.! A
-
-startState :: Int -> ProgramState
-startState i = ProgramState { ptr = 0, memory = m} where
-    m = Map.fromList [(A,0),(B,0), (C,i), (D,0)]
