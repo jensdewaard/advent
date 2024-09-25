@@ -1,5 +1,24 @@
 {-# LANGUAGE GADTs #-}
-module Common.List (count, chunksOf, endsWith, longest, prepend, findCycle, takeUntil, occur, sumWith, rotate, rotateR, deleteAll, uninterleave, splitOn, swapElems, moveElem) where
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+module Common.List (
+  chunksOf,
+  count,
+  deleteAll,
+  endsWith,
+  findCycle,
+  longest,
+  moveElem,
+  occur,
+  prepend,
+  replace,
+  rotate,
+  rotateR,
+  splitOn,
+  sumWith,
+  swapElems,
+  takeUntil,
+  uninterleave,
+  ) where
 
 import Common.Prelude
 import Data.List (delete, isPrefixOf)
@@ -127,3 +146,11 @@ moveElem x y s = let
         initial' = take y s'
         final' = drop y s'
                      in initial' ++ [elemX] ++ final'
+
+-- | Replaces the element at the given index of a list.
+replace :: Int -> a -> [a] -> [a]
+replace _ _ [] = error "replace: index out of bounds"
+replace n r (a:as)
+  | n < 0      = replace (negate n) a (reverse as)
+  | n == 0     = r:as
+  | otherwise  = a : replace (pred n) r as
