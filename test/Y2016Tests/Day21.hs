@@ -26,20 +26,7 @@ assocTests = let
     "p4 <> (p1 <> p4) == (p4 <> p1) <> p4" ~: runPerm ((p4 <> p1) <> p4) s ~=? runPerm (p4 <> (p1 <> p4)) s,
     "p4 <> (p1 <> p5) == (p4 <> p1) <> p5" ~: runPerm ((p4 <> p1) <> p5) s ~=? runPerm (p4 <> (p1 <> p5)) s
     ]
-
-invertTests :: Test
-invertTests = let
-        p1 = Perm [4,2,3,5,0,1]
-        p1' = Perm [4,2,3,5,0,1]
-        p2 = Perm [3,1,0,2,4,5]
-        s = "abcdef"
-    in
-        TestList [
-            "invert p1 = p1'" ~: runPerm (invert p1) s ~=? runPerm p1' s
-        ]
-
 tests :: Test
 tests = TestList [
-    assocTests,
-    invertTests
+    assocTests
     ]

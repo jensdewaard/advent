@@ -70,7 +70,7 @@ showMapWith :: (a -> Char) -> [(Coord,a)] -> String
 showMapWith f m = showMap $ map (second f) m
 
 showMap :: [(Coord, Char)] -> String
-showMap m = unlines $ map (showLine ms) [1..maxY] where
+showMap m = unlines $ map (showLine ms) [0..maxY] where
     ms = sort m
     maxY = maximum $ map (snd .fst) ms
 
