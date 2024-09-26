@@ -20,3 +20,7 @@ test year day:
 
 start year day:
     @stack run start {{year}} {{day}}
+
+create year:
+    mkdir -p `src/Challenges/Y{{year}}
+    echo {01..25} | xargs -n1 just start {{year}}
