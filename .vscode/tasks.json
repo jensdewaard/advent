@@ -9,42 +9,47 @@
   },
   "tasks": [
     {
-      // F7
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "label": "haskell build",
-      "type": "shell",
-      //"command": "cabal configure && cabal build"
-      "command": "stack build"
-    },
-    {
-      // F6
-      "group": "build",
-      "type": "shell",
-      "label": "haskell clean & build",
-      //"command": "cabal clean && cabal configure && cabal build"
-      "command": "stack clean && stack build"
-      //"command": "stack clean ; stack build"  // for powershell
-    },
-    {
-      // F8
       "group": {
         "kind": "test",
         "isDefault": true
       },
       "type": "shell",
-      "label": "haskell test",
-      //"command": "cabal test"
-      "command": "stack test"
+      "label": "Test a day solution",
+      "command": "just",
+      "args": [
+        "test",
+        "${input:year}",
+        "${input:day}"
+      ],
+      "runOptions": {"reevaluateOnRerun": false}
     },
     {
-      // F6
-      "isBackground": true,
       "type": "shell",
-      "label": "haskell watch",
-      "command": "stack build --test --no-run-tests --file-watch"
+      "label": "Start a new solution",
+      "command": "just",
+      "args": [
+        "start",
+        "${input:year}",
+        "${input:day}"
+      ],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "year",
+      "type": "pickString",
+      "default": "2024",
+      "options": [
+        "2019",
+        "2024",
+      ],
+      "description": "The year" 
+    },
+    {
+      "id": "day",
+      "type": "promptString",
+      "description": "The day"
     }
   ]
 }
