@@ -8,7 +8,7 @@ import Data.Bifunctor (second)
 solutionA :: String -> String
 solutionA = parseProgram ==> (head . memory . state . runOpProgram . mkProg)
 
-mkProg :: OpProgram  -> ProgState
+mkProg :: OpProgram Int -> ProgState Int
 mkProg = snd . flip initMemory (12,2)
 
 
@@ -23,10 +23,10 @@ solutionB = parseProgram ==> (\prog ->
 answer :: (Int, Int) -> Int
 answer (n, v) = 100 * n + v
 
-initMemory :: OpProgram -> (Int, Int) -> ((Int, Int), ProgState)
+initMemory :: OpProgram Int -> (Int, Int) -> ((Int, Int), ProgState Int)
 initMemory prog (noun, verb) = ((noun, verb), ProgState { memory = opReplace 2 verb $ opReplace 1 noun prog, ptr = 0})
 
-isCorrect :: ((Int, Int), ProgState) -> Bool
+isCorrect :: ((Int, Int), ProgState Int) -> Bool
 isCorrect (_, p) = head (memory p) == 19690720
 
 posSol :: [(Int, Int)]

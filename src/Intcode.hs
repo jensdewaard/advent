@@ -3,42 +3,75 @@ module Intcode (ProgState (ProgState, memory, ptr), OpProgram, runOpProgram, par
 
 import Text.ParserCombinators.Parsec
 
-type OpProgram = [Int]
+type OpProgram a = [a]
+data Op = Multiply | Addition deriving Eq
+data Value = Const Int | Var Char | Eqn Op Value Value deriving Eq
 
-data OpCode =
+instance Num Value where
+  (+) :: Value -> Value -> Value
+  (+) (Const a) (Const b) = Const (a + b)
+  (+) va vb = Eqn Addition va vb
+  (*) :: Value -> Value -> Value
+  (*) (Const a) (Const b) = Const (a * b)
+  (*) va vb = Eqn Multiply va vb
+  abs :: Value -> Value
+  abs = undefined
+  signum :: Value -> Value
+  signum = undefined
+  fromInteger :: Integer -> Value
+  fromInteger = Const . fromInteger
+  negate :: Value -> Value
+  negate = undefined
+
+data OpCode a =
     OpFinished
-    | OpAdd Int Int Int
-    | OpMult Int Int Int
+    | OpAdd a a a
+    | OpMult a a a
     deriving Eq
 
-runOpProgram :: Monad m => ProgState -> m ProgState
-runOpProgram s = do 
-    let i = readInstruction s 
+runOpProgram :: (Eq a, Num a, Monad m, Ref a) => ProgState a -> m (ProgState a)
+runOpProgram s = do
+    let i = readInstruction s
     s' <- runOpCode i s
-    if i == OpFinished 
-        then pure s 
+    if i == OpFinished
+        then pure s
         else runOpProgram s'
 
 
-data ProgState = ProgState 
-    { memory    :: OpProgram
+data ProgState a =  ProgState
+    { memory    :: OpProgram a
     , ptr       :: Int
     } deriving Eq
 
-parseProgram :: Parser OpProgram
-parseProgram = (read <$> many1 digit) `sepBy1` char ','
+parseProgram :: Parser (OpProgram Int)
+parseProgram = parseValue `sepBy1` char ','
 
-runOpCode :: Monad m => OpCode -> ProgState -> m ProgState
+parseValue :: Read a => Parser a
+parseValue = do
+    read <$> many1 digit
+
+class Ref a where
+    get :: [a] -> a -> a
+
+instance Ref Int where
+    get :: [Int] -> Int -> Int
+    get l x = l !! x
+
+instance Ref Value where
+  get :: [Value] -> Value -> Value
+  get l (Const n) = l !! n
+
+runOpCode :: (Eq a, Num a, Monad m, Ref a) => OpCode a -> ProgState a -> m (ProgState a)
 runOpCode OpFinished prog = pure prog
-runOpCode (OpAdd opA opB res) prog@(ProgState { memory = mem, ptr = p } ) = pure $ prog { memory = opReplace res ((mem !! opA) + (mem !! opB)) mem, ptr = p+4 }
-runOpCode (OpMult opA opB res) prog@(ProgState { memory = mem, ptr = p} ) = pure $ prog { memory = opReplace res ((mem !! opA) * (mem !! opB)) mem, ptr = p+4 }
+runOpCode (OpAdd opA opB res) prog@(ProgState { memory = mem, ptr = p } ) = pure $ prog { memory = opReplace res (get mem opA + get mem opB) mem, ptr = p+4 }
+runOpCode (OpMult opA opB res) prog@(ProgState { memory = mem, ptr = p} ) = pure $ prog { memory = opReplace res (get mem opA * get mem opB) mem, ptr = p+4 }
 
-opReplace :: Int -> Int -> OpProgram -> OpProgram
+opReplace :: (Eq a, Num a) => a -> a -> OpProgram a -> OpProgram a
 opReplace 0 val (_ : os) = val : os
 opReplace idx val (o : os) = o : opReplace (idx - 1) val os
 opReplace _ _ [] = []
 
-readInstruction :: ProgState -> OpCode
+readInstruction :: (Eq a, Num a) => ProgState a -> OpCode a
 readInstruction ProgState { memory = mem, ptr = p }
     | mem !! p == 99 = OpFinished
     | mem !! p == 1 = OpAdd (mem !! (p+1)) (mem !! (p+2)) (mem !! (p+3))
