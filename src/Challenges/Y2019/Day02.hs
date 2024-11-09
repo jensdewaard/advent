@@ -1,22 +1,24 @@
+{-# LANGUAGE GADTs #-}
 module Challenges.Y2019.Day02 (solutionA, solutionB) where
 
 import Common.Prelude
 import Intcode
-import qualified Data.Bifunctor
+import Data.Bifunctor (second)
 
 solutionA :: String -> String
-solutionA = parseProgram ==> (head . memory . runOpProgram . mkProg)
+solutionA = parseProgram ==> (head . memory . state . runOpProgram . mkProg)
 
 mkProg :: OpProgram  -> ProgState
 mkProg = snd . flip initMemory (12,2)
 
+
 solutionB :: String -> String
-solutionB = parseProgram ==> (\prog -> 
-    answer 
-    $ fst 
-    $ head 
-    $ filter isCorrect 
-    $ map (Data.Bifunctor.second runOpProgram . initMemory prog) posSol)
+solutionB = parseProgram ==> (\prog ->
+    answer
+    $ fst
+    $ head
+    $ filter isCorrect
+    $ map (second (state . runOpProgram) . initMemory prog) posSol)
 
 answer :: (Int, Int) -> Int
 answer (n, v) = 100 * n + v

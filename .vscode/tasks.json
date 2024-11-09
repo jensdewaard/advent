@@ -21,7 +21,23 @@
         "${input:year}",
         "${input:day}"
       ],
-      "runOptions": {"reevaluateOnRerun": false}
+      "runOptions": {
+        "reevaluateOnRerun": false
+      }
+    },
+    {
+      "type": "shell",
+      "label": "Solve a day solution",
+      "command": "just",
+      "args": [
+        "solve",
+        "${input:year}",
+        "${input:day}"
+      ],
+      "runOptions": {
+        "reevaluateOnRerun": false
+      },
+      "problemMatcher": []
     },
     {
       "type": "shell",
@@ -33,6 +49,18 @@
         "${input:day}"
       ],
       "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "Build program",
+      "command": "just",
+      "args": [
+        "build"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ],
   "inputs": [
