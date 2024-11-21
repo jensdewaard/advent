@@ -1,4 +1,3 @@
-{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -64,7 +63,8 @@ runOpCode (OpInput res) prog@(ProgState { memory = mem, ptr = p }) = do
   pure $ prog { memory = opReplace res v mem, ptr = p + 2}
 runOpCode (OpOutput res) prog@(ProgState { memory = mem, ptr = p}) = do
   let v = mem !! fromInteger (toInteger res)
-  writer (prog, [v])
+  _ <- writer (prog, [v])
+  pure $ prog { memory = mem, ptr = p + 2}
 
 
 opReplace :: Int -> Int -> OpProgram -> OpProgram
@@ -78,23 +78,3 @@ readInstruction ProgState { memory = mem, ptr = p }
     | mem !! p == 1 = OpAdd (mem !! (p+1)) (mem !! (p+2)) (mem !! (p+3))
     | mem !! p == 2 = OpMult (mem !! (p+1)) (mem !! (p+2)) (mem !! (p+3))
     | otherwise = error "undefined opcode"
-
-data LogM a = LogM
-    { output :: [String]
-    , state :: a
-    }
-
-instance Functor LogM where
-  fmap :: (a -> b) -> LogM a -> LogM b
-  fmap f (LogM o a) = LogM o (f a)
-
-instance Applicative LogM where
-  pure :: a -> LogM a
-  pure = LogM []
-  (<*>) :: LogM (a -> b) -> LogM a -> LogM b
-  (<*>) (LogM o f) (LogM o'  a) = LogM (o ++ o') (f a)
-
-instance Monad LogM where
-  (>>=) :: LogM a -> (a -> LogM b) -> LogM b
-  (>>=) (LogM o  s) f = let (LogM o'  s') = f s in LogM (o ++ o') s'
-
