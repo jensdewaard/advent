@@ -41,6 +41,7 @@ dependencies:
 - cryptonite
 - bytestring
 - memory
+- transformers
 
 ghc-options:
 - -Wall

@@ -188,6 +188,7 @@ library
     , split
     , text
     , time
+    , transformers
   default-language: Haskell2010
 
 executable advent-exe
@@ -220,6 +221,7 @@ executable advent-exe
     , split
     , text
     , time
+    , transformers
   default-language: Haskell2010
 
 test-suite advent-test
@@ -261,4 +263,5 @@ test-suite advent-test
     , split
     , text
     , time
+    , transformers
   default-language: Haskell2010
