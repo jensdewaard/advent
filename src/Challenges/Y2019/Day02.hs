@@ -8,7 +8,7 @@ import Intcode
 import Data.Bifunctor (second)
 
 solutionA :: String -> String
-solutionA = parseProgram ==> head . memory . runProgram . mkProg
+solutionA = parseProgram ==> head . memory . fst . runProgram . mkProg
 
 mkProg :: OpProgram -> ProgState
 mkProg = flip initMemory (12,2)
@@ -20,7 +20,7 @@ solutionB = parseProgram ==> (\prog ->
     $ fst
     $ head
     $ filter isCorrect
-    $ map (\s -> second (memory . runProgram) (s, initMemory prog s)) posSol
+    $ map (\s -> second (memory . fst . runProgram) (s, initMemory prog s)) posSol
     )
 
 answer :: (Int, Int) -> Int

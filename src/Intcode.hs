@@ -10,15 +10,19 @@ import Control.Monad.Reader
 import Control.Monad.Writer.Class
 import Control.Monad.Identity (Identity(runIdentity))
 import Control.Monad.Writer (runWriter)
+import Common.Parsing (int)
 
 type OpProgram = [Int]
 
+data Mode = Immediate | Position deriving Eq
+type Ref = (Mode, Int)
+
 data OpCode =
     OpFinished
-    | OpAdd Int Int Int
-    | OpMult Int Int Int
+    | OpAdd Ref Ref Int
+    | OpMult Ref Ref Int
     | OpInput Int
-    | OpOutput Int
+    | OpOutput Ref
     deriving Eq
 
 runOpProgram :: (MonadReader Int m, MonadWriter [Int] m) => ProgState -> m ProgState
@@ -29,13 +33,13 @@ runOpProgram s = do
         then pure s
         else runOpProgram s'
 
-runProgramWithInput :: Int -> ProgState -> ProgState
+runProgramWithInput :: Int -> ProgState -> (ProgState, [Int])
 runProgramWithInput x p = let
     m = runOpProgram p
     endState = ((\ n -> runIdentity $ runReaderT n x) . mapReaderT (pure . runWriter)) m
-    in fst endState
+    in endState
 
-runProgram :: ProgState -> ProgState
+runProgram :: ProgState -> (ProgState, [Int])
 runProgram = runProgramWithInput 0
 
 initMemory :: OpProgram -> (Int, Int) -> ProgState
@@ -44,26 +48,24 @@ initMemory prog (noun, verb) = ProgState { memory = opReplace 2 verb $ opReplace
 data ProgState =  ProgState
     { memory    :: OpProgram
     , ptr       :: Int
-    } deriving Eq
+    } deriving (Eq, Show)
 
 parseProgram :: Parser OpProgram
-parseProgram = parseValue `sepBy1` char ','
+parseProgram = int `sepBy1` char ','
 
-parseValue :: Read a => Parser a
-parseValue = do
-    read <$> many1 digit
-
+get :: OpProgram -> Ref -> Int
+get _ (Immediate, n) = n
+get mem (Position, n) = mem !! n
 
 runOpCode :: (MonadReader Int m, MonadWriter [Int] m) => OpCode -> ProgState -> m ProgState
 runOpCode OpFinished prog = pure prog
-runOpCode (OpAdd opA opB res) prog@(ProgState { memory = mem, ptr = p } ) = pure $ prog { memory = opReplace res (mem !! opA + mem !! opB) mem, ptr = p+4 }
-runOpCode (OpMult opA opB res) prog@(ProgState { memory = mem, ptr = p} ) = pure $ prog { memory = opReplace res (mem !! opA * mem !! opB) mem, ptr = p+4 }
+runOpCode (OpAdd opA opB res) prog@(ProgState { memory = mem, ptr = p } ) = pure $ prog { memory = opReplace res (get mem opA + get mem opB) mem, ptr = p+4 }
+runOpCode (OpMult opA opB res) prog@(ProgState { memory = mem, ptr = p} ) = pure $ prog { memory = opReplace res (get mem opA * get mem opB) mem, ptr = p+4 }
 runOpCode (OpInput res) prog@(ProgState { memory = mem, ptr = p }) = do
   v <- ask
   pure $ prog { memory = opReplace res v mem, ptr = p + 2}
 runOpCode (OpOutput res) prog@(ProgState { memory = mem, ptr = p}) = do
-  let v = mem !! fromInteger (toInteger res)
-  _ <- writer (prog, [v])
+  _ <- writer (prog, [get mem res])
   pure $ prog { memory = mem, ptr = p + 2}
 
 
@@ -75,6 +77,15 @@ opReplace _ _ [] = []
 readInstruction :: ProgState -> OpCode
 readInstruction ProgState { memory = mem, ptr = p }
     | mem !! p == 99 = OpFinished
-    | mem !! p == 1 = OpAdd (mem !! (p+1)) (mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 2 = OpMult (mem !! (p+1)) (mem !! (p+2)) (mem !! (p+3))
-    | otherwise = error "undefined opcode"
+    | mem !! p == 1 = OpAdd (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 1001 = OpAdd (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 0101 = OpAdd (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 1101 = OpAdd (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 2 = OpMult (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 1002 = OpMult (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 0102 = OpMult (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 1102 = OpMult (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 3 = OpInput (mem !! (p+1))
+    | mem !! p == 4 = OpOutput (Position, mem !! (p+1))
+    | mem !! p == 104 = OpOutput (Immediate, mem !! (p+1))
+    | otherwise = error $ "undefined opcode: " ++ show (mem !! p)
