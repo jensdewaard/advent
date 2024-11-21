@@ -23,6 +23,10 @@ data OpCode =
     | OpMult Ref Ref Int
     | OpInput Int
     | OpOutput Ref
+    | OpJmpT Ref Ref
+    | OpJmpF Ref Ref
+    | OpLt Ref Ref Ref
+    | OpEq Ref Ref Ref
     deriving Eq
 
 runOpProgram :: (MonadReader Int m, MonadWriter [Int] m) => ProgState -> m ProgState
@@ -67,6 +71,18 @@ runOpCode (OpInput res) prog@(ProgState { memory = mem, ptr = p }) = do
 runOpCode (OpOutput res) prog@(ProgState { memory = mem, ptr = p}) = do
   _ <- writer (prog, [get mem res])
   pure $ prog { memory = mem, ptr = p + 2}
+runOpCode (OpJmpT p1 p2) prog@(ProgState { memory = mem, ptr = p}) = pure $ if get mem p1 /= 0 
+  then prog { ptr = get mem p2 }
+  else prog { ptr = p + 3 }
+runOpCode (OpJmpF p1 p2) prog@(ProgState { memory = mem, ptr = p}) = pure $ if get mem p1 == 0 
+  then prog { ptr = get mem p2 }
+  else prog { ptr = p + 3 }
+runOpCode (OpLt p1 p2 p3) prog@(ProgState { memory = mem, ptr = p}) = pure $ if get mem p1 < get mem p2 
+  then prog { memory = opReplace (get mem p3) 1 mem, ptr = p + 4 }
+  else prog { memory = opReplace (get mem p3) 0 mem, ptr = p + 4 }
+runOpCode (OpEq p1 p2 p3) prog@(ProgState { memory = mem, ptr = p}) = pure $ if get mem p1 == get mem p2 
+  then prog { memory = opReplace (get mem p3) 1 mem, ptr = p + 4 }
+  else prog { memory = opReplace (get mem p3) 0 mem, ptr = p + 4 }
 
 
 opReplace :: Int -> Int -> OpProgram -> OpProgram
@@ -77,15 +93,39 @@ opReplace _ _ [] = []
 readInstruction :: ProgState -> OpCode
 readInstruction ProgState { memory = mem, ptr = p }
     | mem !! p == 99 = OpFinished
-    | mem !! p == 1 = OpAdd (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 1001 = OpAdd (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 0101 = OpAdd (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 1101 = OpAdd (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 2 = OpMult (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 1002 = OpMult (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 0102 = OpMult (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 1102 = OpMult (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-    | mem !! p == 3 = OpInput (mem !! (p+1))
-    | mem !! p == 4 = OpOutput (Position, mem !! (p+1))
-    | mem !! p == 104 = OpOutput (Immediate, mem !! (p+1))
-    | otherwise = error $ "undefined opcode: " ++ show (mem !! p)
+    | mem !! p == 00001 = OpAdd (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01001 = OpAdd (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 00101 = OpAdd (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01101 = OpAdd (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 00002 = OpMult (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01002 = OpMult (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 00102 = OpMult (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01102 = OpMult (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 00003 = OpInput (mem !! (p+1))
+    | mem !! p == 00004 = OpOutput (Position, mem !! (p+1))
+    | mem !! p == 00104 = OpOutput (Immediate, mem !! (p+1))
+    | mem !! p == 00005 = OpJmpT (Position, mem !! (p+1)) (Position, mem !! (p+2))
+    | mem !! p == 00105 = OpJmpT (Immediate, mem !! (p+1)) (Position, mem !! (p+2))
+    | mem !! p == 01005 = OpJmpT (Position, mem !! (p+1)) (Immediate, mem !! (p+2))
+    | mem !! p == 01105 = OpJmpT (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2))
+    | mem !! p == 00006 = OpJmpF (Position, mem !! (p+1)) (Position, mem !! (p+2))
+    | mem !! p == 00106 = OpJmpF (Immediate, mem !! (p+1)) (Position, mem !! (p+2))
+    | mem !! p == 01006 = OpJmpF (Position, mem !! (p+1)) (Immediate, mem !! (p+2))
+    | mem !! p == 01106 = OpJmpF (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2))
+    | mem !! p == 00007 = OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 00107 = OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 01007 = OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 01107 = OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 10007 = OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 10107 = OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 11007 = OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 11107 = OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 00008 = OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 00108 = OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 01008 = OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 01108 = OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
+    | mem !! p == 10008 = OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 10108 = OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 11008 = OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 11108 = OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | otherwise = error $ "undefined opcode: " ++ show (mem !! p) ++ ", at position " ++ show p
