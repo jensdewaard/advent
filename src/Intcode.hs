@@ -25,8 +25,8 @@ data OpCode =
     | OpOutput Ref
     | OpJmpT Ref Ref
     | OpJmpF Ref Ref
-    | OpLt Ref Ref Ref
-    | OpEq Ref Ref Ref
+    | OpLt Ref Ref Int
+    | OpEq Ref Ref Int
     deriving Eq
 
 runOpProgram :: (MonadReader Int m, MonadWriter [Int] m) => ProgState -> m ProgState
@@ -78,11 +78,11 @@ runOpCode (OpJmpF p1 p2) prog@(ProgState { memory = mem, ptr = p}) = pure $ if g
   then prog { ptr = get mem p2 }
   else prog { ptr = p + 3 }
 runOpCode (OpLt p1 p2 p3) prog@(ProgState { memory = mem, ptr = p}) = pure $ if get mem p1 < get mem p2 
-  then prog { memory = opReplace (get mem p3) 1 mem, ptr = p + 4 }
-  else prog { memory = opReplace (get mem p3) 0 mem, ptr = p + 4 }
+  then prog { memory = opReplace p3 1 mem, ptr = p + 4 }
+  else prog { memory = opReplace p3 0 mem, ptr = p + 4 }
 runOpCode (OpEq p1 p2 p3) prog@(ProgState { memory = mem, ptr = p}) = pure $ if get mem p1 == get mem p2 
-  then prog { memory = opReplace (get mem p3) 1 mem, ptr = p + 4 }
-  else prog { memory = opReplace (get mem p3) 0 mem, ptr = p + 4 }
+  then prog { memory = opReplace p3 1 mem, ptr = p + 4 }
+  else prog { memory = opReplace p3 0 mem, ptr = p + 4 }
 
 
 opReplace :: Int -> Int -> OpProgram -> OpProgram
@@ -112,20 +112,20 @@ readInstruction ProgState { memory = mem, ptr = p }
     | mem !! p == 00106 = OpJmpF (Immediate, mem !! (p+1)) (Position, mem !! (p+2))
     | mem !! p == 01006 = OpJmpF (Position, mem !! (p+1)) (Immediate, mem !! (p+2))
     | mem !! p == 01106 = OpJmpF (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2))
-    | mem !! p == 00007 = OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 00107 = OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 01007 = OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 01107 = OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 10007 = OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
-    | mem !! p == 10107 = OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
-    | mem !! p == 11007 = OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
-    | mem !! p == 11107 = OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
-    | mem !! p == 00008 = OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 00108 = OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 01008 = OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 01108 = OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Position, mem !! (p+3))
-    | mem !! p == 10008 = OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
-    | mem !! p == 10108 = OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (Immediate, mem !! (p+3))
-    | mem !! p == 11008 = OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
-    | mem !! p == 11108 = OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (Immediate, mem !! (p+3))
+    | mem !! p == 00007 = OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 00107 = OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01007 = OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01107 = OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 10007 = OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 10107 = OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 11007 = OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 11107 = OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 00008 = OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 00108 = OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01008 = OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 01108 = OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 10008 = OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 10108 = OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 11008 = OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+    | mem !! p == 11108 = OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
     | otherwise = error $ "undefined opcode: " ++ show (mem !! p) ++ ", at position " ++ show p
