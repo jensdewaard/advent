@@ -11,7 +11,7 @@ solutionA :: String -> String
 solutionA = parseProgram ==> head . memory . runProgram . mkProg
 
 mkProg :: OpProgram -> ProgState
-mkProg = snd . flip initMemory (12,2)
+mkProg = flip initMemory (12,2)
 
 
 solutionB :: String -> String
@@ -20,7 +20,8 @@ solutionB = parseProgram ==> (\prog ->
     $ fst
     $ head
     $ filter isCorrect
-    $ map (second (memory . runProgram) . initMemory prog) posSol)
+    $ map (\s -> second (memory . runProgram) (s, initMemory prog s)) posSol
+    )
 
 answer :: (Int, Int) -> Int
 answer (n, v) = 100 * n + v

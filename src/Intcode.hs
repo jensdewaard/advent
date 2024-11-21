@@ -39,8 +39,8 @@ runProgramWithInput x p = let
 runProgram :: ProgState -> ProgState
 runProgram = runProgramWithInput 0
 
-initMemory :: OpProgram -> (Int, Int) -> ((Int, Int), ProgState)
-initMemory prog (noun, verb) = ((noun, verb), ProgState { memory = opReplace 2 verb $ opReplace 1 noun prog, ptr = 0})
+initMemory :: OpProgram -> (Int, Int) -> ProgState
+initMemory prog (noun, verb) = ProgState { memory = opReplace 2 verb $ opReplace 1 noun prog, ptr = 0}
 
 data ProgState =  ProgState
     { memory    :: OpProgram
