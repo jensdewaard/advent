@@ -4,14 +4,11 @@ module Challenges.Y2019.Day02 (solutionA, solutionB) where
 
 import Common.Prelude ( (==>) )
 import Intcode
-    ( ProgState(..), OpProgram, parseProgram, runInterpreter, initMemory, mkProgram, opReplace )
+    ( Memory, parseProgram, runInterpreter, initMemory, mkProgram, getMemory, memEdit, modifyMemory, address)
 import Data.Bifunctor (second)
 
 solutionA :: String -> String
-solutionA = parseProgram ==> head . memory . runInterpreter . modifyMem . mkProgram
-
-modifyMem :: ProgState -> ProgState
-modifyMem ps = ps { memory = opReplace 2 2 $ opReplace 1 12 $ memory ps }
+solutionA = parseProgram ==> address 0 . getMemory . runInterpreter . modifyMemory (memEdit 2 2 . memEdit 1 12) . mkProgram
 
 solutionB :: String -> String
 solutionB = parseProgram ==> (\prog ->
@@ -19,15 +16,15 @@ solutionB = parseProgram ==> (\prog ->
     $ fst
     $ head
     $ filter isCorrect
-    $ map (\s -> second (memory . runInterpreter) (s, initMemory prog s)) posSol
+    $ map (\s -> second (getMemory . runInterpreter) (s, initMemory prog s)) posSol
     )
 
 answer :: (Int, Int) -> Int
 answer (n, v) = 100 * n + v
 
 
-isCorrect :: ((Int, Int), OpProgram) -> Bool
-isCorrect (_, p) = head p == 19690720
+isCorrect :: ((Int, Int), Memory) -> Bool
+isCorrect (_, p) = address 0 p == 19690720
 
 posSol :: [(Int, Int)]
 posSol = [(x, y) | x <- [0..100], y <- [0..100]]

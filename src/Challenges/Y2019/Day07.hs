@@ -1,7 +1,7 @@
 module Challenges.Y2019.Day07 (solutionA, solutionB) where
 import Common.Prelude
 import Data.List (permutations, singleton)
-import Intcode (mkProgramWithInput, parseProgram, ProgState(..), Ref(..), runInterpreter, runInterpreterUntil, peekInstruction, OpCode (..), OpProgram)
+import Intcode (mkProgramWithInput, parseProgram, ProgState(..), Ref(..), runInterpreter, runInterpreterUntil, peekInstruction, OpCode (..), OpProgram, getMemory)
 
 solutionA :: String -> String
 solutionA = solve parseProgram (\p -> let
@@ -52,6 +52,6 @@ run inputA ms = let
     nextSet = runMachines ms inputA
     outLast = last $ outputs $ last ms
     outE = last $ outputs $ last nextSet
-    in (if any ((==OpFinished) . (\ps -> peekInstruction (memory ps) (ptr ps))) ms
+    in (if any ((==OpFinished) . (\ps -> peekInstruction (getMemory ps) (ptr ps))) ms
         then outLast
         else run outE nextSet)
