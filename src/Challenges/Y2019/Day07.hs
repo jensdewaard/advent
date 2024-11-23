@@ -1,7 +1,7 @@
 module Challenges.Y2019.Day07 (solutionA, solutionB) where
 import Common.Prelude
 import Data.List (permutations, singleton)
-import Intcode (mkProgramWithInput, parseProgram, ProgState(..), runInterpreter, runInterpreterUntil, peekInstruction, OpCode (..), Mode (..), OpProgram, mkProgram)
+import Intcode (mkProgramWithInput, parseProgram, ProgState(..), Ref(..), runInterpreter, runInterpreterUntil, peekInstruction, OpCode (..), OpProgram)
 
 solutionA :: String -> String
 solutionA = solve parseProgram (\p -> let
@@ -24,11 +24,11 @@ getOutput = singleton . head . outputs
 
 runMachines :: [ProgState] -> Int -> [ProgState]
 runMachines m x = let
-        ma = runInterpreterUntil (OpOutput (Immediate, 0)) (head m) { inputs = inputs (head m) ++ [x], outputs = []}
-        mb = runInterpreterUntil (OpOutput (Immediate, 0)) (m !! 1) { inputs = inputs (m !! 1) ++ getOutput ma, outputs = []}
-        mc = runInterpreterUntil (OpOutput (Immediate, 0)) (m !! 2) { inputs = inputs (m !! 2) ++ getOutput mb, outputs = []}
-        md = runInterpreterUntil (OpOutput (Immediate, 0)) (m !! 3) { inputs = inputs (m !! 3) ++ getOutput mc, outputs = []}
-        me = runInterpreterUntil (OpOutput (Immediate, 0)) (m !! 4) { inputs = inputs (m !! 4) ++ getOutput md, outputs = []}
+        ma = runInterpreterUntil (OpOutput (Immediate 0)) (head m) { inputs = inputs (head m) ++ [x], outputs = []}
+        mb = runInterpreterUntil (OpOutput (Immediate 0)) (m !! 1) { inputs = inputs (m !! 1) ++ getOutput ma, outputs = []}
+        mc = runInterpreterUntil (OpOutput (Immediate 0)) (m !! 2) { inputs = inputs (m !! 2) ++ getOutput mb, outputs = []}
+        md = runInterpreterUntil (OpOutput (Immediate 0)) (m !! 3) { inputs = inputs (m !! 3) ++ getOutput mc, outputs = []}
+        me = runInterpreterUntil (OpOutput (Immediate 0)) (m !! 4) { inputs = inputs (m !! 4) ++ getOutput md, outputs = []}
     in [ma, mb, mc, md, me]
 
 initMachines :: OpProgram -> [Int] -> [ProgState]
