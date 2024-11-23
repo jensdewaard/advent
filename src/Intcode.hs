@@ -4,7 +4,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE GADTs #-}
-module Intcode (runInterpreter, ProgState(..), OpProgram, OpCode(..), nextInstruction, Mode(..), initMemory, mkProgram, mkProgramWithInput, parseProgram, runProgram, runProgramUntil, opReplace) where
+module Intcode (runInterpreter, runInterpreterUntil, peekInstruction, ProgState(..), OpProgram, OpCode(..), nextInstruction, Mode(..), initMemory, mkProgram, mkProgramWithInput, parseProgram, runProgram, runProgramUntil, opReplace) where
 
 import Text.ParserCombinators.Parsec ( Parser, char, sepBy1 )
 import Common.Parsing (int)
@@ -13,9 +13,10 @@ import Control.Monad.State
 type OpProgram = [Int]
 
 data Mode = Immediate | Position deriving Eq
-data IntCodeErrors = WrongOpCode Int | OutOfBounds Int | NoInput deriving (Eq, Show)
+data IntCodeError = WrongOpCode Int | OutOfBounds Int | NoInput deriving (Eq, Show)
 type Ref = (Mode, Int)
 type Pointer = Int
+
 
 
 data OpCode =
@@ -35,7 +36,7 @@ data ProgState = ProgState
     , ptr       :: Pointer
     , inputs    :: [Int]
     , outputs   :: [Int]
-    } | FailedState IntCodeErrors deriving (Eq, Show)
+    } | FailedState IntCodeError deriving (Eq, Show)
 
 class (MonadState ProgState m) => MonadPointer m where
   getPtr :: m Pointer
@@ -103,11 +104,14 @@ mkProgram m = ProgState {
   ptr = 0
   }
 
-mkProgramWithInput :: OpProgram -> [Int] -> ProgState
+mkProgramWithInput :: [Int] -> OpProgram -> ProgState
 mkProgramWithInput is mem = (empty ()) { memory = mem, inputs = is }
 
 runInterpreter :: ProgState -> ProgState
 runInterpreter = execState runProgram 
+
+runInterpreterUntil :: OpCode -> ProgState -> ProgState
+runInterpreterUntil op = execState (runProgramUntil op)
 
 runProgram :: (MonadPointer m, MonadMemory m, MonadInput m, MonadOutput m) =>  m ()
 runProgram = runProgramUntil OpFinished
@@ -202,47 +206,50 @@ opReplace 0 val (_ : os) = val : os
 opReplace idx val (o : os) = o : opReplace (idx - 1) val os
 opReplace _ _ [] = []
 
+peekInstruction :: OpProgram -> Pointer -> OpCode
+peekInstruction mem p = case mem !! p of
+        99 -> OpFinished
+        00001 -> OpAdd (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        01001 -> OpAdd (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        00101 -> OpAdd (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        01101 -> OpAdd (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        00002 -> OpMult (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        01002 -> OpMult (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        00102 -> OpMult (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        01102 -> OpMult (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        00003 -> OpInput (mem !! (p+1))
+        00004 -> OpOutput (Position, mem !! (p+1))
+        00104 -> OpOutput (Immediate, mem !! (p+1))
+        00005 -> OpJmpT (Position, mem !! (p+1)) (Position, mem !! (p+2))
+        00105 -> OpJmpT (Immediate, mem !! (p+1)) (Position, mem !! (p+2))
+        01005 -> OpJmpT (Position, mem !! (p+1)) (Immediate, mem !! (p+2))
+        01105 -> OpJmpT (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2))
+        00006 -> OpJmpF (Position, mem !! (p+1)) (Position, mem !! (p+2))
+        00106 -> OpJmpF (Immediate, mem !! (p+1)) (Position, mem !! (p+2))
+        01006 -> OpJmpF (Position, mem !! (p+1)) (Immediate, mem !! (p+2))
+        01106 -> OpJmpF (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2))
+        00007 -> OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        00107 -> OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        01007 -> OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        01107 -> OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        10007 -> OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        10107 -> OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        11007 -> OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        11107 -> OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        00008 -> OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        00108 -> OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        01008 -> OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        01108 -> OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        10008 -> OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        10108 -> OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
+        11008 -> OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        11108 -> OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
+        _ -> error "no such opcode"
+
 nextInstruction :: (MonadMemory m, MonadPointer m) => m OpCode
 nextInstruction = do
     mem <- getMem
     p <- getPtr
     if p >= length mem 
       then error "index out of bounds" 
-      else case mem !! p of
-        99 -> return OpFinished
-        00001 -> return $ OpAdd (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        01001 -> return $ OpAdd (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        00101 -> return $ OpAdd (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        01101 -> return $ OpAdd (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        00002 -> return $ OpMult (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        01002 -> return $ OpMult (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        00102 -> return $ OpMult (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        01102 -> return $ OpMult (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        00003 -> return $ OpInput (mem !! (p+1))
-        00004 -> return $ OpOutput (Position, mem !! (p+1))
-        00104 -> return $ OpOutput (Immediate, mem !! (p+1))
-        00005 -> return $ OpJmpT (Position, mem !! (p+1)) (Position, mem !! (p+2))
-        00105 -> return $ OpJmpT (Immediate, mem !! (p+1)) (Position, mem !! (p+2))
-        01005 -> return $ OpJmpT (Position, mem !! (p+1)) (Immediate, mem !! (p+2))
-        01105 -> return $ OpJmpT (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2))
-        00006 -> return $ OpJmpF (Position, mem !! (p+1)) (Position, mem !! (p+2))
-        00106 -> return $ OpJmpF (Immediate, mem !! (p+1)) (Position, mem !! (p+2))
-        01006 -> return $ OpJmpF (Position, mem !! (p+1)) (Immediate, mem !! (p+2))
-        01106 -> return $ OpJmpF (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2))
-        00007 -> return $ OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        00107 -> return $ OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        01007 -> return $ OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        01107 -> return $ OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        10007 -> return $ OpLt (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        10107 -> return $ OpLt (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        11007 -> return $ OpLt (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        11107 -> return $ OpLt (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        00008 -> return $ OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        00108 -> return $ OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        01008 -> return $ OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        01108 -> return $ OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        10008 -> return $ OpEq (Position, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        10108 -> return $ OpEq (Immediate, mem !! (p+1)) (Position, mem !! (p+2)) (mem !! (p+3))
-        11008 -> return $ OpEq (Position, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        11108 -> return $ OpEq (Immediate, mem !! (p+1)) (Immediate, mem !! (p+2)) (mem !! (p+3))
-        _ -> error "no such opcode"
+      else return $ peekInstruction mem p
