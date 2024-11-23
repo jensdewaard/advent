@@ -4,15 +4,14 @@ module Challenges.Y2019.Day02 (solutionA, solutionB) where
 
 import Common.Prelude ( (==>) )
 import Intcode
-    ( ProgState(..), OpProgram, parseProgram, runProgram, initMemory )
+    ( ProgState(..), OpProgram, parseProgram, runInterpreter, initMemory, mkProgram, opReplace )
 import Data.Bifunctor (second)
 
 solutionA :: String -> String
-solutionA = parseProgram ==> head . memory . fst . runProgram . mkProg
+solutionA = parseProgram ==> head . memory . runInterpreter . modifyMem . mkProgram
 
-mkProg :: OpProgram -> ProgState
-mkProg = flip initMemory (12,2)
-
+modifyMem :: ProgState -> ProgState
+modifyMem ps = ps { memory = opReplace 2 2 $ opReplace 1 12 $ memory ps }
 
 solutionB :: String -> String
 solutionB = parseProgram ==> (\prog ->
@@ -20,7 +19,7 @@ solutionB = parseProgram ==> (\prog ->
     $ fst
     $ head
     $ filter isCorrect
-    $ map (\s -> second (memory . fst . runProgram) (s, initMemory prog s)) posSol
+    $ map (\s -> second (memory . runInterpreter) (s, initMemory prog s)) posSol
     )
 
 answer :: (Int, Int) -> Int

@@ -3,6 +3,6 @@ import Common.Prelude
 import Intcode
 
 solutionA :: String -> String
-solutionA = solve parseProgram (snd . runProgramWithInput 1 . flip ProgState 0 )
+solutionA = solve parseProgram (outputs . runInterpreter . mkProgramWithInput [1])
 solutionB :: String -> String
-solutionB = solve parseProgram (snd . runProgramWithInput 5 . flip ProgState 0 )
+solutionB = solve parseProgram (outputs . runInterpreter . mkProgramWithInput [5])

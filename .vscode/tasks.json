@@ -37,7 +37,14 @@
       "runOptions": {
         "reevaluateOnRerun": false
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      }
     },
     {
       "type": "shell",
