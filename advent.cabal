@@ -115,6 +115,7 @@ library
       Challenges.Y2019.Day09
       Challenges.Y2019.Day10
       Challenges.Y2019.Day11
+      Challenges.Y2019.Day12
       Challenges.Y2022
       Challenges.Y2022.Day01
       Challenges.Y2022.Day02
@@ -165,6 +166,7 @@ library
       Common.Queue
       Common.Search
       Common.Vector2
+      Common.Vector3
       FloydWarshall
       Intcode
       Parser
