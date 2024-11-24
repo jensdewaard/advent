@@ -4,8 +4,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE GADTs #-}
- {-# LANGUAGE UnicodeSyntax #-}
-module Intcode (runInterpreter, address, Memory, runInterpreterUntil, peekInstruction, ProgState(..), OpProgram, Ref(..), OpCode(..), nextInstruction, initMemory, mkProgram, mkProgramWithInput, parseProgram, runProgram, runProgramUntil, opReplace, getMemory, memEdit, modifyMemory) where
+
+module Intcode (runInterpreter, address, Memory, runInterpreterUntil, runInterpreterUntilOutput, peekInstruction, ProgState(..), OpProgram, Ref(..), OpCode(..), nextInstruction, initMemory, mkProgram, mkProgramWithInput, parseProgram, runProgram, runProgramUntil, opReplace, getMemory, memEdit, modifyMemory, addInput, isFinished, setInput, clearOutputs, clearInputs) where
 
 import Text.ParserCombinators.Parsec ( Parser, char, sepBy1 )
 import Common.Parsing (int)
@@ -139,8 +139,12 @@ runInterpreter = execState (runProgramUntil OpFinished)
 runInterpreterUntil :: OpCode -> ProgState -> ProgState
 runInterpreterUntil op = execState (runProgramUntil op)
 
+runInterpreterUntilOutput :: ProgState -> ProgState
+runInterpreterUntilOutput = execState (runProgramUntil $ OpOutput (Position 0))
+
 runProgram :: (MonadPointer m, MonadMemory m, MonadInput m, MonadOutput m, MonadRelative m) =>  m ()
 runProgram = runProgramUntil OpFinished
+
 
 runProgramUntil :: (MonadPointer m, MonadMemory m, MonadInput m, MonadOutput m, MonadRelative m) => OpCode -> m ()
 runProgramUntil op = do
@@ -285,3 +289,18 @@ address x (Memory m) = (M.!) m x
 
 modifyMemory :: (Memory -> Memory) -> ProgState -> ProgState
 modifyMemory f ps = ps { memory = f $ memory ps }
+
+addInput :: Int -> ProgState -> ProgState
+addInput i ps = ps { inputs = inputs ps ++ [i] }
+
+setInput :: [Int] -> ProgState -> ProgState
+setInput is ps = ps { inputs = is }
+
+clearInputs :: ProgState -> ProgState
+clearInputs = setInput []
+
+clearOutputs :: ProgState -> ProgState
+clearOutputs ps = ps { outputs = [] }
+
+isFinished :: ProgState -> Bool
+isFinished ps = peekInstruction (memory ps) (ptr ps) == OpFinished

@@ -2,6 +2,8 @@ module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, be
 
 import Data.Bifunctor (second)
 import Data.List (sort, tails)
+import Data.Map (Map)
+import qualified Data.Map as M
 import Prelude hiding (reverse)
 
 type Coord = (Int, Int)
