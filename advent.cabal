@@ -113,6 +113,7 @@ library
       Challenges.Y2019.Day07
       Challenges.Y2019.Day08
       Challenges.Y2019.Day09
+      Challenges.Y2019.Day10
       Challenges.Y2019.Day11
       Challenges.Y2022
       Challenges.Y2022.Day01
@@ -163,6 +164,7 @@ library
       Common.Prelude
       Common.Queue
       Common.Search
+      Common.Vector2
       FloydWarshall
       Intcode
       Parser
@@ -170,6 +172,8 @@ library
       Paths_advent
   hs-source-dirs:
       src
+  default-extensions:
+      InstanceSigs
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wredundant-constraints
   build-depends:
       HUnit
@@ -180,6 +184,7 @@ library
     , containers
     , cryptonite
     , data-memocombinators
+    , extra
     , fgl
     , hashable
     , heap
@@ -213,6 +218,7 @@ executable advent-exe
     , containers
     , cryptonite
     , data-memocombinators
+    , extra
     , fgl
     , hashable
     , heap
@@ -255,6 +261,7 @@ test-suite advent-test
     , containers
     , cryptonite
     , data-memocombinators
+    , extra
     , fgl
     , hashable
     , heap

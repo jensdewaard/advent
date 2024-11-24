@@ -42,6 +42,7 @@ dependencies:
 - bytestring
 - memory
 - transformers
+- extra
 
 ghc-options:
 - -Wall
@@ -55,6 +56,8 @@ ghc-options:
 
 library:
   source-dirs: src
+  default-extensions:
+    - InstanceSigs
 
 executables:
   advent-exe:
