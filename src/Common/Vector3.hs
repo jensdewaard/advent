@@ -22,25 +22,30 @@ instance Functor Vector3 where
   fmap f v = vector3 (f $ x v) (f $ y v) (f $ z v)
 
 instance Applicative Vector3 where
+  pure :: a -> Vector3 a
   pure a = vector3 a a a
   (<*>) :: Vector3 (a -> b) -> Vector3 a -> Vector3 b
   (<*>) (Vector3 fa fb fc) (Vector3 a b c) = Vector3 (fa a) (fb b) (fc c)
 
+instance Foldable Vector3 where
+  foldMap :: Monoid m => (a -> m) -> Vector3 a -> m
+  foldMap f (Vector3 a b c) = f a <> f b <> f c
+
+instance Traversable Vector3 where
+  traverse :: Applicative f => (a -> f b) -> Vector3 a -> f (Vector3 b)
+  traverse f (Vector3 a b c) = Vector3 <$> f a <*> f b <*> f c
 
 instance Num a => Num (Vector3 a) where
   (+) :: Vector3 a -> Vector3 a -> Vector3 a
-  (+) = plus
+  (+) = liftA2 (+)
+  (-) = liftA2 (-)
   (*) :: Vector3 a -> Vector3 a -> Vector3 a
-  (*) = undefined
+  (*) = liftA2 (*)
   abs :: Vector3 a -> Vector3 a
-  abs v = Vector3 (abs $ x v) (abs $ y v) (abs $ z v)
+  abs v = abs <$> v
   signum :: Vector3 a -> Vector3 a
-  signum v = Vector3 (signum $ x v) (signum $ y v) (signum $ z v)
+  signum v = signum <$> v
   fromInteger :: Integer -> Vector3 a
-  fromInteger a = Vector3 (fromInteger a) 0 0
+  fromInteger a = pure $ fromInteger a
   negate :: Vector3 a -> Vector3 a
-  negate v = Vector3 (negate $ x v) (negate $ y v) (negate $ z v)
-    
-
-plus :: Num a => Vector3 a -> Vector3 a -> Vector3 a
-plus (Vector3 x1 y1 z1) (Vector3 x2 y2 z2) = Vector3 (x1 + x2) (y1 + y2) (z1 + z2)
+  negate v = negate <$> v

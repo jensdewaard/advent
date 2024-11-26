@@ -63,6 +63,7 @@ longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' 
 prepend :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
 prepend (a,b) (as,bs) = (a ++ as, b ++ bs)
 
+-- | Finds a cycle on a list. 
 findCycle :: Eq a => [a] -> ([a],[a])
 findCycle xxs = fCycle xxs xxs
   where fCycle (x:xs) (_:y:ys)
