@@ -12,7 +12,7 @@ solutionA = solve parser (run >>> (!!1000) >>> fmap energy)
 solutionB :: String -> String
 solutionB = solve parser (traverse transpose >>> fmap (period timestep') >>> foldl lcm 1)
 
-period :: (Eq a, Num a) => ([(a,a)] -> [(a,a)]) -> [(a, a)] -> Int
+period :: (Eq a) => ([(a,a)] -> [(a,a)]) -> [(a, a)] -> Int
 period f ms = go 1 (f ms) where
     go n xs = if xs == ms then n else go (n +1) (f xs)
 
