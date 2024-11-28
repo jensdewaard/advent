@@ -1,12 +1,17 @@
 {-# LANGUAGE BangPatterns, TupleSections #-}
-module Common.Search (bfs, bfsUntil, dfs, dfsUntil, dijkstra, dijkstraOn, simple) where
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts #-}
+module Common.Search (bfs, bfsUntil, dfs, dfsUntil,  Cost(..), search, Dijkstra(..), dijkstra, dijkstraOn, simple) where
 
 import qualified Data.PQueue.Min as PM
 import qualified Data.Set as Set ( empty, insert, member )
 import Data.List ( foldl' )
 import Common.Queue as Queue
     ( Queue( (:<|), Empty), fromList, appendList, (<|>))
-import Data.Maybe (isJust)
 import Control.Monad (mplus)
 
 --
@@ -41,6 +46,35 @@ bfsUntil predicate next start = loop Set.empty (fromList start)
     loop _ _ = error "cannot pop from non-empty queue"
 bfs :: Ord a => (a -> [a]) -> [a] -> [a]
 bfs = bfsUntil (const False)
+
+class Ord a => Cost a where
+  combine :: a -> a -> a
+  nocost :: a
+
+instance Cost Int where
+  combine = (+)
+  nocost = 0
+
+-- data (Cost cost, Representable state b, Ord b) => Dijkstra state b cost = Dijkstra 
+--   { adjacency :: state -> [(state, cost)]
+--   , estimate :: state -> cost
+--   , target :: state -> Bool
+--   }
+
+class Dijkstra graph where
+  type DijkstraNode graph :: *
+  type DijkstraCost graph :: *
+  type DijkstraRepr graph :: *
+  represent :: graph -> DijkstraNode graph -> DijkstraRepr graph
+  adjacency :: graph -> DijkstraNode graph -> [(DijkstraNode graph, DijkstraCost graph)]
+  estimate :: graph -> DijkstraNode graph -> DijkstraCost graph
+
+-- search :: (Cost cost, Ord state, Ord b, Representable state b) => Dijkstra state b cost -> state -> Maybe (state,cost)
+-- search (Dijkstra adj est tar) start = dijkstraOn represent adj [(start, nocost)] combine est tar
+
+search :: forall g. (Dijkstra g, Cost (DijkstraCost g), Ord (DijkstraNode g), Ord (DijkstraRepr g)) =>
+  [DijkstraNode g] -> (DijkstraNode g -> Bool) -> g -> Maybe (DijkstraNode g, DijkstraCost g)
+search start accept graph = dijkstraOn (represent graph) (adjacency graph) (map (,nocost) start) combine (estimate graph) accept
 
 dijkstraOn :: (Ord state, Ord b, Ord cost) =>
   (state -> b) -- state representation function
@@ -78,14 +112,14 @@ simple :: (Ord state) =>
     -> state
     -> (state -> Bool)
     -> Maybe (state, Int)
-simple next start = dijkstra (map (,1) . next) [(start, 0)] (+) (const 1) 
+simple next start = dijkstra (map (,1) . next) [(start, 0)] (+) (const 1)
 
 
 binary :: [a] -> (a -> Bool) -> Maybe a
 binary [] _ = Nothing
 binary [a] target = if target a then Just a else Nothing
-binary as target = let 
-  n = length as `div` 2 
+binary as target = let
+  n = length as `div` 2
   l = binary (take n as) target
   r = binary (drop n as) target
   in mplus l r
