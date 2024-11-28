@@ -18,6 +18,8 @@ module Common.List (
   swapElems,
   takeUntil,
   uninterleave,
+  aggregateOn,
+  firstWhere
   ) where
 
 import Common.Prelude
@@ -59,6 +61,10 @@ occur (a:as) = let n = 1 + length (filter (==a) as) in
 longest :: [[a]] -> [a]
 longest [] = error "longest on empty list"
 longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' == l) ls
+
+firstWhere :: (a -> Bool) -> [a] -> Maybe a
+firstWhere _ [] = Nothing
+firstWhere pred (a:as) = if pred a then Just a else firstWhere pred as
 
 prepend :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
 prepend (a,b) (as,bs) = (a ++ as, b ++ bs)
@@ -155,3 +161,12 @@ replace n r (a:as)
   | n < 0      = replace (negate n) a (reverse as)
   | n == 0     = r:as
   | otherwise  = a : replace (pred n) r as
+
+-- | Aggregates a list. If two successive elements are equal by the repr function, they are combined via the combine function.
+aggregateOn :: (Eq b) => (a -> b) -> (a -> a -> a) -> [a] -> [a]
+aggregateOn _ _ [] = []
+aggregateOn _ _ [a] = [a]
+aggregateOn repr combine (a : b : cs) =
+    if repr a == repr b
+        then aggregateOn repr combine (combine a b : cs)
+        else a : aggregateOn repr combine (b : cs)

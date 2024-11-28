@@ -6,6 +6,8 @@ import qualified Data.Set as Set ( empty, insert, member )
 import Data.List ( foldl' )
 import Common.Queue as Queue
     ( Queue( (:<|), Empty), fromList, appendList, (<|>))
+import Data.Maybe (isJust)
+import Control.Monad (mplus)
 
 --
 dfsUntil :: Ord a => (a -> Bool) -> (a -> [a]) -> [a] -> [a]
@@ -77,3 +79,13 @@ simple :: (Ord state) =>
     -> (state -> Bool)
     -> Maybe (state, Int)
 simple next start = dijkstra (map (,1) . next) [(start, 0)] (+) (const 1) 
+
+
+binary :: [a] -> (a -> Bool) -> Maybe a
+binary [] _ = Nothing
+binary [a] target = if target a then Just a else Nothing
+binary as target = let 
+  n = length as `div` 2 
+  l = binary (take n as) target
+  r = binary (drop n as) target
+  in mplus l r
