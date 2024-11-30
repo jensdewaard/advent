@@ -113,10 +113,12 @@ instance Monad m => MonadMemory (StateT ProgState m) where
   fetch (Relative n) = do
     Memory mem <- getMem
     offset <- getBase
-    if (n + offset) < 0 then error "retrieving negative memory" else return $ (M.!) mem (n + offset)
+    if (n + offset) < 0
+      then error "retrieving negative memory"
+      else return $ M.findWithDefault 0 (n+offset) mem
   fetch (Position n) = do
     Memory mem <- getMem
-    return $ M.findWithDefault 0 n mem 
+    return $ M.findWithDefault 0 n mem
 
 empty ::  ProgState
 empty = ProgState {
@@ -267,7 +269,7 @@ peekInstruction :: Memory -> Pointer -> OpCode
 peekInstruction mem p = let
   n = address p mem
   op = determineOpCode n
-  p1 = determineMode ((n `div`   100) `mod` 10) $ address (p + 1) mem 
+  p1 = determineMode ((n `div`   100) `mod` 10) $ address (p + 1) mem
   p2 = determineMode ((n `div`  1000) `mod` 10) $ address (p + 2) mem
   p3 = determineMode ((n `div` 10000) `mod` 10) $ address (p + 3) mem
   in op p1 p2 p3
@@ -285,7 +287,7 @@ getMemory :: ProgState -> Memory
 getMemory = memory
 
 address :: Int -> Memory -> Int
-address x (Memory m) = (M.!) m x
+address x (Memory m) = M.findWithDefault 0 x m
 
 modifyMemory :: (Memory -> Memory) -> ProgState -> ProgState
 modifyMemory f ps = ps { memory = f $ memory ps }

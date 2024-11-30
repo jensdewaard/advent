@@ -1,15 +1,28 @@
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Common.Prelude where 
 import Text.ParserCombinators.Parsec (Parser, parse)
 
-solve :: Show b => Parser a -> (a -> b) -> String -> String
-solve parser f = show . f . parse' parser where
+class Showable s where
+    show' :: s -> String
+
+instance {-# OVERLAPS #-} Showable String where
+    show' = id
+
+instance Show s => Showable s where
+  show' = show
+
+
+solve :: Showable b => Parser a -> (a -> b) -> String -> String
+solve parser f = show' . f . parse' parser where
     parse' :: Parser a -> String -> a
     parse' p i = case parse p "advent" i of
                     Left err -> error ("could not run parser " ++ show err)
                     Right val -> val
 
-(==>) :: Show b => Parser a -> (a -> b) -> String -> String
+(==>) :: Showable b => Parser a -> (a -> b) -> String -> String
 p ==> f = solve p f
 
 infix 6 ==>
