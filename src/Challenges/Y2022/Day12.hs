@@ -12,7 +12,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Text.ParserCombinators.Parsec ( letter, Parser )
 import Data.Char ( ord )
-import Common.Search (dijkstra, Dijkstra (..), search)
+import Common.Search (Dijkstra (..), search)
 
 solutionA :: String -> String
 -- solutionA = parser ==> \m -> dijkstra
@@ -21,35 +21,42 @@ solutionA :: String -> String
 --   (+) -- combination
 --   (const 1) -- estimation
 --   (\c -> m Map.! c == 'E') --end state
-solutionA = solve (grid letter) (\x -> search [startNode x] (\c -> x Map.! c == 'E') x)
+solutionA = solve (grid letter) (\x -> search [startNode x] (\(MazePosition _ c) -> x Map.! c == 'E'))
 
 solutionB :: String -> String
-solutionB = solve (grid letter) (\x -> search (allStarts x) (\c -> x Map.! c == 'E') x)
+solutionB = solve (grid letter) (\x -> search (allStarts x) (\(MazePosition _ c) -> x Map.! c == 'E'))
 -- solutionB = solve (grid letter) (\m -> dijkstra
 --   (adjacentNodes m)
 --   (map (\(c,_) -> (c,0)) $ filter (\(_,t) -> t == 'a') (Map.assocs m))
 --   (+) (const 1) (\c -> m Map.! c == 'E'))
 
-allStarts :: Map Coord Char -> [Coord]
-allStarts m = map fst $ filter (\(_,t) -> t == 'a') (Map.assocs m)
+allStarts :: Map Coord Char -> [MazePosition]
+allStarts m = map (\(c,_) -> MazePosition m c) $ filter (\(_,t) -> t == 'a') (Map.assocs m)
 
-startNode :: Map a Char -> a
-startNode m = fst $ head $ filter (\(_,t) -> t == 'S') (Map.assocs m)
+startNode :: Map Coord Char -> MazePosition
+startNode m = MazePosition m $ fst $ head $ filter (\(_,t) -> t == 'S') (Map.assocs m)
 
-instance Dijkstra (Map Coord Char) where
-  type DijkstraCost (Map Coord Char) = Int
-  type DijkstraNode (Map Coord Char) = Coord
-  type DijkstraRepr (Map Coord Char) = Coord
-  represent :: Map Coord Char -> DijkstraNode (Map Coord Char) -> DijkstraRepr (Map Coord Char)
-  represent _ = id
-  adjacency :: Map Coord Char -> DijkstraNode (Map Coord Char)
-    -> [(DijkstraNode (Map Coord Char), DijkstraCost (Map Coord Char))]
+instance Dijkstra MazePosition where
+  type DijkstraCost MazePosition = Int
+  type DijkstraRepr MazePosition = Coord
+  represent :: MazePosition -> DijkstraRepr MazePosition
+  represent = position
+  adjacency :: MazePosition -> [(MazePosition, DijkstraCost MazePosition)]
   adjacency = adjacentNodes
-  estimate :: Map Coord Char -> DijkstraNode (Map Coord Char) -> DijkstraCost (Map Coord Char)
-  estimate _ = const 1
+  estimate :: MazePosition -> DijkstraCost MazePosition
+  estimate = const 1
 
-adjacentNodes :: Map Coord Char -> Coord -> [(Coord, Int)]
-adjacentNodes m c = [(c', 1) | c' <- cardinal c,
+data MazePosition = MazePosition
+  { world :: Map Coord Char
+  , position :: Coord
+  }
+
+instance Eq MazePosition where (==) m1 m2 = position m1 == position m2
+instance Ord MazePosition where (<=) m1 m2 = position m1 <= position m2
+instance Show MazePosition where show = show . position 
+
+adjacentNodes :: MazePosition -> [(MazePosition, Int)]
+adjacentNodes (MazePosition m c) = [(MazePosition m c', 1) | c' <- cardinal c,
     Map.member c' m,
     hdiff (m Map.! c) (m Map.! c') <= 1
   ]

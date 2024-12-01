@@ -121,6 +121,7 @@ library
       Challenges.Y2019.Day15
       Challenges.Y2019.Day16
       Challenges.Y2019.Day17
+      Challenges.Y2019.Day18
       Challenges.Y2022
       Challenges.Y2022.Day01
       Challenges.Y2022.Day02
@@ -160,6 +161,7 @@ library
       Challenges.Y2023.Day18
       Challenges.Y2023.Day19
       Challenges.Y2024
+      Challenges.Y2024.Day01
       Common.Char
       Common.Coord
       Common.Graph

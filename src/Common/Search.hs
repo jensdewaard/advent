@@ -5,7 +5,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
-module Common.Search (bfs, bfsUntil, dfs, dfsUntil,  Cost(..), search, Dijkstra(..), dijkstra, dijkstraOn, simple) where
+module Common.Search (bfs, bfsUntil, dfs, dfsUntil,  Cost(..), search, Dijkstra(..), dijkstra, dijkstraOn, simple, searchFor) where
 
 import qualified Data.PQueue.Min as PM
 import qualified Data.Set as Set ( empty, insert, member )
@@ -62,19 +62,19 @@ instance Cost Int where
 --   }
 
 class Dijkstra graph where
-  type DijkstraNode graph :: *
   type DijkstraCost graph :: *
   type DijkstraRepr graph :: *
-  represent :: graph -> DijkstraNode graph -> DijkstraRepr graph
-  adjacency :: graph -> DijkstraNode graph -> [(DijkstraNode graph, DijkstraCost graph)]
-  estimate :: graph -> DijkstraNode graph -> DijkstraCost graph
+  represent :: graph -> DijkstraRepr graph
+  adjacency :: graph -> [(graph, DijkstraCost graph)]
+  estimate :: graph -> DijkstraCost graph
 
--- search :: (Cost cost, Ord state, Ord b, Representable state b) => Dijkstra state b cost -> state -> Maybe (state,cost)
--- search (Dijkstra adj est tar) start = dijkstraOn represent adj [(start, nocost)] combine est tar
+searchFor :: forall g. (Dijkstra g, Cost (DijkstraCost g), Ord g, Ord (DijkstraRepr g)) =>
+  (g -> Bool) -> [g] -> Maybe (g, DijkstraCost g)
+searchFor = flip search
 
-search :: forall g. (Dijkstra g, Cost (DijkstraCost g), Ord (DijkstraNode g), Ord (DijkstraRepr g)) =>
-  [DijkstraNode g] -> (DijkstraNode g -> Bool) -> g -> Maybe (DijkstraNode g, DijkstraCost g)
-search start accept graph = dijkstraOn (represent graph) (adjacency graph) (map (,nocost) start) combine (estimate graph) accept
+search :: forall g. (Dijkstra g, Cost (DijkstraCost g), Ord g, Ord (DijkstraRepr g)) =>
+  [g] -> (g -> Bool) -> Maybe (g, DijkstraCost g)
+search start = dijkstraOn represent adjacency (map (,nocost) start) combine estimate
 
 dijkstraOn :: (Ord state, Ord b, Ord cost) =>
   (state -> b) -- state representation function

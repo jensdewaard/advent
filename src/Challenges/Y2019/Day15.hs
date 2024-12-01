@@ -10,7 +10,7 @@ import Data.Bifunctor (Bifunctor (first))
 import Data.Maybe (fromJust)
 
 solutionA :: String -> String
-solutionA = solve parseProgram (\p -> first position $ fromJust $  search [initState p] ((==2) . status) (initState p))
+solutionA = solve parseProgram (\p -> first position $ fromJust $  search [initState p] ((==2) . status))
 solutionB :: String -> String
 solutionB = solve parseProgram (\p ->
     let
@@ -27,14 +27,13 @@ instance Ord Depth where
 
 instance Dijkstra DroidState where
   type DijkstraCost DroidState = Int
-  type DijkstraNode DroidState = DroidState
   type DijkstraRepr DroidState = Coord
-  represent :: DroidState -> DijkstraNode DroidState -> DijkstraRepr DroidState
-  represent = const position
-  adjacency :: DroidState -> DijkstraNode DroidState -> [(DijkstraNode DroidState, DijkstraCost DroidState)]
-  adjacency = const nextStates
-  estimate :: DroidState -> DijkstraNode DroidState -> DijkstraCost DroidState
-  estimate _ = const 1
+  represent :: DroidState -> DijkstraRepr DroidState
+  represent = position
+  adjacency :: DroidState -> [(DroidState, DijkstraCost DroidState)]
+  adjacency = nextStates
+  estimate :: DroidState -> DijkstraCost DroidState
+  estimate = const 1
 
 initState :: OpProgram -> DroidState
 initState p = DroidState (0,0) (mkProgram p) 0
