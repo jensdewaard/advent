@@ -19,7 +19,9 @@ module Common.List (
   takeUntil,
   uninterleave,
   aggregateOn,
-  firstWhere
+  firstWhere,
+  monotone, differences,
+  subsets
   ) where
 
 import Common.Prelude
@@ -170,3 +172,23 @@ aggregateOn repr combine (a : b : cs) =
     if repr a == repr b
         then aggregateOn repr combine (combine a b : cs)
         else a : aggregateOn repr combine (b : cs)
+
+differences :: Num a => [a] -> [a]
+differences ns = zipWith (-) ns (drop 1 ns)
+
+monotone :: (Num a, Ord a) =>[a] -> Bool
+monotone ns = allDecreasing ns || allIncreasing ns
+
+allDecreasing :: (Num a, Ord a) =>[a] -> Bool
+allDecreasing ns = let
+    ds = zipWith (-) ns (drop 1 ns)
+    in all (>0) ds
+
+allIncreasing :: (Num a, Ord a) =>[a] -> Bool
+allIncreasing ns = let
+    ds = zipWith (-) ns (drop 1 ns)
+    in all (<0) ds
+
+subsets :: [Int] -> [[Int]]
+subsets []  = [[]]
+subsets (x:xs) = subsets xs ++ map (x:) (subsets xs)
