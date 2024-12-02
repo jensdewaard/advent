@@ -2,7 +2,7 @@ module Challenges.Y2024.Day02 (solutionA, solutionB) where
 import Common.Prelude
 import Text.ParserCombinators.Parsec
 import Common.Parsing (int)
-import Control.Arrow ((>>>))
+import Control.Arrow ((>>>), (&&&))
 import Common.List (monotone, differences, subsets)
 
 solutionA :: String -> String
@@ -11,7 +11,7 @@ solutionB :: String -> String
 solutionB = solve parser (map safe' >>> filter id >>> length)
 
 safe :: [Int] -> Bool
-safe ns = safeTolerance ns && monotone ns
+safe = (safeTolerance &&& monotone) >>> uncurry (&&)
 
 safe' :: [Int] -> Bool
 safe' ns = safe ns || any safe (subsetsN (length ns - 1) ns)
