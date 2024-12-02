@@ -1,26 +1,25 @@
-#!/usr/bin/env nix-shell
-#!nix-shell --pure -i runghc -p "haskellPackages.ghcWithPackages (pkgs: [ pkgs.turtle ])"
+module Challenges.Y2022.Day03 (solutionA, solutionB) where
 
-module Challenges.Y2022.Day03 where
+import Data.List ( intersect, nub )
+import qualified Data.Map as M
+import Common.Prelude (solve)
+import Common.List (chunksOf)
+import Text.ParserCombinators.Parsec (Parser, newline, sepEndBy1, many1, letter)
+import Control.Arrow ( (>>>) )
+import Data.Maybe (fromJust)
 
-import qualified Data.Text as T
-import Data.List
-import Data.Char
+solutionA :: String -> String
+solutionA = solve parser (map (inBoth >>> (nub >>> map priority >>> sum)) >>> sum)
+solutionB :: String -> String
+solutionB = solve parser (sum . concatMap (map priority . nub . foldr intersect (['a'..'z'] ++ ['A'..'Z'])) . chunksOf 3 . map allItems)
 
-main :: IO ()
-main = do
-    contents <- readFile "inputs/3.txt"
-    let all = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPRQSTUVWXZY"
-    let rs = map (readRucksack . T.unpack) (T.splitOn (T.pack "\n") (T.pack contents))
-    let gs = chunks 3 (map allItems rs)
-    let is = map inBoth rs
-    let ps = map (map priority . nub) is
-    let ps' = map sum ps
-    let p = sum ps'
-    let bs = map (nub . foldr intersect all) gs
-    let pbs = concatMap (map priority) bs
-    print ("Sum of priority: " ++ show p)
-    print ("Priority of badges " ++ show (sum pbs))
+parser :: Parser [Rucksack]
+parser = rucksack `sepEndBy1` newline where
+    rucksack :: Parser Rucksack
+    rucksack = do
+        contents <- many1 letter
+        let totalItems = length contents
+        return (splitAt (totalItems `div` 2) contents)
 
 type Item = Char
 type Compartment = [Item]
@@ -29,20 +28,9 @@ type Rucksack = (Compartment, Compartment)
 allItems :: Rucksack -> [Item]
 allItems = uncurry (++)
 
-readRucksack :: String -> Rucksack
-readRucksack s = let l = length s in
-    splitAt (l `div` 2) s
-
 inBoth :: Rucksack -> [Item]
 inBoth (l, r) = l `intersect` r
 
-
-
-chunks :: Int -> [a] -> [[a]]
-chunks n [] = []
-chunks n rs = take n rs : chunks n (drop n rs)
-
-
 priority :: Item -> Int
-priority c = let v = ord c in
-    if v <= 90 then v - 38 else v - 96
+priority c = fromJust $ M.lookup c m where
+    m = M.fromList (zip ['a'..'z'] [1..26] ++ zip ['A'..'Z'] [27..52])
