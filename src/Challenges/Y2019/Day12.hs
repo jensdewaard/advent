@@ -33,9 +33,7 @@ timePosition (p, v) = (p + v, v)
 
 timeSpeed :: Num a => [(a, a)] -> [(a, a)]
 timeSpeed moons = let
-    -- newSpeed ms m = sum $ m : [signum (m - m1) | m1 <- ms]
-    newSpeed ms m = foldr (\(other, _) (x, v) -> (x, v + gravity other x)) m ms
-    -- in map (\m -> snd m : [gravity (fst m) (fst m1) | m1 <- ms ]) ms
+    newSpeed ms m = foldr (\(other, _) (px, pv) -> (px, pv + gravity other px)) m ms
     in map (newSpeed moons) moons
 
 transpose :: (Vector3 Int, Vector3 Int) -> Vector3 (Int, Int)
