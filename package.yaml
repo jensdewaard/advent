@@ -36,7 +36,6 @@ dependencies:
 - time
 - advent-of-code-api
 - split
-- hashable
 - pqueue
 - cryptonite
 - bytestring

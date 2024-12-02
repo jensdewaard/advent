@@ -195,7 +195,6 @@ library
     , data-memocombinators
     , extra
     , fgl
-    , hashable
     , heap
     , memory
     , mtl
@@ -229,7 +228,6 @@ executable advent-exe
     , data-memocombinators
     , extra
     , fgl
-    , hashable
     , heap
     , memory
     , mtl
@@ -272,7 +270,6 @@ test-suite advent-test
     , data-memocombinators
     , extra
     , fgl
-    , hashable
     , heap
     , memory
     , mtl

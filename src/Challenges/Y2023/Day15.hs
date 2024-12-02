@@ -8,7 +8,6 @@ import Data.List (delete)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Common.Parsing (symbol)
-import Data.Hashable
 
 solutionA :: String -> String
 solutionA = solve parser (sum . map h) where
@@ -26,16 +25,16 @@ multLens :: Int -> Lens -> Int
 multLens i l@(Equals _ x) = i * x
 
 store :: Map Int [Lens] -> Lens -> Map Int [Lens]
-store m l@(Equals _ _) = let
-    h = hash l
+store m l@(Equals s _) = let
+    h = hash' 0 s
     box = Map.findWithDefault [] h m
     in if l `elem` box
         then Map.insert h (replace l box) m
         else Map.insert h (box++[l]) m
-store m l@(Dash _) =  let
-    h = hash l
+store m l@(Dash s) =  let
+    h = hash' 0 s
     box = Map.findWithDefault [] h m
-    in Map.insert (hash l) (delete l box) m
+    in Map.insert (hash' 0 s) (delete l box) m
 
 replace :: Eq t => t -> [t] -> [t]
 replace _ [] = []
@@ -48,13 +47,6 @@ instance Eq Lens where
     (Dash lbl) == (Equals lbl' _) = lbl == lbl'
     (Equals lbl _) == (Equals lbl' _) = lbl == lbl'
     (Equals lbl _) == (Dash lbl') = lbl == lbl'
-
-instance Hashable Lens where
-    hashWithSalt :: Int -> Lens -> Int
-    hash :: Lens -> Int
-    hash (Dash lbl) = hash' 0 lbl
-    hash (Equals lbl _) = hash' 0 lbl
-    hashWithSalt _ = hash
 
 hash' :: Int -> String -> Int
 hash' current "" = current
