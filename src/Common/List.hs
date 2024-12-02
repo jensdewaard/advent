@@ -66,7 +66,7 @@ longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' 
 
 firstWhere :: (a -> Bool) -> [a] -> Maybe a
 firstWhere _ [] = Nothing
-firstWhere pred (a:as) = if pred a then Just a else firstWhere pred as
+firstWhere predicate (a:as) = if predicate a then Just a else firstWhere predicate as
 
 prepend :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
 prepend (a,b) (as,bs) = (a ++ as, b ++ bs)
