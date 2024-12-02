@@ -13,6 +13,7 @@ import Data.List ( foldl' )
 import Common.Queue as Queue
     ( Queue( (:<|), Empty), fromList, appendList, (<|>))
 import Control.Monad (mplus)
+import Data.Kind (Type)
 
 --
 dfsUntil :: Ord a => (a -> Bool) -> (a -> [a]) -> [a] -> [a]
@@ -62,8 +63,8 @@ instance Cost Int where
 --   }
 
 class Dijkstra graph where
-  type DijkstraCost graph :: *
-  type DijkstraRepr graph :: *
+  type DijkstraCost graph :: Type
+  type DijkstraRepr graph :: Type
   represent :: graph -> DijkstraRepr graph
   adjacency :: graph -> [(graph, DijkstraCost graph)]
   estimate :: graph -> DijkstraCost graph
@@ -91,7 +92,7 @@ dijkstraOn repr trans start combine estimate accept =
       Nothing -> Nothing
       Just ((_,cost,state), heap')
         | accept state -> Just (state, cost)
-        | repr state `Set.member` seen -> go seen heap'
+        | repr state `Set.member` seen -> go (seen) heap'
         | otherwise ->
             let nxts = (\(val', cost') -> let ncost = combine cost cost' in
                   (combine (estimate val') ncost, ncost, val')) <$> trans state
