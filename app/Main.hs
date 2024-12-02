@@ -111,8 +111,11 @@ start :: Integer -> Integer -> IO ()
 start year day = do
   -- TODO add a check to see if the file already exists
   let d = (if day <= 9 then "0" else "") ++ show day
-  let content = "module Challenges.Y" ++ show year ++ ".Day" ++ d ++ " (solutionA, solutionB) where\nimport Common.Prelude\nimport Text.ParserCombinators.Parsec\n\nsolutionA :: String -> String\nsolutionA = solve parser (const \"\")\nsolutionB :: String -> String\nsolutionB = solve parser (const \"\")\n\nparser :: Parser ()\nparser = undefined"
+  template <- openFile "./src/day_template.hs" ReadMode
+  contents <- hGetContents template
+  let content = "module Challenges.Y" ++ show year ++ ".Day" ++ d ++ " (solutionA, solutionB) where\n" ++ contents
   handle <- openFile ("./src/Challenges/Y" ++ show year ++ "/Day" ++ d ++ ".hs") WriteMode
   hPutStr handle content
+  hClose template
   hClose handle
   return ()
