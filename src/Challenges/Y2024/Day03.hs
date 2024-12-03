@@ -1,6 +1,6 @@
 module Challenges.Y2024.Day03 (solutionA, solutionB) where
 import Common.Prelude (solve)
-import Text.ParserCombinators.Parsec (Parser, char, string, alphaNum, (<|>), many, try, space)
+import Text.ParserCombinators.Parsec (Parser, char, string, alphaNum, (<|>), many, try, space, anyChar)
 import Control.Arrow ((>>>))
 import Common.Parsing (int, symbol, brackets)
 import Data.Maybe (catMaybes)
@@ -28,16 +28,8 @@ parser = do
     x <- many (try mul <|> try doI <|> try dont <|> garbage)
     return $ catMaybes x
 
-garb :: Parser Char
-garb = do
-    alphaNum <|> symbol <|> brackets <|> char ','  
-    <|> space <|> char '_' 
-    <|> char '/' <|> char '\\' <|> char '\'' 
-
 garbage :: Parser (Maybe Instruction)
-garbage = do
-    _ <- garb
-    return Nothing
+garbage = anyChar >> return Nothing
 
 doI :: Parser (Maybe Instruction)
 doI = do
