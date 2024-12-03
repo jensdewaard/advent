@@ -6,21 +6,20 @@ import Common.Parsing (int, symbol, brackets)
 import Data.Maybe (catMaybes)
 
 solutionA :: String -> String
-solutionA = solve parser (map sumMul >>> sum)
+solutionA = solve parser (foldl sumMul 0)
 solutionB :: String -> String
--- solutionB = solve parser (sumMulB True)
-solutionB = solve parser (sumMulB True)
+solutionB = solve parser (foldl sumMulB (True, 0) >>> snd)
 
-sumMul :: Instruction -> Int
-sumMul Do = 0
-sumMul Dont = 0
-sumMul (Mul x y) = x * y
+sumMul :: Int -> Instruction -> Int
+sumMul n Do = n
+sumMul n Dont = n
+sumMul n (Mul x y) = n + x * y
 
-sumMulB :: Bool -> [Instruction] -> Int
-sumMulB _ [] = 0
-sumMulB _ (Do:is) = sumMulB True is
-sumMulB _ (Dont:is) = sumMulB False is
-sumMulB count (Mul x y:is) = (if count then x * y else 0) + sumMulB count is
+sumMulB :: (Bool, Int) -> Instruction -> (Bool, Int)
+sumMulB (_, n) Do = (True, n)
+sumMulB (_, n) Dont = (False, n)
+sumMulB (True, n) (Mul x y) = (True, n + x * y)
+sumMulB (False, n) (Mul _ _) = (False, n)
 
 data Instruction = Do | Dont | Mul Int Int deriving Show
 
