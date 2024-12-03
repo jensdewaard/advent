@@ -1,9 +1,10 @@
 module Challenges.Y2024.Day03 (solutionA, solutionB) where
 import Common.Prelude (solve)
-import Text.ParserCombinators.Parsec (Parser, char, string, alphaNum, (<|>), many, try, space, anyChar)
+import Text.ParserCombinators.Parsec (Parser, char, string, (<|>), try, anyChar, manyTill, optional, sepEndBy1, lookAhead, eof)
 import Control.Arrow ((>>>))
-import Common.Parsing (int, symbol, brackets)
-import Data.Maybe (catMaybes)
+import Common.Parsing (int)
+import Control.Monad (void)
+import Text.Parsec.Char (string')
 
 solutionA :: String -> String
 solutionA = solve parser (foldl sumMul 0)
@@ -24,28 +25,25 @@ sumMulB (False, n) (Mul _ _) = (False, n)
 data Instruction = Do | Dont | Mul Int Int deriving Show
 
 parser :: Parser [Instruction]
-parser = do
-    x <- many (try mul <|> try doI <|> try dont <|> garbage)
-    return $ catMaybes x
+parser = optional garbage >> instruction `sepEndBy1` garbage
 
-garbage :: Parser (Maybe Instruction)
-garbage = anyChar >> return Nothing
+garbage :: Parser ()
+garbage = void (manyTill anyChar (void (lookAhead instruction) <|> eof))
 
-doI :: Parser (Maybe Instruction)
-doI = do
-    _ <- string "do()"
-    return $ Just Do
+instruction :: Parser Instruction
+instruction = try doI <|> try dont <|> try mul
 
-dont :: Parser (Maybe Instruction)
-dont = do
-    _ <- string "don't()"
-    return $ Just Dont
+doI :: Parser Instruction
+doI = string' "do()" >> return Do
 
-mul :: Parser (Maybe Instruction)
+dont :: Parser Instruction
+dont = string' "don't()" >> return Dont
+
+mul :: Parser Instruction
 mul = do
     _ <- string "mul("
     x <- int
     _ <- char ','
     y <- int
     _ <- char ')'
-    return $ Just $ Mul x y
+    return $ Mul x y
