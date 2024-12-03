@@ -1,4 +1,4 @@
-module Common.Parsing (int, coords, symbol, grid, dir) where
+module Common.Parsing (int, coords, symbol, grid, dir, brackets) where
 
 import Common.Coord (Coord, Dir (..))
 import Data.Map (Map)
@@ -20,6 +20,12 @@ coords = do
 
 symbol :: Parser Char
 symbol = char '-' <|> char '+' <|> char '=' <|> char '*' <|> char '#' <|> char '.'
+  <|> char '@' <|> char '$' <|> char '!' <|> char '%' <|> char '&' <|> char ':'
+  <|> char ';' <|> char '~' <|> char '?' <|> char '^'
+
+brackets :: Parser Char
+brackets = char '[' <|> char ']' <|> char '(' <|> char ')' <|> char '{' <|> char '}'
+  <|> char '<' <|> char '>'
 
 grid :: Parser a -> Parser (Map Coord a)
 grid f = do
