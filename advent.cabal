@@ -164,6 +164,7 @@ library
       Challenges.Y2024.Day01
       Challenges.Y2024.Day02
       Challenges.Y2024.Day03
+      Challenges.Y2024.Day04
       Common.Char
       Common.Coord
       Common.Graph
