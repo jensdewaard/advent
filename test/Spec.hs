@@ -6,6 +6,7 @@ import qualified FloydWarshallTests as FW
 import qualified Y2019Tests.Day01 as Y19D1
 import qualified Y2019Tests.Day04 as Y19D4
 import qualified Y2016Tests.Day21 as Y16D21
+import qualified Y2024Tests.Day05 as Y24D05
 import Test.HUnit (runTestTT, errors, failures, Test (TestList))
 import System.Exit (exitSuccess, exitFailure)
 main :: IO ()
@@ -18,6 +19,7 @@ main = do
         Y19D1.tests,
         Y19D4.tests,
         Y16D21.tests,
+        Y24D05.tests,
         List.tests
         ])
     if errors counts + failures counts == 0

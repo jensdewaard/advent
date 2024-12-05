@@ -52,6 +52,7 @@
                 arrterian.nix-env-selector
                 usernamehw.errorlens
                 vscodevim.vim
+                bierner.docs-view
 
                 # theming
                 equinusocio.vsc-material-theme

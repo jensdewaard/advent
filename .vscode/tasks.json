@@ -11,7 +11,7 @@
     {
       "group": {
         "kind": "test",
-        "isDefault": true
+        "isDefault": false
       },
       "type": "shell",
       "label": "Test a day solution",
@@ -24,6 +24,16 @@
       "runOptions": {
         "reevaluateOnRerun": false
       }
+    },
+    {
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "type": "shell",
+      "label": "Run all tests",
+      "command": "stack",
+      "args": ["test"]
     },
     {
       "type": "shell",

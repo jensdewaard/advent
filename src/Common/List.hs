@@ -21,7 +21,9 @@ module Common.List (
   aggregateOn,
   firstWhere,
   monotone, differences,
-  subsets
+  subsets,
+  none,
+  sorted
   ) where
 
 import Common.Prelude
@@ -192,3 +194,12 @@ allIncreasing ns = let
 subsets :: [Int] -> [[Int]]
 subsets []  = [[]]
 subsets (x:xs) = subsets xs ++ map (x:) (subsets xs)
+
+none :: (a -> Bool) -> [a] -> Bool
+none predicate = not . any predicate
+
+-- | sorted is true if every element in the list is less than or equal to every successive element
+sorted :: Ord a => [a] -> Bool
+sorted [] = True
+sorted [_] = True
+sorted (a:as) = all (a <=) as && sorted as

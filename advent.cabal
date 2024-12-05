@@ -165,6 +165,7 @@ library
       Challenges.Y2024.Day02
       Challenges.Y2024.Day03
       Challenges.Y2024.Day04
+      Challenges.Y2024.Day05
       Common.Char
       Common.Coord
       Common.Graph
@@ -172,6 +173,7 @@ library
       Common.List
       Common.Math
       Common.Parsing
+      Common.Poset
       Common.Prelude
       Common.Queue
       Common.Search
@@ -253,10 +255,12 @@ test-suite advent-test
       Common.IntervalTests
       Common.ListTests
       Common.MathTests
+      Common.PosetTests
       FloydWarshallTests
       Y2016Tests.Day21
       Y2019Tests.Day01
       Y2019Tests.Day04
+      Y2024Tests.Day05
       Paths_advent
   hs-source-dirs:
       test
