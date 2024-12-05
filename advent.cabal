@@ -173,6 +173,7 @@ library
       Common.List
       Common.Math
       Common.Parsing
+      Common.Poset
       Common.Prelude
       Common.Queue
       Common.Search
@@ -254,6 +255,7 @@ test-suite advent-test
       Common.IntervalTests
       Common.ListTests
       Common.MathTests
+      Common.PosetTests
       FloydWarshallTests
       Y2016Tests.Day21
       Y2019Tests.Day01

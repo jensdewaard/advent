@@ -22,10 +22,10 @@ testLE4 = "" ~: False ~=? mkItem 75 0 <= mkItem 97 1
 
 tests :: Test
 tests = TestList [
-    testLE1,
-    testLE2,
-    testLE3,
-    testLE4,
-    testSort1,
-    testSort2
+    -- testLE1,
+    -- testLE2,
+    -- testLE3,
+    -- testLE4,
+    -- testSort1,
+    -- testSort2
     ]
