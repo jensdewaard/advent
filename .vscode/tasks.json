@@ -23,6 +23,14 @@
       ],
       "runOptions": {
         "reevaluateOnRerun": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": false
       }
     },
     {
@@ -51,7 +59,7 @@
       "presentation": {
         "echo": true,
         "focus": false,
-        "panel": "shared",
+        "panel": "dedicated",
         "showReuseMessage": false,
         "clear": true
       }
