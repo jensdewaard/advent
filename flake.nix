@@ -44,8 +44,28 @@
               "
           '';
         };
+
+        vscode = pkgs.vscode-with-extensions.override {
+            vscode = pkgs.vscodium;
+            vscodeExtensions = with pkgs.vscode-extensions; [
+                # base extensions
+                arrterian.nix-env-selector
+                usernamehw.errorlens
+                vscodevim.vim
+
+                # theming
+                equinusocio.vsc-material-theme
+                equinusocio.vsc-material-theme-icons
+
+                # haskell
+                justusadam.language-haskell
+                haskell.haskell
+            ];
+        };
+
       in {
         devShells.default = pkgs.mkShell {
+          packages = [ vscode ];
           buildInputs = myDevTools;
 
           # Make external Nix c libraries like zlib known to GHC, like
