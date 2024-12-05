@@ -1,59 +1,70 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
-module Challenges.Y2024.Day05 (solutionA, solutionB, compareUI, uiLE, PageOrdering(..), UpdateItem(..)) where
+module Challenges.Y2024.Day05 (solutionA, solutionB, PageOrdering(..), UpdateItem(..)) where
 import Common.Prelude (solve)
 import Text.ParserCombinators.Parsec (Parser, char, sepEndBy1, newline, sepBy1)
 import Control.Arrow ((>>>), (&&&), first, second)
 import Common.Parsing (int)
-import Data.List (sortBy)
+import Data.List (sortBy, sort)
 
 solutionA :: String -> String
-solutionA = solve parser (first isSorted >>> uncurry filter >>> map (ui2Int . middle) >>> sum)
+solutionA = solve parser (filter isSorted >>> map (value . middle) >>> sum)
 
-isSorted :: [PageOrdering] -> Update -> Bool
-isSorted pos u = sortU pos u == u
+isSorted :: Update -> Bool
+isSorted (Update is ) = sort is == is
 
 middle :: Update -> UpdateItem
-middle u = let n = length u in head $ drop (n `div` 2) u
-
-ui2Int :: UpdateItem -> Int
-ui2Int (UpdateItem n) = n
+middle (Update is) = let n = length is in (is !! max 0 (n `div` 2))
 
 solutionB :: String -> String
-solutionB = solve parser (first length >>> second (map length) >>> second (any even))
+solutionB = solve parser (const "")
 
-data PageOrdering = PageOrdering (UpdateItem,UpdateItem) deriving (Eq, Show)
+data PageOrdering = PageOrdering (Int,Int) deriving (Eq, Show)
 
 data Update = Update
-    { items :: [Int]
-    , orderings :: [PageOrdering]
+    { items :: [UpdateItem]
     } deriving (Show)
 
-data UpdateItem = UpdateItem Int deriving (Eq, Show)
+data UpdateItem = UpdateItem
+    { value :: Int
+    , orderings :: [PageOrdering]
+    , originalPos :: Int
+    }
 
 instance Eq Update where
   (==) u1 u2 = items u1 == items u2
 
-instance Ord Update where
-  compare u1 u2 = compareUI (orderings u1) (items u1) (items u2)
+instance Eq UpdateItem where
+    (==) x y = value x == value y
 
-left :: PageOrdering -> UpdateItem
+instance Ord UpdateItem where
+  compare = uiLE
+
+uiLE :: UpdateItem -> UpdateItem -> Ordering
+uiLE u1@(UpdateItem v1 pos o1) u2@(UpdateItem v2 _ o2) 
+    | v1 == v2 = EQ
+    | PageOrdering (v1,v2) `elem` pos = LT
+    | PageOrdering (v2,v1) `elem` pos = GT
+    | otherwise = compare o1 o2
+
+instance Show UpdateItem where
+    show :: UpdateItem -> String
+    show = show . value
+
+left :: PageOrdering -> Int
 left (PageOrdering (u,_)) = u
 
-sortU :: [PageOrdering] -> Update -> Update
-sortU pos u = let u' = sortBy (compareUI pos) u in if u == u' then u' else sortU pos u'
+-- sortU :: [PageOrdering] -> Update -> Update
+-- sortU pos u = let u' = sortBy (compareUI pos) u in if u == u' then u' else sortU pos u'
 
-right :: PageOrdering -> UpdateItem
+right :: PageOrdering -> Int
 right (PageOrdering (_,u)) = u
 
-uiLE :: [PageOrdering] -> UpdateItem -> UpdateItem -> Bool
-uiLE pos u1 u2 = PageOrdering (u1,u2) `elem` pos || any (uiLE pos u1 . left) (filter ((==u2) . right) pos)
-
-compareUI :: [PageOrdering] -> UpdateItem -> UpdateItem -> Ordering
-compareUI pos u1 u2
-  | uiLE pos u1 u2 = LT
-  | uiLE pos u2 u1 = GT
-  | otherwise = EQ
+-- compareUI :: [PageOrdering] -> UpdateItem -> UpdateItem -> Ordering
+-- compareUI pos u1 u2
+--   | uiLE pos u1 u2 = LT
+--   | uiLE pos u2 u1 = GT
+--   | otherwise = EQ
 --   | otherwise = error "incomparable"
 
 pageorders :: Parser [PageOrdering]
@@ -61,13 +72,13 @@ pageorders = (do
     x <- int
     _ <- char '|'
     y <- int
-    return (PageOrdering (UpdateItem x, UpdateItem y))) `sepEndBy1` newline
+    return (PageOrdering (x, y))) `sepEndBy1` newline
 
 updates :: [PageOrdering] -> Parser [Update]
 updates pos = (do
     is <- int `sepBy1` char ','
-    let uis = is
-    return $ Update uis pos )
+    let uis = map (`UpdateItem` pos) is
+    return $ Update (zipWith (\f n -> f n) uis [1..]) )
     `sepEndBy1` newline
 
 parser :: Parser [Update]
