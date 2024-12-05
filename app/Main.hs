@@ -7,6 +7,7 @@ import Advent
 import qualified Challenges.Y2015 as Y2015
 import qualified Challenges.Y2016 as Y2016
 import qualified Challenges.Y2017 as Y2017
+import qualified Challenges.Y2018 as Y2018
 import qualified Challenges.Y2019 as Y2019
 import qualified Challenges.Y2022 as Y2022
 import qualified Challenges.Y2023 as Y2023
@@ -36,6 +37,7 @@ getYear :: Integer -> Integer -> (String -> String, String -> String)
 getYear 2015 = Y2015.getDay
 getYear 2016 = Y2016.getDay
 getYear 2017 = Y2017.getDay
+getYear 2018 = Y2018.getDay
 getYear 2019 = Y2019.getDay
 getYear 2022 = Y2022.getDay
 getYear 2023 = Y2023.getDay
