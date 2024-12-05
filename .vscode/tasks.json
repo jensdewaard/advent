@@ -86,6 +86,7 @@
       "type": "pickString",
       "default": "2024",
       "options": [
+        "2018",
         "2019",
         "2022",
         "2023",
