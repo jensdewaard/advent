@@ -1,35 +1,30 @@
-module Common.ListTests (tests, prop_swapelems_inv, prop_swapelems_comm) where
+{-# LANGUAGE  TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-type-defaults #-}
+module Common.ListTests (runTests) where
 
-import Test.QuickCheck
-    ( chooseAny,
-      suchThat,
-      forAll,
-      Arbitrary(arbitrary),
-      Gen,
-      Property,
-      Result(reason) )
-import Common.List (swapElems, moveElem, rotate)
-import Control.Arrow ((>>>))
-import Test.QuickCheck.Property (succeeded, failed)
-
--- swapElemsTest = TestList [
---     "swap 0 2 abc = cba" ~: "cba" ~=? swapElems 0 2 "abc",
---     "swap 1 3 dabcd = dcbad" ~: "dcbad" ~=? swapElems 1 3 "dabcd",
---     "swap 1 1 abc = abc" ~: "abc" ~=? swapElems 1 1 "abc",
---     "swap 1 3 dabcd = dcbad" ~: "dcbad" ~=? swapElems 3 1 "dabcd"
---     ]
-
-prop_swapelems_inv :: [Char] -> Property
-prop_swapelems_inv s
-    = forAll (chooseAny `suchThat` (\x -> 0 <= x && x <= 10)) $ \m ->
-      forAll (chooseAny `suchThat` (\x -> 0 <= x && x < m)) $ \n ->
-        swapElems n m (swapElems m n s) == s
+import Common.List (swapElems, differences)
+import Test.QuickCheck.All (quickCheckAll)
+import Test.QuickCheck ((==>), Property)
 
 prop_swapelems_refl :: Int -> String -> Bool
 prop_swapelems_refl n s = swapElems n n s == swapElems n n s
 
 prop_swapelems_comm :: Int -> Int -> String -> Bool
 prop_swapelems_comm n m s = swapElems n m s == swapElems m n s
+
+prop_differences_oneshorter :: (Eq a, Num a) => [a] -> Property
+prop_differences_oneshorter ns = ns /= [] ==> length ns == length (differences ns) + 1
+
+prop_differences_scanl_reverses :: (Eq a, Num a) => [a] -> Property
+prop_differences_scanl_reverses ns = ns /= [] ==> scanl (+) (head ns) (differences ns) == ns
+
+prop_differences_empty :: Bool
+prop_differences_empty = null (differences [])
+
+--------------------------
+return []
+runTests :: IO Bool
+runTests = $quickCheckAll
 
 -- moveElemTest = TestList [
 --     "move 1 1 abc = abc" ~: "abc" ~=? moveElem 1 1 "abc",
@@ -53,4 +48,3 @@ prop_swapelems_comm n m s = swapElems n m s == swapElems m n s
 --     moveElemTest,
 --     rotateTest
 --     ]
-tests = [prop_swapelems_inv]

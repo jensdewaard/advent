@@ -41,7 +41,15 @@
       "type": "shell",
       "label": "Run all tests",
       "command": "stack",
-      "args": ["test"]
+      "args": ["test", "--coverage"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "type": "shell",

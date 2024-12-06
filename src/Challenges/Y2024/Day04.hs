@@ -6,15 +6,13 @@ import Common.Prelude (solve)
 import Text.ParserCombinators.Parsec (Parser, letter)
 import Control.Arrow ((>>>), (&&&))
 import Common.Parsing (grid)
-import Common.Coord (Coord, cardinal, diag, direction, moveN, above, right, below)
+import Common.Coord
+    ( Coord, cardinal, diag, above, right, below, left )
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Maybe (isJust, fromJust)
 import Common.Search (bfs)
 import Data.Ord (comparing)
-import Data.List (sort)
-import Common.List (differences)
-import Common.Coord (left)
 
 solutionA :: String -> String
 solutionA = solve parser (allStarts >>> bfs nextLetter >>> filter ((==4) . length . poss)  >>> length)
