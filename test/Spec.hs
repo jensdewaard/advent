@@ -9,19 +9,14 @@ import qualified Y2016Tests.Day21 as Y16D21
 import qualified Y2024Tests.Day05 as Y24D05
 import Test.HUnit (runTestTT, errors, failures, Test (TestList))
 import System.Exit (exitSuccess, exitFailure)
-main :: IO ()
-main = do
-    counts <- runTestTT (TestList [
-        Char.tests,
-        Interval.tests,
-        Math.tests,
-        FW.tests,
-        Y19D1.tests,
-        Y19D4.tests,
-        Y16D21.tests,
-        Y24D05.tests,
-        List.tests
-        ])
-    if errors counts + failures counts == 0
-        then exitSuccess
-        else exitFailure
+import Test.QuickCheck
+import Data.List (intersperse)
+
+-- import Test.Framework (defaultMain, testGroup)
+-- import Test.Framework.Providers.QuickCheck (testProperty)
+import Test.QuickCheck
+import Test.QuickCheck.Arbitrary
+import Common.ListTests 
+
+main = quickCheck prop_swapelems_comm
+-- /show

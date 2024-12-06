@@ -133,14 +133,13 @@ indexOf = indexOf' 0 where
       else indexOf' (index+1) needle (tail haystack)
 
 swapElems :: Int -> Int -> [a] -> [a]
+swapElems _ _ [] = []
 swapElems i j xs
-  | i > length xs = error "index i out of bounds"
-  | j > length xs = error "index j out of bounds"
   | i == j = xs
   | i > j  = swapElems j i xs
 swapElems i j xs = let
-              elemI = xs !! i
-              elemJ = xs !! j
+              elemI = xs !! (i `mod` length xs)
+              elemJ = xs !! (j `mod` length xs)
               initial = take i xs
               middle = take (j - i - 1) $ drop (i+1) xs
               final = drop (j+1) xs

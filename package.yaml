@@ -32,6 +32,7 @@ dependencies:
 - pureMD5
 - text
 - HUnit
+- QuickCheck
 - optparse-applicative
 - time
 - advent-of-code-api
