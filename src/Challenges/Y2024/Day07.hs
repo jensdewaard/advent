@@ -1,11 +1,11 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 module Challenges.Y2024.Day07 (solutionA, solutionB) where
 import Common.Prelude (solve)
-import Text.ParserCombinators.Parsec (Parser, newline, string, many1, sepEndBy1, space, sepBy1, char)
+import Text.ParserCombinators.Parsec (Parser, newline, string, sepEndBy1, sepBy1, char)
 import Control.Arrow ((>>>))
-import Data.Maybe (mapMaybe, isJust)
+import Data.Maybe (mapMaybe)
 import Common.Parsing (int)
-import Control.Applicative ((<|>), Alternative (some), asum)
+import Control.Applicative (asum)
 
 solutionA :: String -> String
 solutionA = solve parser (mapMaybe (canCalibrate [(+),(*)]) >>> sum)
