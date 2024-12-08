@@ -4,6 +4,12 @@
 module Main (main) where
 
 import Advent
+    ( defaultAoCOpts,
+      runAoC_,
+      mkDay_,
+      AoC(AoCPrompt, AoCInput, AoCSubmit),
+      AoCOpts(_aCache),
+      AoCUserAgent(AoCUserAgent, _auaEmail, _auaRepo), SubmitRes (SubUnknown), Part (Part1, Part2) )
 import qualified Challenges.Y2015 as Y2015
 import qualified Challenges.Y2016 as Y2016
 import qualified Challenges.Y2017 as Y2017
@@ -12,12 +18,14 @@ import qualified Challenges.Y2019 as Y2019
 import qualified Challenges.Y2022 as Y2022
 import qualified Challenges.Y2023 as Y2023
 import qualified Challenges.Y2024 as Y2024
-import Data.Text (unpack)
+import Data.Text (unpack, Text)
 import Options.Applicative
 import Parser (ProgramArgs (ProgramArgs), args)
 import System.CPUTime
 import System.IO
 import Text.Printf
+import Control.Monad (void)
+import Data.Map (Map, member)
 
 main :: IO ()
 main = runProg =<< execParser opts
@@ -49,19 +57,21 @@ runProg :: ProgramArgs -> IO ()
 -- runProg (Sample test year day) = getSol (test, year, day) >>= runSol >>= putStr
 runProg (ProgramArgs cmd year day) = do
   case cmd of
-    "solve" -> solve year day
-    "test" -> test year day
-    "get" -> get year day
+    "solve" -> void (solve year day)
+    "test" -> void (test year day)
+    "get" -> void (get year day)
     "start" -> start year day
+    "submit" -> submit year day
     _ -> error "unknown command"
 
-solveAndTime :: String -> (String -> String) -> String -> IO ()
+solveAndTime :: String -> (String -> String) -> String -> IO Solution
 solveAndTime lbl f x = do
   time <- getCPUTime
   let !r = f x
   now <- getCPUTime
-  let diff = showDiff $ fromIntegral (now - time) / (10 ^ (9 :: Integer))
-  putStr (lbl ++ ": " ++ r ++ "\t (Computation time: " ++ diff ++ ")" ++ "\n")
+  let diff = fromIntegral (now - time) / (10 ^ (9 :: Integer))
+  putStr (lbl ++ ": " ++ r ++ "\t (Computation time: " ++ showDiff diff ++ ")" ++ "\n")
+  return $ Solution r diff (SubUnknown "not yet submitted")
 
 showDiff :: Double -> String
 showDiff diff
@@ -79,21 +89,29 @@ mkDataPath y d
   | d <= 9 = "cache/example/" ++ show y ++ "/0" ++ show d ++ ".txt"
   | otherwise = "cache/example/" ++ show y ++ "/" ++ show d ++ ".txt"
 
-solve :: Integer -> Integer -> IO ()
+data Solution = Solution
+  {   answer :: String
+  ,   time   :: Double
+  ,   correct :: SubmitRes
+  } deriving (Show, Read, Eq)
+
+solve :: Integer -> Integer -> IO (Solution, Solution)
 solve year day = do
   (a, b) <- getSol (year, day)
   opts <- aocOpts year
   cs <- runAoC_ opts $ AoCInput $ mkDay_ day
-  solveAndTime "A" a $ unpack cs
-  solveAndTime "B" b $ unpack cs
+  solA <- solveAndTime "A" a $ unpack cs
+  solB <- solveAndTime "B" b $ unpack cs
+  return (solA, solB)
 
-test :: Integer -> Integer -> IO ()
+test :: Integer -> Integer -> IO (Solution, Solution)
 test year day = do
   (a, b) <- getSol (year, day)
   handle <- openFile (mkDataPath year day) ReadMode
   contents <- hGetContents handle
-  solveAndTime "A" a contents
-  solveAndTime "B" b contents
+  solA <- solveAndTime "A" a contents
+  solB <- solveAndTime "B" b contents
+  return (solA, solB)
 
 aocOpts :: Integer -> IO AoCOpts
 aocOpts y = do
@@ -103,11 +121,30 @@ aocOpts y = do
   let opts = defaultAoCOpts uAgent y key
   return opts {_aCache = Just "./cache"}
 
-get :: Integer -> Integer -> IO ()
+get :: Integer -> Integer -> IO (Map Part Text)
 get year day = do
   opts <- aocOpts year
-  ps <- runAoC_ opts $ AoCPrompt $ mkDay_ day
-  putStr $ show ps
+  runAoC_ opts $ AoCPrompt $ mkDay_ day
+
+submit :: Integer -> Integer -> IO ()
+submit year day = do
+  opts <- aocOpts year
+  parts <- get year day
+  (solA, solB) <- solve year day
+  (txt, response) <- if Part2 `member` parts
+    then runAoC_ opts $ AoCSubmit (mkDay_ day) Part2 (answer solB)
+    else runAoC_ opts $ AoCSubmit (mkDay_ day) Part1 (answer solA)
+
+  putStr (show response)
+
+
+getAnswer :: Integer -> Integer -> IO (Maybe (Solution, Solution))
+getAnswer year day = do
+  handle <- openFile ("cache/answers/" ++ show year ++ "/" ++ show day) ReadMode
+  fileContents <- hGetContents handle
+  return $ read fileContents
+
+
 
 start :: Integer -> Integer -> IO ()
 start year day = do
