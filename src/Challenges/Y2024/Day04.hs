@@ -47,15 +47,6 @@ data LetterSearch = LetterSearch
     , world :: Map Coord Char
     } deriving Show
 
-instance Num Coord where
-  (+) (x,y) (x',y')= (x+x', y + y')
-  (-) (x,y) (x',y') = (x - x', y - y')
-  (*) = undefined
-  abs = undefined
-  signum = undefined
-  fromInteger = undefined
-  negate = undefined
-
 nextLetter :: LetterSearch -> [LetterSearch]
 nextLetter (LetterSearch ps f m) = [
         LetterSearch (p' : ps) f' m |

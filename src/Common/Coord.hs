@@ -1,12 +1,27 @@
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right,  turnLeft, turnRight, rightN, direction, showMap, showMapWith, cardinal, reverse, area, diag) where
 
 import Data.Bifunctor (second)
 import Data.List (sort, tails)
-import Data.Map (Map)
-import qualified Data.Map as M
 import Prelude hiding (reverse)
 
 type Coord = (Int, Int)
+
+instance Num Coord where
+  (+) :: Coord -> Coord -> Coord
+  (+) (x1, y1) (x2, y2) = (x1+x2, y1+y2) 
+  (*) :: Coord -> Coord -> Coord
+  (*) (x1, y1) (x2, y2) = (x1*x2, y1*y2)
+  abs :: Coord -> Coord
+  abs (x, y) = (abs x, abs y)
+  signum :: Coord -> Coord
+  signum (x, y) = (signum x, signum y)
+  fromInteger :: Integer -> Coord
+  fromInteger n = (fromInteger n, fromInteger n)
+  negate :: Coord -> Coord
+  negate (x, y) = (negate x, negate y)
 
 data Dir = U | D | L| R deriving (Show, Eq, Ord)
 
