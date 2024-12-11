@@ -7,6 +7,9 @@ import Text.ParserCombinators.Parsec (Parser, parse)
 class Showable s where
     show' :: s -> String
 
+class HasLength a where
+    len :: a -> Int
+
 instance {-# OVERLAPS #-} Showable String where
     show' = id
 
@@ -43,3 +46,6 @@ mapIf _ _ [] = []
 mapIf p f l = map (\x -> if p x then f x else x) l
 
 type Predicate a = a -> Bool
+
+class MonadOrd m where
+  (>==) :: Ord b => m a -> (a -> m b) -> m b

@@ -1,16 +1,16 @@
 {-# LANGUAGE ViewPatterns #-}
 module Challenges.Y2024.Day11 (solutionA, solutionB) where
-import Common.Prelude (solve)
+import Common.Prelude (solve, HasLength (len), (>==))
 import Text.ParserCombinators.Parsec (Parser, spaces, sepEndBy1)
 import Control.Arrow ((>>>))
 import Common.Parsing (int)
-import qualified Common.FreqMap as F
-import Common.FreqMap (FreqMap, applyF)
+import Common.FreqMap (FreqMap)
+-- import Common.LinkedList (LinkedList)
 
 solutionA :: String -> String
-solutionA = solve parser (iterate (applyF blink) >>> (!!25) >>> F.length )
+solutionA = solve parser (iterate (>== blink) >>> (!!25) >>> len )
 solutionB :: String -> String
-solutionB = solve parser (iterate (applyF blink) >>> (!!75) >>> F.length)
+solutionB = solve parser (iterate (>== blink) >>> (!!75) >>> len )
 
 blink :: (Semigroup (m Int), Applicative m) => Int -> m Int
 blink 0 = pure 1
@@ -27,4 +27,7 @@ type Stone = FreqMap Int
 parser :: Parser Stone
 parser = do
     ns <- int `sepEndBy1` spaces
-    return $ F.fromList ns
+    return $ fromList ns
+
+fromList :: Ord a => [a] -> FreqMap a
+fromList = foldr ((<>) . pure) mempty

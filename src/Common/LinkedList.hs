@@ -1,6 +1,7 @@
 module Common.LinkedList where
 
 import Prelude hiding (length)
+import Common.Prelude (HasLength (..), MonadOrd ((>==)))
 
 data LinkedList a = Link
     {   value :: a
@@ -23,13 +24,6 @@ instance Applicative LinkedList where
   (<*>) (Link f fn) (Link a an) = Link (f a) (fn <*> an)
   (<*>) _ _ = ListEnd
 
-instance Monad LinkedList where
-  (>>=) :: LinkedList a -> (a -> LinkedList b) -> LinkedList b
-  (>>=) (Link a na) f = case f a of 
-    ListEnd -> ListEnd
-    (Link b _) -> Link b (na >>= f)
-  (>>=) ListEnd _ = ListEnd
-
 instance Semigroup (LinkedList a) where
   (<>) :: LinkedList a -> LinkedList a -> LinkedList a
   (<>) = cons
@@ -50,3 +44,22 @@ instance Foldable LinkedList where
 length :: LinkedList a -> Int
 length ListEnd = 0
 length (Link _ n) = 1 + length n
+
+instance HasLength (LinkedList a) where
+  len :: LinkedList a -> Int
+  len ListEnd = 0
+  len (Link _ n) = 1 + len n
+
+applyF :: Ord a => (a -> LinkedList a) -> LinkedList a -> LinkedList a
+applyF _ ListEnd = ListEnd
+applyF f (Link a n) = f a <> applyF f n
+
+instance Monad LinkedList where
+  (>>=) :: LinkedList a -> (a -> LinkedList b) -> LinkedList b
+  (>>=) (Link a na) f = case f a of 
+    ListEnd -> ListEnd
+    (Link b _) -> Link b (na >>= f)
+  (>>=) ListEnd _ = ListEnd
+
+instance MonadOrd LinkedList where
+  (>==) = (>>=)

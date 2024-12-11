@@ -1,13 +1,15 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE ViewPatterns #-}
-module Common.FreqMap (FreqMap(FM, (:<|)), length, fromList, singleton, first, applyF) where
-
-import Prelude hiding (length)
+module Common.FreqMap (FreqMap(FM), fromList, singleton, first, applyF) where
 
 import Data.List (sort)
-import Data.Bifunctor (second)
+import Data.Bifunctor (first, second)
 import Data.List.Extra (mconcatMap)
+import Common.Prelude (HasLength (..), MonadOrd ((>==)))
+import Control.Applicative (asum)
+import Control.Monad (join)
+import Data.Tuple (swap)
 
 data FreqMap a where
   FM :: [(a, Int)] -> FreqMap a
@@ -41,13 +43,9 @@ instance Ord a => Semigroup (FreqMap a) where
   (<>) :: FreqMap a -> FreqMap a -> FreqMap a
   (<>) = combine
 
-
 instance Ord a => Monoid (FreqMap a) where
   mempty :: FreqMap a
   mempty = FM []
-
-length :: FreqMap a -> Int
-length (FM x) = sum $ map snd x
 
 fromList :: Ord a => [a] -> FreqMap a
 fromList = foldr ((<>) . pure) mempty
@@ -55,16 +53,33 @@ fromList = foldr ((<>) . pure) mempty
 singleton :: a -> Int -> FreqMap a
 singleton a n = FM [(a,n)]
 
-first :: FreqMap a -> Maybe ((a,Int), FreqMap a)
-first (FM []) = Nothing
-first (FM (a:as)) = Just (a, FM as)
-
-pattern (:<|) :: (a,Int) -> FreqMap a -> FreqMap a
-pattern x :<| xs <- (first -> Just (x, xs))
-infix 6 :<|
-
-doF :: (a -> FreqMap a) -> a -> Int -> FreqMap a
+doF :: (a -> FreqMap b) -> a -> Int -> FreqMap b
 doF f a n = let (FM as) = f a in FM (map (second (*n)) as)
 
-applyF :: Ord a => (a -> FreqMap a) -> FreqMap a -> FreqMap a
-applyF f (FM as) = mconcatMap (uncurry (doF f)) as
+applyF :: Ord b => (a -> FreqMap b) -> FreqMap a -> FreqMap b
+applyF f (FM as) = let fs = map (uncurry (doF f)) as in
+  undefined
+
+instance HasLength (FreqMap a) where
+  len (FM x) = sum $ map snd x
+
+instance Foldable FreqMap where
+
+instance Traversable FreqMap where
+  traverse :: Applicative f => (a -> f b) -> FreqMap a -> f (FreqMap b)
+  traverse f (FM as) = let
+    fas = map (first f) as
+    in sequenceA (FM fas)
+
+scale :: Int -> FreqMap a -> FreqMap a
+scale n (FM as) = FM (map (second (*n)) as)
+
+joinFM :: Ord a => FreqMap (FreqMap a) -> FreqMap a
+joinFM (FM fms) = let
+  fms' = map (uncurry scale . swap) fms
+  in
+    mconcat fms'
+
+instance MonadOrd FreqMap where
+  (>==) :: Ord b => FreqMap a -> (a -> FreqMap b) -> FreqMap b
+  (>==) ma k = joinFM $ fmap k ma
