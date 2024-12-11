@@ -1,9 +1,13 @@
 {-# LANGUAGE GADTs #-}
-module Common.FreqMap (FreqMap(..), length, fromList, singleton) where
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE ViewPatterns #-}
+module Common.FreqMap (FreqMap(FM, (:<|)), length, fromList, singleton, first, applyF) where
 
 import Prelude hiding (length)
 
 import Data.List (sort)
+import Data.Bifunctor (second)
+import Data.List.Extra (mconcatMap)
 
 data FreqMap a where
   FM :: [(a, Int)] -> FreqMap a
@@ -50,3 +54,17 @@ fromList = foldr ((<>) . pure) mempty
 
 singleton :: a -> Int -> FreqMap a
 singleton a n = FM [(a,n)]
+
+first :: FreqMap a -> Maybe ((a,Int), FreqMap a)
+first (FM []) = Nothing
+first (FM (a:as)) = Just (a, FM as)
+
+pattern (:<|) :: (a,Int) -> FreqMap a -> FreqMap a
+pattern x :<| xs <- (first -> Just (x, xs))
+infix 6 :<|
+
+doF :: (a -> FreqMap a) -> a -> Int -> FreqMap a
+doF f a n = let (FM as) = f a in FM (map (second (*n)) as)
+
+applyF :: Ord a => (a -> FreqMap a) -> FreqMap a -> FreqMap a
+applyF f (FM as) = mconcatMap (uncurry (doF f)) as

@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Common.Prelude where 
