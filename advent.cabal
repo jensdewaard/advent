@@ -216,6 +216,7 @@ library
       Common.Coord
       Common.Graph
       Common.Interval
+      Common.LinkedList
       Common.List
       Common.Math
       Common.Parsing
