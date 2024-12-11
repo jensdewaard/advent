@@ -23,6 +23,22 @@ instance Applicative LinkedList where
   (<*>) (Link f fn) (Link a an) = Link (f a) (fn <*> an)
   (<*>) _ _ = ListEnd
 
+instance Monad LinkedList where
+  (>>=) :: LinkedList a -> (a -> LinkedList b) -> LinkedList b
+  (>>=) (Link a na) f = case f a of 
+    ListEnd -> ListEnd
+    (Link b _) -> Link b (na >>= f)
+  (>>=) ListEnd _ = ListEnd
+
+instance Semigroup (LinkedList a) where
+  (<>) :: LinkedList a -> LinkedList a -> LinkedList a
+  (<>) = cons
+
+instance Monoid (LinkedList a) where
+  mempty :: LinkedList a
+  mempty = ListEnd
+
+
 fromList :: [a] -> LinkedList a
 fromList = foldr Link ListEnd
 

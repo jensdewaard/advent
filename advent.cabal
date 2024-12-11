@@ -214,6 +214,7 @@ library
       Challenges.Y2024.Day25
       Common.Char
       Common.Coord
+      Common.FreqMap
       Common.Graph
       Common.Interval
       Common.LinkedList

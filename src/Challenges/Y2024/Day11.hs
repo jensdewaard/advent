@@ -1,33 +1,33 @@
 module Challenges.Y2024.Day11 (solutionA, solutionB) where
 import Common.Prelude (solve)
-import Text.ParserCombinators.Parsec (Parser, many1, spaces, sepEndBy1)
-import Control.Arrow ((>>>), (&&&))
-import Data.Maybe (isJust, fromJust)
+import Text.ParserCombinators.Parsec (Parser, spaces, sepEndBy1)
+import Control.Arrow ((>>>))
 import Common.Parsing (int)
-import qualified Common.LinkedList as LL
-import Common.LinkedList (LinkedList(..))
+import qualified Common.FreqMap as F
+import Common.FreqMap (FreqMap (..), singleton)
 
 solutionA :: String -> String
-solutionA = solve parser (iterate blink >>> (!!25) >>> LL.length )
+solutionA = solve parser (iterate blink >>> (!!25) >>> F.length )
 solutionB :: String -> String
-solutionB = solve parser (iterate blink >>> (!!0) >>> LL.length )
+solutionB = solve parser (iterate blink >>> (!!75) >>> F.length)
 
 blink :: Stone -> Stone
-blink ListEnd = ListEnd
-blink (Link txt ns)
-    | txt == "0" = Link "1" (blink ns)
-    | even (length txt)  = let
-        h = length txt `div` 2
+blink (FM []) = mempty
+blink (FM ((txt,n):ns))
+    | txt == 0 = singleton 1 n <> blink (FM ns)
+    | even (length $ show txt)  = let
+        s = show txt
+        h = length s `div` 2
         e1 :: Int
-        e1 = read $ take h txt
+        e1 = read $ take h s
         e2 :: Int
-        e2 = read $ drop h txt
-        in Link (show e1) (Link (show e2) (blink ns))
-    | otherwise = Link (show (2024 * read txt)) (blink ns)
+        e2 = read $ drop h s
+        in singleton e1 n <> singleton e2 n <> blink (FM ns)
+    | otherwise = singleton (2024 * txt) n <> blink (FM ns)
 
-type Stone = LinkedList String
+type Stone = FreqMap Int
 
 parser :: Parser Stone
 parser = do
     ns <- int `sepEndBy1` spaces
-    return $ LL.fromList $ map show ns
+    return $ F.fromList ns 
