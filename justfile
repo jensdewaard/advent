@@ -1,22 +1,23 @@
-default:
-    @just build
+advent-exe:=".stack-work/dist/x86_64-linux/ghc-9.6.6/build/advent-exe/advent-exe"
+advent-test:=".stack-work/dist/x86_64-linux/ghc-9.6.6/build/advent-test/advent-test"
+
+default: build
 
 build:
-    @stack build --ghc-options -fprint-potential-instances
+    @stack build --profile --ghc-options -fprint-potential-instances
 
-profile year day:
-    stack build --profile --ghc-options -fprint-potential-instances
-    stack exec --profile -- advent-exe solve {{year}} {{day}} +RTS -p -hc
+profile year day: build
+    stack exec --profile -- advent-exe test {{year}} {{day}} +RTS -p -hc
 
 run year day:
     @stack run solve {{year}} {{day}}
 
-solve year day:
-    @stack run solve {{year}} {{day}}
+solve year day: build
+    @{{advent-exe}} solve {{year}} {{day}}
 
-test year day:
+test year day: build
     @stack test
-    @stack run test {{year}} {{day}}
+    @{{advent-exe}} test {{year}} {{day}}
 
 start year day:
     @stack run start {{year}} {{day}}

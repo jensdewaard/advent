@@ -52,8 +52,8 @@ sumWith :: Num b => (a -> b) -> [a] -> b
 sumWith f =  sum . map f
 
 -- | Count the number of elements in a list that satisfy a predicate.
-count :: Predicate a -> [a] -> Int
-count predicate = length . filter predicate
+count :: Foldable f => Predicate a -> f a -> Int
+count predicate = foldr (\e n -> if predicate e then 1 + n else n) 0 
 
 -- | The number of occurences of an element in a list.
 occur :: Eq a => [a] -> [(a, Int)]
