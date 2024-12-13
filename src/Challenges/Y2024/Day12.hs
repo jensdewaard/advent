@@ -25,7 +25,7 @@ solutionA :: String -> String
 solutionA = solve parser (floodRegion >>> sumWith (\(Region r _) -> length r * length (perimeter r)))
 
 solutionB :: String -> String
-solutionB = solve parser (floodRegion >>> map (\r -> (area r , (length $ sides r))))
+solutionB = solve parser (floodRegion >>> map (\r -> (flowerR r, area r , length $ sides r)) >>> sumWith (\(_,a,s) -> a*s))
 
 parser :: Parser (Set Garden)
 parser = do
@@ -69,14 +69,14 @@ sides :: Region -> [[(Coord, Dir)]]
 --     | length gs <= 2 = 4
 sides (Region _ p) = let
         sds = groupOn snd $ sortOn snd p
-    in mergeSides $ concatMap (groupsBy (\ (a,_) (b,_) -> dist a b == 1)) sds
+    in mconcat $ map (mergeSides . groupsBy (\ (a,_) (b,_) -> dist a b == 1)) sds
 
 mergeSides :: [[(Coord, Dir)]] -> [[(Coord, Dir)]]
 mergeSides [] = []
 mergeSides (a:as) = let
     x = last a
-    b = filter (\l -> d x (head l) == 1) as
     d (n,_) (m,_) = dist n m
+    b = filter (\l -> d x (head l) == 1) as
     in if null b
         then a : mergeSides as
         else let b' = head b in mergeSides $ (a <> b') : delete b' as
@@ -112,6 +112,9 @@ data Garden = Garden
     ,   flower :: Char
     ,   world :: Map Coord Char
     }
+
+flowerR :: Region -> Char
+flowerR (Region r _) = flower $ head r
 
 instance Show Garden where
     show g = show (coord g) ++ "," ++ show (flower g)
