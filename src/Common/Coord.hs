@@ -4,14 +4,16 @@
 module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right,  turnLeft, turnRight, rightN, direction, showMap, showMapWith, cardinal, reverse, area, diag) where
 
 import Data.Bifunctor (second)
-import Data.List (sort, tails)
+import Data.List (sort, tails, maximumBy)
 import Prelude hiding (reverse)
+import Common.List (chunksOf)
+import Data.Ord (comparing)
 
 type Coord = (Int, Int)
 
 instance Num Coord where
   (+) :: Coord -> Coord -> Coord
-  (+) (x1, y1) (x2, y2) = (x1+x2, y1+y2) 
+  (+) (x1, y1) (x2, y2) = (x1+x2, y1+y2)
   (*) :: Coord -> Coord -> Coord
   (*) (x1, y1) (x2, y2) = (x1*x2, y1*y2)
   abs :: Coord -> Coord
@@ -87,12 +89,9 @@ showMapWith :: (a -> Char) -> [(Coord,a)] -> String
 showMapWith f m = showMap $ map (second f) m
 
 showMap :: [(Coord, Char)] -> String
-showMap m = unlines $ map (showLine ms) [0..maxY] where
-    ms = sort m
-    maxY = maximum $ map (snd .fst) ms
-
-showLine :: [(Coord, Char)] -> Int -> String
-showLine m y = let xs = filter (\c -> snd (fst c) == y) m in map snd xs
+showMap m = "\n" <> unlines (chunksOf width cs) where
+  cs = map snd m
+  width = fst $ fst $ maximumBy (comparing fst) m
 
 reverse :: Dir -> Dir
 reverse U = D

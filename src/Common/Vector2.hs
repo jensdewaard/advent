@@ -1,10 +1,20 @@
 module Common.Vector2 (Vector2(..), vector2, plus, minus, scale, angle, angleI, normalize, rotate, manhattan) where
-import GHC.Float (float2Int, int2Float)
+import GHC.Float (int2Float)
 
 data Vector2 a = Vector2 {
     x :: a,
     y :: a
 } deriving (Eq, Show)
+
+instance Functor Vector2 where
+  fmap :: (a -> b) -> Vector2 a -> Vector2 b
+  fmap f (Vector2 a b) = Vector2 (f a) (f b)
+
+instance Applicative Vector2 where
+  pure :: a -> Vector2 a
+  pure a = Vector2 a a
+  (<*>) :: Vector2 (a -> b) -> Vector2 a -> Vector2 b
+  (<*>) (Vector2 fa fb) (Vector2 a b) = Vector2 (fa a) (fb b)
 
 instance RealFloat a => Semigroup (Vector2 a) where
   (<>) :: Vector2 a -> Vector2 a -> Vector2 a
