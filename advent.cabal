@@ -263,6 +263,7 @@ library
     , parsec
     , pqueue
     , pureMD5
+    , quickcheck-classes
     , scientific
     , split
     , text
@@ -299,6 +300,7 @@ executable advent-exe
     , parsec
     , pqueue
     , pureMD5
+    , quickcheck-classes
     , scientific
     , split
     , text
@@ -346,6 +348,7 @@ test-suite advent-test
     , parsec
     , pqueue
     , pureMD5
+    , quickcheck-classes
     , scientific
     , split
     , text

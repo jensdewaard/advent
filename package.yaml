@@ -33,6 +33,7 @@ dependencies:
 - text
 - HUnit
 - QuickCheck
+- quickcheck-classes
 - optparse-applicative
 - time
 - advent-of-code-api

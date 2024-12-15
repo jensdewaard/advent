@@ -1,12 +1,18 @@
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-type-defaults #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant bracket" #-}
 {-# HLINT ignore "Move brackets to avoid $" #-}
-module Common.IntervalTests (tests) where
+{-# OPTIONS_GHC -Wno-orphans #-}
+module Common.IntervalTests (runTests) where
 
 import Test.HUnit
 import Common.Interval
+import Test.QuickCheck.All 
+import Test.QuickCheck 
+import Test.QuickCheck.Classes
+import Data.Proxy (Proxy (Proxy))
 
 ivs :: [Interval Int]
 ivs = [
@@ -90,3 +96,19 @@ tests = TestList [
     "the union of (1,4) and (2, 9) = (1,9)" ~: fromPair (1,4) `union` fromPair (2,9) ~?= fromPair (1,9),
     "the union of (4,7) and (1, 9) = (1,9)" ~: fromPair (4,7) `union` fromPair (1,9) ~?= fromPair (1,9)
     ]
+
+instance Arbitrary a => Arbitrary (Interval a) where
+  arbitrary = applyArbitrary2 Interval
+
+intervalInt :: Proxy (Interval Int)
+intervalInt = Proxy
+
+laws :: (Ord a, Monoid a, Arbitrary a, Show a) => Proxy a -> [Laws]
+laws p = [eqLaws p, ordLaws p, semigroupLaws p, semigroupMonoidLaws p, monoidLaws p]
+
+--------------------------
+return []
+runTests :: IO Bool
+runTests = do
+    lawsCheckMany [("Interval Int", laws intervalInt)]
+    $quickCheckAll

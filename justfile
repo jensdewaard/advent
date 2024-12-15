@@ -19,6 +19,9 @@ test year day: build
     @stack test
     @{{advent-exe}} test {{year}} {{day}}
 
+tests: build
+    @stack test
+
 start year day:
     @stack run start {{year}} {{day}}
 

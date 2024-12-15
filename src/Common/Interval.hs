@@ -6,7 +6,10 @@ import Data.List (sort)
 
 data Interval a = Empty | Interval a a
 
-instance Eq a => Eq (Interval a) where
+instance Ord a => Eq (Interval a) where
+    (==) Empty Empty = True
+    (==) _ Empty = False
+    (==) Empty _ = False
     (==) i j = lb i == lb j && ub i == ub j
 
 instance Show a => Show (Interval a) where
@@ -50,14 +53,14 @@ length Empty = 0
 length (Interval l u) = Prelude.length [l..u]
 
 -- | The lower bound of an interval
-lb :: Interval a -> a
+lb :: Ord a => Interval a -> a
 lb Empty = error "lower bound of empty interval"
-lb (Interval x _) = x
+lb (Interval x y) = min x y
 
 -- | The upper bound of an interval
-ub :: Interval a -> a
+ub :: Ord a => Interval a -> a
 ub Empty = error "upper bound of empty interval"
-ub (Interval _ y) = y
+ub (Interval x y) = max x y
 
 -- | True if and only if the two given intervals have no overlapping numbers
 distinct :: Ord a => Interval a -> Interval a -> Bool
@@ -93,6 +96,7 @@ instance Ord a => Semigroup (Interval a) where
 instance Ord a => Monoid (Interval a) where
     mempty :: Interval a
     mempty = Empty
+    mappend = (<>)
 
 -- | i `remove` j returns all values of i that are not included in j.
 remove :: (Enum a, Ord a) => Interval a -> Interval a -> [Interval a]
