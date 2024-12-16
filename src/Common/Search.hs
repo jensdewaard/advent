@@ -20,7 +20,7 @@ import Data.List (foldl')
 import qualified Data.Map as M
 import Data.Maybe (fromJust)
 import qualified Data.PQueue.Min as PM
-import qualified Data.Set as Set (empty, insert, member)
+import qualified Data.Set as Set (empty, insert, member, fromList, toList, findMin)
 
 --
 dfsUntil :: (Ord a) => (a -> Bool) -> (a -> [a]) -> [a] -> [a]
@@ -112,14 +112,17 @@ dijkstraOn' ::
   (state -> Bool) -> -- acceptance function
   [(state, cost)]
 dijkstraOn' repr trans start combine estimate accept =
-  go M.empty (foldl' (\hp (a, b) -> PM.insert (b, b, a) hp) PM.empty start)
+  go M.empty (foldl' (\hp (a, b) -> PM.insert (b, b, a) hp) PM.empty start) Set.empty
   where
-    go !seen heap = case PM.minView heap of
+    go !seen heap foundThusFar = case PM.minView heap of
       Nothing -> []
       Just ((_, cost, state), heap')
-        | accept state -> (state, cost) : go seen heap'
-        | repr state `M.member` seen && cost > fromJust (M.lookup (repr state) seen) ->
-            go seen heap'
+        | not (null foundThusFar) && cost > snd (Set.findMin foundThusFar)
+            -> Set.toList foundThusFar
+        | accept state && null foundThusFar 
+          -> let found = (state, cost) in found : go seen heap' (Set.insert found foundThusFar)
+        | repr state `M.member` seen 
+            -> go seen heap' foundThusFar
         | otherwise ->
             let nxts =
                   ( \(val', cost') ->
@@ -128,7 +131,7 @@ dijkstraOn' repr trans start combine estimate accept =
                   )
                     <$> trans state
                 heap'' = foldl' (flip PM.insert) heap' nxts
-             in go (M.insert (repr state) cost seen) heap''
+             in go (M.insert (repr state) cost seen) heap'' foundThusFar
 
 dijkstraOn ::
   (Ord state, Ord b, Ord cost) =>

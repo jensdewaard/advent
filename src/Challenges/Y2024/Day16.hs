@@ -2,7 +2,7 @@
 
 module Challenges.Y2024.Day16 (solutionA, solutionB) where
 
-import Common.Coord (Coord, Dir (..), move, turnLeft, turnRight, dist)
+import Common.Coord (Coord, Dir (..), move, turnLeft, turnRight)
 import Common.Parsing (grid)
 import Common.Prelude (solve)
 import Common.Search (Dijkstra (..), searchFor, searchFor')
@@ -14,7 +14,6 @@ import qualified Data.Map as M
 import Data.Ord (comparing)
 import Text.ParserCombinators.Parsec (Parser, char)
 import Data.Maybe (fromJust)
-import Common.List (sumWith)
 
 solutionA :: String -> String
 solutionA = solve parser (reindeerStart >>> searchFor reindeerAtFinish)
@@ -34,9 +33,6 @@ solutionB =
 
 reindeerAtFinish :: Reindeer -> Bool
 reindeerAtFinish r = M.lookup (position r) (maze r) == Just 'E'
-
-finish :: Map Coord Char -> Coord
-finish m = fst $ head $ M.toList $ M.filter (=='E') m
 
 data Reindeer = Reindeer
   { position :: Coord,
@@ -68,7 +64,7 @@ instance Dijkstra Reindeer where
   adjacency :: Reindeer -> [(Reindeer, DijkstraCost Reindeer)]
   adjacency = possibleMoves
   estimate :: Reindeer -> DijkstraCost Reindeer
-  estimate r = let w = maze r in dist (finish w) (position r)
+  estimate _ = 1
 
 possibleMoves :: Reindeer -> [(Reindeer, Int)]
 possibleMoves r =
