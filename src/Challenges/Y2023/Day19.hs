@@ -1,76 +1,70 @@
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE FlexibleInstances #-}
 module Challenges.Y2023.Day19 (solutionA, solutionB) where
 
 import Common.Prelude (solve)
-import Common.Search (dfs)
-import Data.Bifunctor (first)
 import Data.Map (Map, fromList)
-import Data.Maybe (maybeToList)
+import qualified Data.Map as M
 import Common.Parsing (int)
 import Text.ParserCombinators.Parsec
-import qualified Data.Map as Map
+import Control.Applicative (asum)
+import Control.Arrow ((>>>))
+import Common.List (sumWith)
 
 solutionA :: String -> String
-solutionA = solve parser (sum . map (addUp . fst) . filterFinal . uncurry processAll . first addEnds)
+solutionA = solve parser (uncurry accepted >>> sumWith total)
 solutionB :: String -> String
 solutionB = solve parser (const "")
 
-addUp :: Item -> Int
-addUp (Item xval mval aval sval) = xval + mval + aval + sval
-
-processAll :: Map String Workflow -> [Item] -> [(Item, Workflow)]
-processAll ws = concatMap (\i -> dfs (process ws i) (start ws i))
-
-addEnds :: Map String Workflow -> Map String Workflow
-addEnds = Map.insert "A" ("A", []) . Map.insert "R" ("R", [])
-
 type Workflow = (String, [Rule])
+data Attribute = X | M | A | S deriving (Eq, Show)
+type WorkflowName = String
+data Rule = Rule Attribute Ordering Int WorkflowName | Unconditional WorkflowName deriving (Eq, Show)
 
-filterFinal :: [(Item, Workflow)] -> [(Item, Workflow)]
-filterFinal = filter isAorR
+accepted :: Map String Workflow -> [Part Int] -> [Part Int]
+accepted wfs = filter (\p -> evaluateWorkflowStart wfs p == "A")
 
-isAorR :: (Item, Workflow) -> Bool
-isAorR w = lbl == "A" where lbl = fst $ snd w
+evaluateWorkflowStart :: Map String Workflow -> Part Int -> String
+evaluateWorkflowStart ws p = let
+    workflowIn = M.lookup "in" ws
+    in case workflowIn of
+        Just w -> evaluateWorkflow ws w p
+        Nothing -> error "no workflow by name of 'in'"
 
-start :: Map String Workflow -> Item -> [(Item, Workflow)]
-start ws i = map (i,) $ maybeToList $ Map.lookup "in" ws
+evaluateRule :: Part Int -> Rule -> Maybe WorkflowName
+evaluateRule _ (Unconditional wf) = Just wf
+evaluateRule p (Rule attr GT v wf) = if get attr p > v then Just wf else Nothing
+evaluateRule p (Rule attr LT v wf) = if get attr p < v then Just wf else Nothing
+evaluateRule _ (Rule _ EQ _ _) = error "invalid comparison"
 
-process :: Map String Workflow -> Item -> (Item, Workflow) -> [(Item, Workflow)]
-process _ _ (_,(_,[])) = []
-process ws i (_,(l,r:rs)) = if mkPred r i
-    then map (i,) $ maybeToList $ Map.lookup (destination r) ws
-    else process ws i (i,(l,rs))
+evaluateWorkflow :: Map String Workflow -> Workflow -> Part Int -> String
+evaluateWorkflow ws (_, rs) p = let
+    res = asum $ map (evaluateRule p) rs
+    in case res of
+        Nothing -> error ("could not evaluate part " ++ show p ++ " on rules " ++ show rs)
+        Just "A" -> "A"
+        Just "R" -> "R"
+        Just ans -> let w = M.lookup ans ws in
+            case w of
+                Just w' -> evaluateWorkflow ws w' p
+                Nothing -> error ("evaluated to non-existing workflow " ++ show w)
 
-mkPred :: Rule -> Item -> Bool
-mkPred (Rule 'o' _ _ _) _ = True
-mkPred (Rule attr comp v _) i =
-    getComparison comp (getAttribute attr i) v
+get :: Attribute -> Part a -> a
+get X = x
+get M = m
+get A = a
+get S = s
 
-getComparison :: Char -> Int -> Int -> Bool
-getComparison '>' = (>)
-getComparison '<' = (<)
+data Part a = Part
+    {   x :: a
+    ,   m :: a
+    ,   a :: a
+    ,   s :: a
+    } deriving (Eq, Show)
 
-getAttribute :: Char -> Item -> Int
-getAttribute 'x' = x
-getAttribute 'm' = m
-getAttribute 'a' = a
-getAttribute 's' = s
+total :: Num a => Part a -> a
+total p = x p + m p + a p + s p
 
-data Rule = Rule {
-    attribute :: Char,
-    comparison :: Char,
-    val :: Int,
-    destination :: String
-}  deriving (Eq, Ord, Show)
-
-data Item = Item {
-    x :: Int,
-    m :: Int,
-    a :: Int,
-    s :: Int
-} deriving (Show, Eq, Ord)
-
-parser :: Parser (Map String Workflow,[Item])
+parser :: Parser (Map String Workflow,[Part Int])
 parser = do
     ws <- workflow `sepEndBy1` newline
     _ <- newline
@@ -87,15 +81,16 @@ workflow = do
 
 rule :: Parser Rule
 rule = try (do
-    attr <- char 'x' <|> char 'm' <|> char 'a' <|> char 's'
-    comp <- char '<' <|> char '>'
+    attr <- (char 'x' >> return X) <|> (char 'm' >> return M)
+        <|> (char 'a' >> return A) <|> (char 's' >> return S)
+    comp <- (char '<' >> return LT) <|> (char '>' >> return GT)
     value <- int
     _ <- char ':'
     lbl <- many1 alphaNum
     return $ Rule attr comp value lbl)
-    <|> (do lbl <- many1 letter ; return (Rule 'o' '=' 0 lbl))
+    <|> (do lbl <- many1 letter ; return (Unconditional lbl))
 
-item :: Parser Item
+item :: Parser (Part Int)
 item = do
     _ <- string "{x="
     xval <- int
@@ -106,6 +101,6 @@ item = do
     _ <- string ",s="
     sval <- int
     _ <- char '}'
-    return $ Item xval mval aval sval
+    return $ Part xval mval aval sval
 
 
