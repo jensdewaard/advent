@@ -2,73 +2,41 @@
 
 module Challenges.Y2024.Day16 (solutionA, solutionB) where
 
-import Common.Coord (Coord, Dir (..), cardinal, move, turnLeft, turnRight)
+import Common.Coord (Coord, Dir (..), move, turnLeft, turnRight, dist)
 import Common.Parsing (grid)
 import Common.Prelude (solve)
-import Common.Search (Dijkstra (..), bfs, dfs, searchFor)
+import Common.Search (Dijkstra (..), searchFor, searchFor')
 import Control.Applicative ((<|>))
-import Control.Arrow ((&&&), (>>>))
-import Data.List (nub, singleton)
+import Control.Arrow ((>>>))
+import Data.List (singleton, nub)
 import Data.Map (Map)
 import qualified Data.Map as M
-import Data.Maybe (fromJust)
 import Data.Ord (comparing)
 import Text.ParserCombinators.Parsec (Parser, char)
+import Data.Maybe (fromJust)
+import Common.List (sumWith)
 
 solutionA :: String -> String
 solutionA = solve parser (reindeerStart >>> searchFor reindeerAtFinish)
 
 solutionB :: String -> String
 solutionB =
-  solve
-    parser
-    ( \m ->
-        let shortestPath = pathTaken $ fst $ fromJust $ searchFor reindeerAtFinish (reindeerStart m)
-         in bfs couldReachEnd (map (fuelUp (length shortestPath)) $ reindeerStart m)
-        -- in length shortestPath
+  solve parser (\m -> 
+    let 
+      start = reindeerStart m 
+      shortestPathLength = length $ pathTaken $ fst $ fromJust $ searchFor reindeerAtFinish start
+      allPaths = searchFor' reindeerAtFinish start
+      shortestPaths = takeWhile ((==shortestPathLength) . length . pathTaken . fst) allPaths
+    in length $ nub $ concatMap (pathTaken . fst) shortestPaths
+    -- in shortestPaths
     )
-
-couldReachEnd :: FueledReindeer -> [FueledReindeer]
-couldReachEnd r = [r'
-    | p' <- cardinal (fuelPosition r)
-    , M.lookup p' (fuelMaze r) /= Just '#'
-    , let r' = FueledReindeer p' (fuel r - 1) (p' : fueledPath r) (fuelMaze r)
-    , endReachable (fuel r - 1) r'
-    ]
-
-endReachable :: Int -> FueledReindeer -> Bool
-endReachable 0 r = fueledReindeerAtFinish r
-endReachable n r =
-  any
-    (endReachable (n - 1))
-    [ FueledReindeer p' (fuel r - 1) [] (fuelMaze r)
-      | p' <- cardinal (fuelPosition r),
-        M.lookup p' (fuelMaze r) /= Just '#'
-    ]
-
-fuelUp :: Int -> Reindeer -> FueledReindeer
-fuelUp f r = FueledReindeer (position r) f (pathTaken r) (maze r)
+-- solutionB = const ""
 
 reindeerAtFinish :: Reindeer -> Bool
 reindeerAtFinish r = M.lookup (position r) (maze r) == Just 'E'
-fueledReindeerAtFinish :: FueledReindeer -> Bool
-fueledReindeerAtFinish r = M.lookup (fuelPosition r) (fuelMaze r) == Just 'E'
 
-data FueledReindeer = FueledReindeer
-    { fuelPosition :: Coord
-    , fuel :: Int
-    , fueledPath :: [Coord]
-    , fuelMaze :: Map Coord Char
-    }
-
-instance Eq FueledReindeer where
-    (==) f g = fuelPosition f == fuelPosition g
-
-instance Ord FueledReindeer where
-    compare = comparing fuelPosition
-
-instance Show FueledReindeer where
-    show r = show (fuelPosition r) ++ "(" ++ show (fuel r) ++ ")"
+finish :: Map Coord Char -> Coord
+finish m = fst $ head $ M.toList $ M.filter (=='E') m
 
 data Reindeer = Reindeer
   { position :: Coord,
@@ -85,11 +53,11 @@ instance Eq Reindeer where
   (==) r s = position r == position s && facing r == facing s && score r == score s
 
 instance Ord Reindeer where
-  compare = comparing position <> comparing facing
+  compare = comparing score <> comparing position <> comparing facing
 
 reindeerStart :: Map Coord Char -> [Reindeer]
 reindeerStart m = case M.toList $ M.filter (== 'S') m of
-  [(c, 'S')] -> singleton $ Reindeer c R 0 [] m
+  [(c, 'S')] -> singleton $ Reindeer c R 0 [c] m
   _ -> error "could not find start reindeer"
 
 instance Dijkstra Reindeer where
@@ -100,7 +68,7 @@ instance Dijkstra Reindeer where
   adjacency :: Reindeer -> [(Reindeer, DijkstraCost Reindeer)]
   adjacency = possibleMoves
   estimate :: Reindeer -> DijkstraCost Reindeer
-  estimate = const 1
+  estimate r = let w = maze r in dist (finish w) (position r)
 
 possibleMoves :: Reindeer -> [(Reindeer, Int)]
 possibleMoves r =
@@ -109,16 +77,6 @@ possibleMoves r =
       M.lookup p' (maze r) /= Just '#' -- destination is not a wall
   ]
     ++ [ (Reindeer (position r) f' (score r + 1000) (pathTaken r) (maze r), 1000)
-         | f' <- [turnLeft (facing r), turnRight (facing r)]
-       ]
-
-possibleMovesNS :: Reindeer -> [Reindeer]
-possibleMovesNS r =
-  [ Reindeer p' (facing r) (score r + 1) (p' : pathTaken r) (maze r)
-    | let p' = move (facing r) (position r),
-      M.lookup p' (maze r) /= Just '#' -- destination is not a wall
-  ]
-    ++ [ Reindeer (position r) f' (score r + 1000) (pathTaken r) (maze r)
          | f' <- [turnLeft (facing r), turnRight (facing r)]
        ]
 
