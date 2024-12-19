@@ -20,6 +20,7 @@ module Common.List (
   uninterleave,
   aggregateOn,
   firstWhere,
+  firstIndex,
   monotone, differences,
   subsets,
   none,
@@ -53,7 +54,7 @@ sumWith f =  sum . map f
 
 -- | Count the number of elements in a list that satisfy a predicate.
 count :: Foldable f => Predicate a -> f a -> Int
-count predicate = foldr (\e n -> if predicate e then 1 + n else n) 0 
+count predicate = foldr (\e n -> if predicate e then 1 + n else n) 0
 
 -- | The number of occurences of an element in a list.
 occur :: Eq a => [a] -> [(a, Int)]
@@ -69,6 +70,22 @@ longest ls = let l = maximum $ map length ls in head $ filter (\l' -> length l' 
 firstWhere :: (a -> Bool) -> [a] -> Maybe a
 firstWhere _ [] = Nothing
 firstWhere predicate (a:as) = if predicate a then Just a else firstWhere predicate as
+
+firstIndex :: (a -> Bool) -> [a] -> Maybe Int
+firstIndex _ [] = Nothing
+firstIndex predicate as = go 0 (length as - 1) where
+  go ptr1 ptr2
+    | ptr2 < ptr1 = error "bounds have crossed"
+    | ptr1 == ptr2 = if predicate (as !! ptr1) then Just ptr1 else Nothing
+    | otherwise =
+      if predicate (as !! halfway)
+        then go ptr1 nextPoint
+        else go nextPoint ptr2
+        where halfway = ptr1 + ((ptr2 - ptr1) `div` 2)
+              nextPoint
+                | halfway == ptr1 = ptr1 + 1
+                | halfway == ptr2 = ptr2 - 1
+                | otherwise = halfway
 
 prepend :: ([a],[b]) -> ([a],[b]) -> ([a],[b])
 prepend (a,b) (as,bs) = (a ++ as, b ++ bs)

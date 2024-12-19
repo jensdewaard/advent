@@ -75,6 +75,7 @@ solveAndTime lbl f x = do
 
 showDiff :: Double -> String
 showDiff diff
+  | diff < 1 = printf "%0.3f μs" (diff * 1000)
   | diff < 1000 = printf "%0.3f ms" diff
   | diff < 60000 = printf "%0.3f  s" (diff / 1000)
   | diff < 3600000 = printf "%0.2f m" (diff / 36000)
