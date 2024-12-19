@@ -21,7 +21,6 @@ solutionA = solve parser (take 1024 >>> initialState (70, 70) >>> singleton
 
 solutionB :: String -> String
 solutionB = solve parser (inits >>> map (initialState (70,70)) >>> firstIndex noPathExist)
--- solutionB = solve parser (\ cs -> cs !! 21)
 
 
 noPathExist :: State -> Bool
