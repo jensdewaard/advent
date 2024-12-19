@@ -9,6 +9,9 @@ build:
 profile year day: build
     stack exec --profile -- advent-exe test {{year}} {{day}} +RTS -p -hc
 
+profile-full year day: build
+    stack exec --profile -- advent-exe solve {{year}} {{day}} +RTS -p -hc
+
 run year day:
     @stack run solve {{year}} {{day}}
 

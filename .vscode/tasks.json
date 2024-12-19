@@ -14,6 +14,31 @@
         "isDefault": false
       },
       "type": "shell",
+      "label": "Profile a day solution on the actual case",
+      "command": "just",
+      "args": [
+        "profile-full",
+        "${input:year}",
+        "${input:day}"
+      ],
+      "runOptions": {
+        "reevaluateOnRerun": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    },
+    {
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "type": "shell",
       "label": "Test a day solution",
       "command": "just",
       "args": [

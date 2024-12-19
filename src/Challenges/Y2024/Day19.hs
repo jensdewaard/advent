@@ -2,20 +2,22 @@
 module Challenges.Y2024.Day19 (solutionA, solutionB) where
 
 import Common.Prelude (solve)
-import Control.Arrow ((&&&), (>>>))
+import Control.Arrow ((>>>))
 import Data.List (isPrefixOf, singleton)
-import Text.ParserCombinators.Parsec (Parser, many, newline, sepBy, string, char, (<|>), many1, sepEndBy)
-import Common.Search (Dijkstra (..), searchFor, searchFor')
+import Text.ParserCombinators.Parsec (Parser, newline, string, char, (<|>), many1, sepEndBy)
+import Common.Search (Dijkstra (..), searchFor)
 import Data.Maybe (isJust)
-import Common.List (count)
+import Common.List (count, sumWith)
+import qualified Data.MemoCombinators as M
+
 
 solutionA :: String -> String
 solutionA = solve parser ((\(ts, ds) -> map (State ts []) ds) >>> map (searchFor (null . required) . singleton) >>> count isJust)
 
 solutionB :: String -> String
-solutionB = solve parser ((\(ts, ds) -> map (State ts []) ds) >>> map (searchFor' (null . required) . singleton) >>> map length)
+solutionB = solve parser (\(ts, ds) -> sumWith (memoizedPossibilities ts) ds)
 
-data Color = W | U | B | R | G deriving (Eq, Ord, Show)
+data Color = W | U | B | R | G deriving (Eq, Ord, Show, Enum)
 
 type Design = [Color]
 
@@ -33,6 +35,12 @@ instance Dijkstra State where
     represent s = (required s, towelsUsed s)
     adjacency = findNext
     estimate = const 1
+
+memoizedPossibilities :: [Towel] -> Design -> Int
+memoizedPossibilities ts = M.list M.enum possibilities where
+  possibilities [] = 1
+  possibilities design = let applicableTowels = filter (`isPrefixOf` design) ts in
+    sumWith (\t -> memoizedPossibilities ts (drop (length t) design))  applicableTowels
 
 findNext :: State -> [(State, Int)]
 findNext s =
