@@ -46,6 +46,7 @@ dependencies:
 - extra
 - matrix
 - vector
+- array
 
 ghc-options:
 - -Wall

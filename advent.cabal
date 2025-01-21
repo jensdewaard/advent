@@ -248,6 +248,7 @@ library
     , QuickCheck
     , advent-of-code-api
     , aeson
+    , array
     , base
     , bytestring
     , containers
@@ -285,6 +286,7 @@ executable advent-exe
     , advent
     , advent-of-code-api
     , aeson
+    , array
     , base
     , bytestring
     , containers
@@ -334,6 +336,7 @@ test-suite advent-test
     , advent
     , advent-of-code-api
     , aeson
+    , array
     , base
     , bytestring
     , containers
