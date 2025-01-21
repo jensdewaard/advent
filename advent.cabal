@@ -271,7 +271,7 @@ library
     , time
     , transformers
     , vector
-  default-language: Haskell2010
+  default-language: GHC2021
 
 executable advent-exe
   main-is: Main.hs

@@ -1,21 +1,21 @@
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Common.Coord (Coord, origin, Dir(..), move, moveN, dist, above, below, belowN, left, right,  turnLeft, turnRight, rightN, direction, showMap, showMapWith, cardinal, reverse, area, diag) where
 
-import Data.Bifunctor (second)
-import Data.List (sort, tails, maximumBy)
-import Prelude hiding (reverse)
+module Common.Coord (Coord, origin, Dir (..), move, moveN, dist, above, below, belowN, left, right, turnLeft, turnRight, rightN, direction, showMap, showMapWith, cardinal, reverse, area, diag) where
+
 import Common.List (chunksOf)
+import Data.Bifunctor (second)
+import Data.List (maximumBy, sort, tails)
 import Data.Ord (comparing)
+import Prelude hiding (reverse)
 
 type Coord = (Int, Int)
 
 instance Num Coord where
   (+) :: Coord -> Coord -> Coord
-  (+) (x1, y1) (x2, y2) = (x1+x2, y1+y2)
+  (+) (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
   (*) :: Coord -> Coord -> Coord
-  (*) (x1, y1) (x2, y2) = (x1*x2, y1*y2)
+  (*) (x1, y1) (x2, y2) = (x1 * x2, y1 * y2)
   abs :: Coord -> Coord
   abs (x, y) = (abs x, abs y)
   signum :: Coord -> Coord
@@ -25,10 +25,10 @@ instance Num Coord where
   negate :: Coord -> Coord
   negate (x, y) = (negate x, negate y)
 
-data Dir = U | D | L| R deriving (Show, Eq, Ord)
+data Dir = U | D | L | R deriving (Show, Eq, Ord)
 
 origin :: Coord
-origin = (0,0)
+origin = (0, 0)
 
 -- | Move into a direction d from the given coordinate.
 move :: Dir -> Coord -> Coord
@@ -45,39 +45,39 @@ moveN n D c = belowN n c
 
 -- | Computes the Manhattan distance between two points.
 dist :: Coord -> Coord -> Int
-dist (px, py) (qx,qy) = abs (px - qx) + abs (py - qy)
+dist (px, py) (qx, qy) = abs (px - qx) + abs (py - qy)
 
 above :: Coord -> Coord
-above (x,y) = (x,y-1)
+above (x, y) = (x, y - 1)
 
 aboveN :: Int -> Coord -> Coord
-aboveN n (x,y) = (x,y-n)
+aboveN n (x, y) = (x, y - n)
 
 below :: Coord -> Coord
 below = belowN 1
 
 belowN :: Int -> Coord -> Coord
-belowN n (x,y) = (x, y+n)
+belowN n (x, y) = (x, y + n)
 
 left :: Coord -> Coord
-left (x,y) = (x-1, y)
+left (x, y) = (x - 1, y)
 
 leftN :: Int -> Coord -> Coord
-leftN n (x,y) = (x-n,y)
+leftN n (x, y) = (x - n, y)
 
 right :: Coord -> Coord
 right = rightN 1
 
 rightN :: Int -> Coord -> Coord
-rightN n (x,y) = (x+n, y)
+rightN n (x, y) = (x + n, y)
 
 direction :: Coord -> Coord -> Dir
 direction x y
-    | y == above x = U
-    | y == below x = D
-    | y == right x = R
-    | y == left x = L
-    | otherwise = error "coords not adjacent"
+  | y == above x = U
+  | y == below x = D
+  | y == right x = R
+  | y == left x = L
+  | otherwise = error "coords not adjacent"
 
 cardinal :: Coord -> [Coord]
 cardinal c = [above c, right c, below c, left c]
@@ -85,13 +85,14 @@ cardinal c = [above c, right c, below c, left c]
 diag :: Coord -> [Coord]
 diag c = [above $ left c, above $ right c, below $ left c, below $ right c]
 
-showMapWith :: (a -> Char) -> [(Coord,a)] -> String
+showMapWith :: (a -> Char) -> [(Coord, a)] -> String
 showMapWith f m = showMap $ map (second f) m
 
 showMap :: [(Coord, Char)] -> String
-showMap m = "\n" <> unlines (chunksOf width cs) where
-  cs = map snd m
-  width = fst $ fst $ maximumBy (comparing fst) m
+showMap m = "\n" <> unlines (chunksOf width cs)
+  where
+    cs = map snd m
+    width = fst $ fst $ maximumBy (comparing fst) m
 
 reverse :: Dir -> Dir
 reverse U = D
@@ -111,5 +112,5 @@ turnRight R = D
 turnRight D = L
 turnRight L = U
 
-area :: Integral a => [(a, a)] -> a
-area xs = sum [x1 * y2 - x2 * y1 | (y1, x1) : (y2 ,x2) : _ <- tails xs] `quot` 2
+area :: (Integral a) => [(a, a)] -> a
+area xs = sum [x1 * y2 - x2 * y1 | (y1, x1) : (y2, x2) : _ <- tails xs] `quot` 2
