@@ -6,7 +6,22 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Common.Search (bfs, bfsUntil, dfs, dfsUntil, Cost (..), search, Dijkstra (..), dijkstra, dijkstraOn, simple, searchFor, searchFor') where
+module Common.Search
+  ( liftCost,
+    bfs,
+    bfsUntil,
+    dfs,
+    dfsUntil,
+    Cost (..),
+    search,
+    Dijkstra (..),
+    dijkstra,
+    dijkstraOn,
+    simple,
+    searchFor,
+    searchFor',
+  )
+where
 
 import Common.Queue as Queue
   ( Queue (Empty, (:<|)),
@@ -14,13 +29,11 @@ import Common.Queue as Queue
     fromList,
     (<|>),
   )
-import Control.Monad (mplus)
 import Data.Kind (Type)
 import Data.List (foldl')
 import qualified Data.Map as M
-import Data.Maybe (fromJust)
 import qualified Data.PQueue.Min as PM
-import qualified Data.Set as Set (empty, insert, member, fromList, toList, findMin)
+import qualified Data.Set as Set (empty, findMin, insert, member, toList)
 
 --
 dfsUntil :: (Ord a) => (a -> Bool) -> (a -> [a]) -> [a] -> [a]
@@ -77,6 +90,9 @@ class Dijkstra graph where
   adjacency :: graph -> [(graph, DijkstraCost graph)]
   estimate :: graph -> DijkstraCost graph
 
+liftCost :: (Num b) => (a -> [a]) -> a -> [(a, b)]
+liftCost f a = map (,1) (f a)
+
 searchFor ::
   forall g.
   (Dijkstra g, Cost (DijkstraCost g), Ord g, Ord (DijkstraRepr g)) =>
@@ -117,12 +133,12 @@ dijkstraOn' repr trans start combine estimate accept =
     go !seen heap foundThusFar = case PM.minView heap of
       Nothing -> []
       Just ((_, cost, state), heap')
-        | not (null foundThusFar) && cost > snd (Set.findMin foundThusFar)
-            -> Set.toList foundThusFar
-        | accept state && null foundThusFar 
-          -> let found = (state, cost) in found : go seen heap' (Set.insert found foundThusFar)
-        | repr state `M.member` seen 
-            -> go seen heap' foundThusFar
+        | not (null foundThusFar) && cost > snd (Set.findMin foundThusFar) ->
+            Set.toList foundThusFar
+        | accept state && null foundThusFar ->
+            let found = (state, cost) in found : go seen heap' (Set.insert found foundThusFar)
+        | repr state `M.member` seen ->
+            go seen heap' foundThusFar
         | otherwise ->
             let nxts =
                   ( \(val', cost') ->
@@ -176,13 +192,4 @@ simple ::
   state ->
   (state -> Bool) ->
   Maybe (state, Int)
-simple next start = dijkstra (map (,1) . next) [(start, 0)] (+) (const 1)
-
-binary :: [a] -> (a -> Bool) -> Maybe a
-binary [] _ = Nothing
-binary [a] target = if target a then Just a else Nothing
-binary as target =
-  let n = length as `div` 2
-      l = binary (take n as) target
-      r = binary (drop n as) target
-   in mplus l r
+simple next start = dijkstra (liftCost next) [(start, 0)] (+) (const 1)

@@ -23,7 +23,7 @@ test year day: build
     @{{advent-exe}} test {{year}} {{day}}
 
 tests: build
-    @stack test
+    @stack test --profile
 
 start year day:
     @stack run start {{year}} {{day}}
