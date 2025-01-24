@@ -234,5 +234,11 @@ sorted [] = True
 sorted [_] = True
 sorted (a : as) = all (a <=) as && sorted as
 
-sublist :: Int -> Int -> [a] -> [a]
+{- | Take a sublist of a list. If the second index is larger than the upper bound of the 
+original list, it will as much elements as possible.
+ -}
+sublist :: Int -- ^ The index of the first desired element.
+  -> Int -- ^ The index of the last desired element.
+  -> [a] -- ^ The list to take a sublist from.
+  -> [a]
 sublist x y = take (y - x) . drop x

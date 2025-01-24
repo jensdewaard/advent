@@ -3,7 +3,7 @@
 module Challenges.Y2024.Day20 (solutionA, solutionB) where
 
 import Common.Coord (Coord, cardinal, dist)
-import Common.List (count, sublist, sumWith)
+import Common.List (count, sumWith)
 import Common.Parsing (grid)
 import Common.Prelude (solve)
 import Data.Array (Array, array, (!))
@@ -16,7 +16,7 @@ solutionA :: String -> String
 solutionA = solve parser (cheats goal 2) where goal = 100
 
 solutionB :: String -> String
-solutionB = solve parser (const "")
+solutionB = solve parser (cheats goal 20) where goal = 100
 
 type Track = Array Int Coord
 
@@ -26,24 +26,23 @@ findTrack :: Maze -> [Coord]
 findTrack = go []
   where
     go visited (Maze start end walls)
-      | start == end = []
+      | start == end = [end]
       | otherwise =
           let c = head $ filter (\x -> x `notElem` walls && x `notElem` visited) $ cardinal start
-           in c : go (c : visited) (Maze c end walls)
+           in start : go (start : visited) (Maze c end walls)
 
 validCheat :: Int -> Int -> (Int, Coord) -> (Int, Coord) -> Bool
-validCheat maxCheatDistance targetedSaving start end =
+validCheat targetedSaving maxCheatDistance start end =
   let d = dist (snd start) (snd end)
-   in d <= maxCheatDistance && d <= (fst end - fst start - targetedSaving)
+   in d <= maxCheatDistance && targetedSaving <= (fst end - fst start - d)
 
 cheats :: Int -> Int -> Track -> Int
-cheats goal cheat track = sumWith f trackIndices
+cheats goal cheatSize track = sumWith f [1..length track]
   where
-    trackIndices = [1 .. length track]
     f start =
       count
-        (\end -> validCheat goal cheat (start, track ! start) (end, track ! end))
-        (sublist (start + 1) (start + goal) trackIndices)
+        (\end -> validCheat goal cheatSize (start, track ! start) (end, track ! end))
+        [start..length track]
 
 parser :: Parser Track
 parser = do
