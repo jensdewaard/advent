@@ -11,6 +11,7 @@ module Common.Search
     Dijkstra (..),
     dijkstra,
     dijkstraOn,
+    dijkstraOn',
     simple,
     searchFor,
     searchFor',

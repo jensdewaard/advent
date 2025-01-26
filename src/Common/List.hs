@@ -28,6 +28,7 @@ module Common.List
     none,
     sorted,
     sublist,
+    zipWithNext,
   )
 where
 
@@ -242,3 +243,6 @@ sublist :: Int -- ^ The index of the first desired element.
   -> [a] -- ^ The list to take a sublist from.
   -> [a]
 sublist x y = take (y - x) . drop x
+
+zipWithNext :: [a] -> [(a,a)]
+zipWithNext as = zip as (drop 1 as)
